@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,6 +7,7 @@
     <SpaRoot>..\l00188315_project.client</SpaRoot>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:60557</SpaProxyServerUrl>
+    <Configurations>Debug;Release;API Only</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,10 +21,8 @@
     <ProjectReference Include="..\l00188315_project.client\l00188315_project.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\L00188315_Project.Core\L00188315_Project.Core.csproj" />
+    <ProjectReference Include="..\L00188315_Project.Infrastructure\L00188315_Project.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
