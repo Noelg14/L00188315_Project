@@ -1,4 +1,6 @@
-﻿namespace L00188315_Project.Core.Entities
+﻿using System.Reflection.Metadata;
+
+namespace L00188315_Project.Core.Entities
 {
     public class Account
     {
@@ -14,5 +16,6 @@
         public List<Transaction>? Transactions { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
+        public string? UserId { get; set; }
     }
 }
