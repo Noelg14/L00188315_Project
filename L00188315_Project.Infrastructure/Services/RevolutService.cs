@@ -7,8 +7,7 @@ using L00188315_Project.Core.Entities;
 
 namespace L00188315_Project.Infrastructure.Services;
 public class RevolutService(ICacheService _cacheService,
-    IConfiguration _configuration,
-    HttpClient _httpClient
+    IConfiguration _configuration
     ) : IRevolutService
 {
     public async Task GetAccessToken()
@@ -29,7 +28,7 @@ public class RevolutService(ICacheService _cacheService,
             };
 
             var form = new FormUrlEncodedContent(kvp);
-            var response = await _httpClient.PostAsync(url, form);
+            var response = await new HttpClient().PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 Console.WriteLine($"Error getting access token: {response.StatusCode}");

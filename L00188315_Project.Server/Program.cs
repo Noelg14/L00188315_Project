@@ -9,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.RegisterServices(); //custom extenstion method.
+builder.Services.AddAppServices(builder.Configuration); //custom extenstion method.
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 

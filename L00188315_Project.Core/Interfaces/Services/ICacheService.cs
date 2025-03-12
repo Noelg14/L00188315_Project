@@ -18,7 +18,7 @@ public interface ICacheService
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public void Set<T>(string key,T value, int? seconds);
+    public void Set<T>(string key,T value, int seconds);
     /// <summary>
     /// Clear a value from the cache
     /// </summary>

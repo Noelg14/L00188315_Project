@@ -1,6 +1,9 @@
 ﻿using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Services;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+using L00188315_Project.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace L00188315_Project.Server.Extensions
 {
@@ -11,23 +14,26 @@ namespace L00188315_Project.Server.Extensions
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
+        public static IServiceCollection AddAppServices(this IServiceCollection services,IConfiguration configuration)
         {
-            builder.Services.AddMemoryCache();
+            services.AddMemoryCache();
 
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            });
 
+            services.AddSingleton<ICacheService, CacheService>(); // singleton, as we only want 1 instance of the cache service
+            services.AddScoped<IRevolutService, RevolutService>();
 
-            builder.Services.AddSingleton<ICacheService, CacheService>(); // singleton, as we only want 1 instance of the cache service
-            builder.Services.AddScoped<IRevolutService, RevolutService>();
-
-            builder.Services.ConfigureHttpJsonOptions(options =>
+            services.ConfigureHttpJsonOptions(options =>
             {
                 options.SerializerOptions.PropertyNameCaseInsensitive = true;
                 options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.SerializerOptions.MaxDepth = 8;
             });
 
-            return builder;
+            return services;
         }
     }
 }
