@@ -1,3 +1,4 @@
+using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,9 +31,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 #if DEBUG
-    app.MapGet("/test", (IConfiguration config) =>
+    app.MapGet("/test", (IKeyVaultService _service) =>
     {
-        return config["kvSettings:clientId"];
+        return _service.GetSecretAsync("testSecret");
     });
 #endif
 

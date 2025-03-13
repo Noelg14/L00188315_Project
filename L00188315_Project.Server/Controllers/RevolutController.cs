@@ -1,15 +1,18 @@
 ﻿using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace L00188315_Project.Server.Controllers
 {
     [ApiController]
     [Route("api/revolut")]
+    [Authorize]
     public class RevolutController : ControllerBase
     {
+        //"openbanking_intent_id": "CONSENTID",
+
         private readonly IRevolutService _revolutService;
         public RevolutController(IRevolutService revolutService)
         {
@@ -36,7 +39,10 @@ namespace L00188315_Project.Server.Controllers
         [HttpGet("consent")]
         public async Task<ActionResult<string>> GetConsent()
         {
-            return Ok(await _revolutService.GetConsentAsync());
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            
+
+            return Ok(await _revolutService.GetConsentAsync(userId));
         }
     }
 }

@@ -4,3 +4,7 @@ dotnet ef migrations add InitialCreateID -p L00188315_Project.Infrastructure -c 
 
 dotnet ef database update -p L00188315_Project.Infrastructure -s L00188315_Project.Server -c AppDbContext
 dotnet ef database update -p L00188315_Project.Infrastructure -s L00188315_Project.Server -c AppIdentityDbContext
+
+
+
+dotnet ef migrations add AddUserId -p L00188315_Project.Infrastructure -c AppDbContext -s L00188315_Project.Server -o Data/Migrations

@@ -1,4 +1,6 @@
-﻿using L00188315_Project.Core.Entities;
+﻿using Transaction = L00188315_Project.Core.Models.Transaction;
+using Account = L00188315_Project.Core.Models.Account;
+using L00188315_Project.Core.Entities;
 
 namespace L00188315_Project.Core.Interfaces.Services;
 public interface IRevolutService
@@ -7,12 +9,12 @@ public interface IRevolutService
     /// Get the access token for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task GetAccessToken();
+    public Task<string> GetAccessToken();
     /// <summary>
     /// Get the consent for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetConsentAsync();
+    public Task<string> GetConsentAsync(string userId);
     /// <summary>
     /// Get the accounts for the Revolut API
     /// </summary>
