@@ -6,11 +6,6 @@ namespace L00188315_Project.Core.Interfaces.Services;
 public interface IRevolutService
 {
     /// <summary>
-    /// Get the access token for the Revolut API
-    /// </summary>
-    /// <returns></returns>
-    public Task<string> GetAccessToken();
-    /// <summary>
     /// Get the consent for the Revolut API
     /// </summary>
     /// <returns></returns>

@@ -15,19 +15,20 @@ using System.Net.Http.Json;
 
 namespace L00188315_Project.Infrastructure.Services;
 public class RevolutService(ICacheService _cacheService,
-    IConfiguration _configuration
+    IConfiguration _configuration,
+    IKeyVaultService _keyVaultService
     ) : IRevolutService
 {
-    public async Task<string> GetAccessToken()
+    private async Task<string> GetAccessToken()
     {
         if(await _cacheService.Get<string>("RevolutToken") != null)
         {
-            return ""; // we already have a token
+            return await _cacheService.Get<string>("RevolutToken"); // we already have a token
         }
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
-            var clientId = _configuration["Revolut:clientId"];
+            var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
 
             var kvp = new List<KeyValuePair<string, string>>{
                     KeyValuePair.Create("client_id", clientId),
@@ -46,7 +47,7 @@ public class RevolutService(ICacheService _cacheService,
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
             _cacheService.Set("RevolutToken", token.access_token,token.expires_in);
 
-            return "";
+            return token.access_token;
         }
         catch (Exception ex)
         {
@@ -67,6 +68,7 @@ public class RevolutService(ICacheService _cacheService,
 
     public async Task<string> GetConsentAsync(string userId)
     {
+     
         var jso = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -85,7 +87,7 @@ public class RevolutService(ICacheService _cacheService,
         };
         using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url))
         {
-            var token = await _cacheService.Get<string>("RevolutToken");
+            var token = await GetAccessToken();
             httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
             httpRequestMessage.Content = new StringContent(JsonSerializer.Serialize(consentRequest), Encoding.UTF8, "application/json");
@@ -97,8 +99,11 @@ public class RevolutService(ICacheService _cacheService,
                 var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
                 var jwt = GenerateJWT(content.Data.ConsentId);
                 var loginPath = _configuration["Revolut:loginUrl"];
+                var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
+
+
                 loginPath += $"&redirect_uri={_configuration["Revolut:redirectUri"]}";
-                loginPath += $"&client_id={_configuration["Revolut:clientId"]}";
+                loginPath += $"&client_id={clientId}";
                 loginPath += $"&request={jwt}";
 
                 return loginPath;
