@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace L00188315_Project.Core.Interfaces.Services
+namespace L00188315_Project.Core.Interfaces.Services;
+
+public interface ITokenService
 {
-    public interface ITokenService
-    {
-    }
+    public string CreateToken(IdentityUser user);
 }

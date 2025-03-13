@@ -25,6 +25,7 @@ namespace L00188315_Project.Server.Extensions
 
             services.AddSingleton<ICacheService, CacheService>(); // singleton, as we only want 1 instance of the cache service
             services.AddScoped<IRevolutService, RevolutService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             services.ConfigureHttpJsonOptions(options =>
             {
