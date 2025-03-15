@@ -7,17 +7,20 @@ public class CacheService(IMemoryCache _cache) : ICacheService
 {
     public void Clear(string key)
     {
-        _cache.Remove(key);
+        //_cache.Remove(key);
     }
-    public Task<T?> Get<T>(string key)
+    public string Get(string key)
     {
-        _cache.TryGetValue(key, out T? value);
-        return Task.FromResult(value);
+        var value = _cache.Get<string>(key);
+        if (string.IsNullOrEmpty(value)){
+            return string.Empty;
+        }
+        return value;
     }
-    public void Set<T>(string key, T value,int seconds = 3600)
+    public string Set(string key, string value,int seconds = 3600)
     {
         TimeSpan expiry = TimeSpan.FromSeconds(seconds);
-        _cache.Set(key, value, expiry);
+        return _cache.Set(key, value, expiry);
     }
 }
 

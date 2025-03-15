@@ -4,6 +4,10 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using L00188315_Project.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace L00188315_Project.Server.Extensions
 {
@@ -17,6 +21,7 @@ namespace L00188315_Project.Server.Extensions
         public static IServiceCollection AddAppServices(this IServiceCollection services,IConfiguration configuration)
         {
             services.AddMemoryCache();
+            services.AddSingleton<MemoryCache>();
 
             services.AddDbContext<AppDbContext>(options =>
             {
@@ -29,6 +34,7 @@ namespace L00188315_Project.Server.Extensions
 
             services.AddScoped<IRevolutService, RevolutService>();
             services.AddScoped<ITokenService, TokenService>();
+
 
             services.ConfigureHttpJsonOptions(options =>
             {

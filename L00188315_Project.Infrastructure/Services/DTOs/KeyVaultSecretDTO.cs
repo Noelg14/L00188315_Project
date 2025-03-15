@@ -15,7 +15,7 @@ public class Attributes
     public int? recoverableDays { get; set; }
 }
 
-public class KeyVaultDTO
+public class KeyVaultSecretDTO
 {
     public string value { get; set; }
     public string id { get; set; }

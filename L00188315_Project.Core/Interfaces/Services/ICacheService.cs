@@ -7,18 +7,16 @@ public interface ICacheService
     /// <summary>
     /// Get a value from the cache
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <returns></returns>
-    public Task<T> Get<T>(string key);
+    public string Get(string key);
     /// <summary>
     /// Set a value in the cache
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public void Set<T>(string key,T value, int seconds);
+    public string Set(string key,string value, int seconds);
     /// <summary>
     /// Clear a value from the cache
     /// </summary>

@@ -31,9 +31,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 #if DEBUG
-    app.MapGet("/test/{secret}", (string secret, IKeyVaultService _service) =>
+    app.MapGet("/secret/{secret}", (string secret, IKeyVaultService _service) =>
     {
         return _service.GetSecretAsync(secret);
+    });    
+    app.MapGet("/cert/{secret}", (string secret, IKeyVaultService _service) =>
+    {
+        return _service.GetCertAsync(secret);
+    });    
+    app.MapGet("/cache/{secret}", (string secret, ICacheService _service) =>
+    {
+        return _service.Get(secret);
     });
 #endif
 

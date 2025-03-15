@@ -16,6 +16,8 @@ namespace L00188315_Project.Core.Entities
         public string? Scopes { get; set; }
         public string? Provider { get; set; }
         public ConsentStatus? ConsentStatus { get; set; } = Entities.ConsentStatus.Created;
+        //public string? AccountId { get; set; }
+        public List<Account>? Account { get; set; }
     }
     public enum ConsentStatus { 
         Created,
