@@ -19,6 +19,7 @@ namespace L00188315_Project.Infrastructure.Services;
 public class RevolutService : IRevolutService
 {
     private HttpClient _mtlsClient;
+    private HttpClient _httpClient;
     private readonly ICacheService _cacheService;
     private readonly IConfiguration _configuration;
     private readonly IKeyVaultService _keyVaultService;
@@ -32,6 +33,7 @@ public class RevolutService : IRevolutService
         _configuration = configuration;
         _keyVaultService = keyVaultService;
         _mtlsClient = ConfigureMtlsClient();
+        _httpClient = new HttpClient();
     }
 
     private async Task<string> GetAccessToken()
@@ -112,12 +114,13 @@ public class RevolutService : IRevolutService
             httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
             httpRequestMessage.Content = new StringContent(JsonSerializer.Serialize(consentRequest), Encoding.UTF8, "application/json");
 
-            var response = await new HttpClient().SendAsync(httpRequestMessage); 
+            var response = await _httpClient.SendAsync(httpRequestMessage); 
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
                 var jwt = GenerateJWT(content.Data.ConsentId);
+
                 var loginPath = _configuration["Revolut:loginUrl"];
                 var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
 
@@ -161,7 +164,7 @@ public class RevolutService : IRevolutService
                 { "client_id", clientId },
                 { "redirect_uri", redirect },
                 { "scope", "accounts" },
-                { "claims","\"id_token\":{\"openbanking_intent_id\":{\"value\":"+consentId+"}"}, // tried anonymousr types, but it didnt work :shrug:
+                { "claims","\"id_token\":{\"openbanking_intent_id\":{\"value\":"+consentId+"}"}, // tried anonymous types, but it didnt work :shrug:
             };
         var tokenString = new JwtSecurityToken(header, payload);
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -172,8 +175,7 @@ public class RevolutService : IRevolutService
     {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         ServicePointManager.CheckCertificateRevocationList = false;
-        // Load the certificate and key from PEM files
-        //var pfxPath = _keyVaultService.GetCertAsync("revolutPfx").Result;
+
         var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]);
 
         var certWithKey = new X509Certificate2(pfxBytes);
@@ -184,7 +186,7 @@ public class RevolutService : IRevolutService
             ClientCertificateOptions = ClientCertificateOption.Manual,
             ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, certChain, policyErrors) =>
             {
-                return true;
+                return true; // allow insecure / self signed certificates
             },
             Credentials = null,
         };
