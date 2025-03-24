@@ -29,7 +29,7 @@ namespace L00188315_Project.Infrastructure.Data
             modelBuilder.Entity<Balance>().HasOne(b => b.Account).WithOne(a => a.Balance).HasForeignKey<Balance>(b => b.AccountId);
             modelBuilder.Entity<Transaction>().HasOne(b => b.Account).WithMany(a => a.Transactions).HasForeignKey(t => t.AccountId);
 
-            modelBuilder.Entity<Consent>().HasOne(b => b.User);
+            modelBuilder.Entity<Consent>();
             modelBuilder.Entity<Consent>().HasMany(c => c.Account);
 
             modelBuilder.Entity<Account>().Property(a => a.Updated).ValueGeneratedOnUpdate();

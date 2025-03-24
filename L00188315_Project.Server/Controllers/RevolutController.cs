@@ -42,7 +42,13 @@ namespace L00188315_Project.Server.Controllers
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             
 
-            return Ok(await _revolutService.GetConsentAsync(userId));
+            return Ok(await _revolutService.GetConsentAsync(userId!));
+        }
+        [HttpGet("callback")]
+        public async Task<ActionResult<string>> Callback([FromQuery] string code)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            return Ok();
         }
     }
 }

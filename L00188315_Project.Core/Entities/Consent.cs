@@ -12,7 +12,7 @@ namespace L00188315_Project.Core.Entities
     {
         public string ConsentId { get; set; }
         public string? UserId { get; set; }
-        public IdentityUser? User{ get; set; }
+        //public IdentityUser? User{ get; set; }
         public string? Scopes { get; set; }
         public string? Provider { get; set; }
         public ConsentStatus? ConsentStatus { get; set; } = Entities.ConsentStatus.Created;
@@ -21,9 +21,9 @@ namespace L00188315_Project.Core.Entities
     }
     public enum ConsentStatus { 
         Created,
+        Pending,
         Failed,
-        Complete
+        Complete,
+        Expired
     }
-
-
 }

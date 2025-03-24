@@ -8,19 +8,24 @@ using System.Net;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Caching.Memory;
+using L00188315_Project.Core.Interfaces.Repositories;
+using L00188315_Project.Infrastructure.Repositories;
 
 namespace L00188315_Project.Server.Extensions
 {
     public static class AppServiceExtenstions
     {
         /// <summary>
-        /// Register services for the application
+        /// Register the services for the app
         /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddAppServices(this IServiceCollection services,IConfiguration configuration)
         {
-            services.AddMemoryCache();
+            services.AddMemoryCache(opt => { 
+                opt.ExpirationScanFrequency = TimeSpan.FromMinutes(1); // scan for expired items every minute
+            });
             services.AddSingleton<MemoryCache>();
 
             services.AddDbContext<AppDbContext>(options =>
@@ -31,6 +36,7 @@ namespace L00188315_Project.Server.Extensions
             services.AddSingleton<ICacheService, CacheService>(); // singleton, as we only want 1 instance of the cache service
             services.AddSingleton<IKeyVaultService, KeyVaultService>(); // singleton, as we only want 1 instance of the cache service
 
+            services.AddScoped<IConsentRepository, ConsentRepository>();
 
             services.AddScoped<IRevolutService, RevolutService>();
             services.AddScoped<ITokenService, TokenService>();

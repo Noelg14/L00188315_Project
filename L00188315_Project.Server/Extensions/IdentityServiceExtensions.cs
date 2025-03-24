@@ -9,6 +9,12 @@ namespace L00188315_Project.Server.Extensions
 {
     public static class IdentityServiceExtensions
     {
+        /// <summary>
+        /// Add Identity services to the application
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public static IServiceCollection AddIdentityServices(
             this IServiceCollection services,
             IConfiguration config

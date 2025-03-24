@@ -31,13 +31,18 @@ public class KeyVaultService(
     public async Task<string> GetSecretAsync(string secretName)
     {
         var token = await GetToken();
+        if (!string.IsNullOrEmpty(_cache.Get(secretName)))
+        {
+            return _cache.Get(secretName);
+        }
         var keyVaultBaseUrl = CreateKeyVaultRequestUrl("secrets", secretName);
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var secret = await _client.GetFromJsonAsync<KeyVaultSecretDTO>(keyVaultBaseUrl);
         if (secret == null)
         {
-            throw new Exception("Certificate not found");
+            throw new Exception("secret not found");
         }
+        _cache.Set(secretName, secret.value, 3600);
 
         return secret.value;
     }

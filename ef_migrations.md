@@ -8,3 +8,4 @@ dotnet ef database update -p L00188315_Project.Infrastructure -s L00188315_Proje
 
 
 dotnet ef migrations add AddUserId -p L00188315_Project.Infrastructure -c AppDbContext -s L00188315_Project.Server -o Data/Migrations
+dotnet ef migrations add UpdateConsent -p L00188315_Project.Infrastructure -c AppDbContext -s L00188315_Project.Server -o Data/Migrations

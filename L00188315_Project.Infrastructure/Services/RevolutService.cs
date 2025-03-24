@@ -14,6 +14,9 @@ using System.Security.Cryptography;
 using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using L00188315_Project.Core.Interfaces.Repositories;
+using L00188315_Project.Core.Entities;
+using static Azure.Core.HttpHeader;
 
 namespace L00188315_Project.Infrastructure.Services;
 public class RevolutService : IRevolutService
@@ -23,10 +26,12 @@ public class RevolutService : IRevolutService
     private readonly ICacheService _cacheService;
     private readonly IConfiguration _configuration;
     private readonly IKeyVaultService _keyVaultService;
+    private readonly IConsentRepository _consentRepository;
 
     public RevolutService(ICacheService cacheService,
         IConfiguration configuration,
-        IKeyVaultService keyVaultService
+        IKeyVaultService keyVaultService,
+        IConsentRepository consentRepository
     )
     {
         _cacheService = cacheService;
@@ -34,6 +39,7 @@ public class RevolutService : IRevolutService
         _keyVaultService = keyVaultService;
         _mtlsClient = ConfigureMtlsClient();
         _httpClient = new HttpClient();
+        _consentRepository = consentRepository;
     }
 
     private async Task<string> GetAccessToken()
@@ -63,7 +69,7 @@ public class RevolutService : IRevolutService
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
-            _cacheService.Set("RevolutToken", token.access_token,token.expires_in);
+            _cacheService.Set("RevolutToken", token!.access_token,token.expires_in);
 
             return token.access_token;
         }
@@ -119,7 +125,15 @@ public class RevolutService : IRevolutService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
-                var jwt = GenerateJWT(content.Data.ConsentId);
+                await _consentRepository.CreateConsentAsync(new Consent
+                {
+                    ConsentId = content?.Data?.ConsentId!,
+                    UserId = userId,
+                    ConsentStatus = ConsentStatus.Pending,
+                    Provider = "Revolut",
+                    Scopes = string.Join(", ", requestData.Permissions)
+                });
+                var jwt = await GenerateJWT(content.Data.ConsentId);
 
                 var loginPath = _configuration["Revolut:loginUrl"];
                 var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
@@ -130,9 +144,6 @@ public class RevolutService : IRevolutService
                 loginPath += $"&request={jwt}";
 
                 return loginPath;
-
-
-                //return await response.Content.ReadAsStringAsync();
             }
             else
             {
@@ -146,10 +157,10 @@ public class RevolutService : IRevolutService
     {
         throw new NotImplementedException();
     }
-    private string GenerateJWT(string consentId)
+    private async Task<string> GenerateJWT(string consentId)
     {          
-        var keyPem = File.ReadAllText(_configuration["Revolut:keyPath"]);
-        var clientId = _keyVaultService.GetSecretAsync("revolutClientId").Result;
+        var keyPem = File.ReadAllText(_configuration["Revolut:keyPath"]!);
+        var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
         var redirect = _configuration["Revolut:redirectUri"];
 
         // Load the certificate and key from PEM files
@@ -157,6 +168,19 @@ public class RevolutService : IRevolutService
         rsa.ImportFromPem(keyPem.ToCharArray());
 
 
+
+    var claimsDictionary = new Dictionary<string, object>
+    {
+        { "id_token", new Dictionary<string, object>
+            {
+                { "openbanking_intent_id", new Dictionary<string, object>
+                    {
+                        { "value", consentId }
+                    }
+                }
+            }
+        }
+    };
         var header = new JwtHeader(new SigningCredentials(new RsaSecurityKey(rsa) { KeyId = "68d032ce-b2c3-43dd-b6a5-fb6f095f7b3b" }, SecurityAlgorithms.RsaSsaPssSha256));
         var payload = new JwtPayload
             {
@@ -164,19 +188,18 @@ public class RevolutService : IRevolutService
                 { "client_id", clientId },
                 { "redirect_uri", redirect },
                 { "scope", "accounts" },
-                { "claims","\"id_token\":{\"openbanking_intent_id\":{\"value\":"+consentId+"}"}, // tried anonymous types, but it didnt work :shrug:
+                { "claims", claimsDictionary }
             };
         var tokenString = new JwtSecurityToken(header, payload);
         var tokenHandler = new JwtSecurityTokenHandler();
+
+
         return tokenHandler.WriteToken(tokenString);
 
     }
     private HttpClient ConfigureMtlsClient()
     {
-        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        ServicePointManager.CheckCertificateRevocationList = false;
-
-        var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]);
+        var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]!);
 
         var certWithKey = new X509Certificate2(pfxBytes);
 
@@ -186,9 +209,10 @@ public class RevolutService : IRevolutService
             ClientCertificateOptions = ClientCertificateOption.Manual,
             ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, certChain, policyErrors) =>
             {
-                return true; // allow insecure / self signed certificates
+                return true; // allow insecure / self signed certificates / dont validate certs
             },
             Credentials = null,
+            CheckCertificateRevocationList = false
         };
 
         clientHandler.ClientCertificates.Add(certWithKey);
