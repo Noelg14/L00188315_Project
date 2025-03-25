@@ -27,4 +27,19 @@ public interface IRevolutService
     /// <param name="accountId"></param>
     /// <returns></returns>
     public Task<string> GetAccountBalanceAsync(string accountId);
+    /// <summary>
+    /// Update the consent status
+    /// </summary>
+    /// <param name="consentId"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public Task UpdateConsent(string consentId,ConsentStatus status);
+    /// <summary>
+    /// Gets the users access token, after consent is received
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="code"></param>
+    /// <returns>The access token</returns>
+    public Task<string> GetUserAccessToken(string userId,string code);
+
 }

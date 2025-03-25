@@ -33,10 +33,12 @@ namespace L00188315_Project.Infrastructure.Repositories
         public async Task<Consent> UpdateConsentAsync(Consent consent, ConsentStatus? status)
         {
            var thisConsent = await GetConsentAsync(consent.ConsentId);
-            thisConsent.ConsentStatus = status;
+            if(status is not null)
+            {
+                thisConsent.ConsentStatus = status; 
+            }
             _dbContext.Consents.Update(thisConsent);
             _dbContext.SaveChanges();
-
 
             return thisConsent;
         }

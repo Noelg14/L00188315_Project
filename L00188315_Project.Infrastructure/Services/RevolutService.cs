@@ -218,5 +218,46 @@ public class RevolutService : IRevolutService
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }
+    public async Task UpdateConsent(string consentId, ConsentStatus status)
+    {
+        var consent = await _consentRepository.GetConsentAsync(consentId);
+        if (consent == null)
+        {
+            throw new Exception("Consent not found");
+        }
+        consent.ConsentStatus = status;
+        await _consentRepository.UpdateConsentAsync(consent,status);
+        return;
+    }
+
+    public async Task<string> GetUserAccessToken(string userId, string code)
+    {
+        try
+        {
+            var url = _configuration["Revolut:tokenUrl"];
+            var kvp = new List<KeyValuePair<string, string>>{
+                    KeyValuePair.Create("code", code),
+                    KeyValuePair.Create("grant_type", "authorization_code")
+                };
+
+            var form = new FormUrlEncodedContent(kvp);
+            var response = await _mtlsClient.PostAsync(url, form);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                Console.WriteLine($"Error getting access token: {response.StatusCode}");
+                return response.StatusCode.ToString();
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            var token = JsonSerializer.Deserialize<TokenDTO>(content);
+            _cacheService.Set($"{userId}", token.access_token, token.expires_in);
+            Console.WriteLine($"Token: {token.access_token}");
+            return token.access_token;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting access token: {ex.Message}");
+            return ex.Message;
+        }
+    }
 }
 

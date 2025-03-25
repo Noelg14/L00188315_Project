@@ -35,6 +35,9 @@ namespace L00188315_Project.Infrastructure.Data
             modelBuilder.Entity<Account>().Property(a => a.Updated).ValueGeneratedOnUpdate();
             modelBuilder.Entity<Account>().Property(a => a.Created).ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<Consent>().Property(a => a.Updated).ValueGeneratedOnUpdate();
+            modelBuilder.Entity<Consent>().Property(a => a.Created).ValueGeneratedOnAdd();
+
 
         }
     }
