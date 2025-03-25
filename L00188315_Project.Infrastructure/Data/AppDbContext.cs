@@ -35,10 +35,46 @@ namespace L00188315_Project.Infrastructure.Data
             modelBuilder.Entity<Account>().Property(a => a.Updated).ValueGeneratedOnUpdate();
             modelBuilder.Entity<Account>().Property(a => a.Created).ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<Consent>().Property(a => a.Updated).ValueGeneratedOnUpdate();
-            modelBuilder.Entity<Consent>().Property(a => a.Created).ValueGeneratedOnAdd();
+            //modelBuilder.Entity<Consent>().Property(a => a.Updated).ValueGeneratedOnUpdate();
+            //modelBuilder.Entity<Consent>().Property(a => a.Created).HasDefaultValue(DateTimeOffset.Now);
 
 
         }
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries<Consent>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.Created = DateTime.UtcNow;
+                    entry.Entity.Updated = DateTime.UtcNow;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.Updated = DateTime.UtcNow;
+                }
+            }
+
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<Consent>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.Created = DateTime.UtcNow;
+                    entry.Entity.Updated = DateTime.UtcNow;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.Updated = DateTime.UtcNow;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }

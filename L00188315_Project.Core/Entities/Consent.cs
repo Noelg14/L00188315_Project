@@ -18,8 +18,8 @@ namespace L00188315_Project.Core.Entities
         public ConsentStatus? ConsentStatus { get; set; } = Entities.ConsentStatus.Created;
         //public string? AccountId { get; set; }
         public List<Account>? Account { get; set; }
-        public DateTimeOffset? Created { get; set; } = DateTimeOffset.Now;
-        public DateTimeOffset? Updated { get; set; }
+        public DateTime? Created { get; set; } = DateTime.Now;
+        public DateTime? Updated { get; set; }
     }
     public enum ConsentStatus { 
         Created,
