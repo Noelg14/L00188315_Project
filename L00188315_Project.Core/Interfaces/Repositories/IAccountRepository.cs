@@ -8,37 +8,36 @@ using System.Threading.Tasks;
 namespace L00188315_Project.Core.Interfaces.Repositories
 {
     /// <summary>
-    /// Repository for managing balances
+    /// Repository for managing accounts
     /// </summary>
-    public interface IBalanceRepository
+    public interface IAccountRepository
     {
         /// <summary>
-        /// Get all balances for a user
+        /// Get all accounts for a user
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public Task<List<Balance>> GetAllBalancesAsync(string userId);
+        public Task<List<Account>> GetAllAccountsAsync(string userId);
         /// <summary>
-        /// Get a balance by its id
+        /// Get an account by its id
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="accountId"></param>
         /// <returns></returns>
-        public Task<Balance> GetBalanceAsync(string userId, string accountId);
+        public Task<Account> GetAccountAsync(string userId, string accountId);
         /// <summary>
-        /// Create a balance
+        /// Create an account
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="balance"></param>
+        /// <param name="account"></param>
         /// <returns></returns>
-        public Task<Balance> CreateBalanceAsync(string userId, Balance balance);
+        public Task<Account> CreateAccountAsync(string userId, Account account);
         /// <summary>
-        /// Update a balance
+        /// Update an account
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="balance"></param>
+        /// <param name="account"></param>
         /// <returns></returns>
-        public Task<Balance> UpdateBalanceAsync(string userId, Balance balance);
-
+        public Task<Account> UpdateAccountAsync(string userId, Account account);
     }
 }
