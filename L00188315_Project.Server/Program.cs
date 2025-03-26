@@ -2,6 +2,7 @@ using System.Security.Cryptography.X509Certificates;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Server.Extensions;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 #if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly.
@@ -58,10 +59,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAppServices(builder.Configuration); //custom extenstion method.
 builder.Services.AddIdentityServices(builder.Configuration);
 
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -75,7 +80,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-#if DEBUG
+#if DEBUG // debug endponts for KV / Cache
 app.MapGet(
     "/secret/{secret}",
     (string secret, IKeyVaultService _service) =>
