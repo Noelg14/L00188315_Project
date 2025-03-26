@@ -60,7 +60,9 @@ builder.Services.AddAppServices(builder.Configuration); //custom extenstion meth
 builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration));
+    configuration.ReadFrom.Configuration(context.Configuration)
+    .WriteTo.Console() // write to console
+    );
 
 var app = builder.Build();
 

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Core.Models;
+using L00188315_Project.Infrastructure.Services;
 using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +17,13 @@ namespace L00188315_Project.Server.Controllers
         //"openbanking_intent_id": "CONSENTID",
 
         private readonly IRevolutService _revolutService;
+        private readonly ILogger<RevolutController> _logger;
 
-        public RevolutController(IRevolutService revolutService)
+        public RevolutController(IRevolutService revolutService,
+            ILogger<RevolutController> logger)
         {
             _revolutService = revolutService;
+            _logger = logger;
         }
 
         [HttpGet("jwks")]
@@ -50,6 +54,7 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<string>> GetConsent()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            _logger.LogInformation("Getting consent for {0}",userId);
 
             return Ok(await _revolutService.GetConsentAsync(userId!));
         }
@@ -61,14 +66,18 @@ namespace L00188315_Project.Server.Controllers
         )
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(id_token);
             var consentId = jwtSecurityToken
                 .Claims.First(x => x.Type == "openbanking_intent_id")
                 .Value;
 
+            _logger.LogInformation("Callback Recieved for User {0} with Consent {1}",userId,consentId);
+
+
             await _revolutService.UpdateConsent(consentId, Core.Entities.ConsentStatus.Complete); // update consent first
+            _logger.LogInformation("Consent {0} updated ", consentId);
+
             var token = await _revolutService.GetUserAccessToken(userId, code);
 
             return Ok(new { Token = token });
@@ -78,6 +87,7 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<List<Account>>> GetAccounts()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            _logger.LogInformation("Getting Accounts for User: {0}", userId);
             return Ok(await _revolutService.GetAccountsAsync(userId));
         }
 
@@ -93,6 +103,8 @@ namespace L00188315_Project.Server.Controllers
             var accounts = await _revolutService.GetAccountsAsync(userId);
             var transactions = await _revolutService.GetTransactionsAsync(accountId, userId);
 
+            _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId,accountId);
+
             return Ok(transactions);
         }
 
@@ -105,6 +117,8 @@ namespace L00188315_Project.Server.Controllers
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             var accounts = await _revolutService.GetAccountsAsync(userId);
             var balances = await _revolutService.GetAccountBalanceAsync(accountId, userId);
+
+            _logger.LogInformation("Getting Balances for User: {0} & Account {1}", userId, accountId);
 
             return Ok(balances);
         }

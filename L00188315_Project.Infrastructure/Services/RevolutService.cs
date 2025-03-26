@@ -13,6 +13,7 @@ using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Core.Models;
 using L00188315_Project.Infrastructure.Services.DTOs;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Account = L00188315_Project.Core.Models.Account;
 using Balance = L00188315_Project.Core.Models.Balance;
@@ -28,12 +29,14 @@ public class RevolutService : IRevolutService
     private readonly IConfiguration _configuration;
     private readonly IKeyVaultService _keyVaultService;
     private readonly IConsentRepository _consentRepository;
+    private readonly ILogger<RevolutService> _logger;
 
     public RevolutService(
         ICacheService cacheService,
         IConfiguration configuration,
         IKeyVaultService keyVaultService,
-        IConsentRepository consentRepository
+        IConsentRepository consentRepository,
+        ILogger<RevolutService> logger
     )
     {
         _cacheService = cacheService;
@@ -42,6 +45,7 @@ public class RevolutService : IRevolutService
         _mtlsClient = ConfigureMtlsClient();
         _httpClient = new HttpClient();
         _consentRepository = consentRepository;
+        _logger = logger;
     }
 
     /// <summary>
