@@ -1,5 +1,4 @@
-﻿
-namespace L00188315_Project.Core.Interfaces.Services;
+﻿namespace L00188315_Project.Core.Interfaces.Services;
 
 public interface IKeyVaultService
 {

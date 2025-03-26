@@ -1,27 +1,25 @@
-﻿using L00188315_Project.Core.Interfaces.Services;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Text.Json;
-using Microsoft.Extensions.Configuration;
-using L00188315_Project.Infrastructure.Services.DTOs;
 using System.Net.Http.Headers;
-using System.Text;
-using L00188315_Project.Core.Models;
-using Transaction = L00188315_Project.Core.Models.Transaction;
-using Account = L00188315_Project.Core.Models.Account;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
 using System.Net.Http.Json;
 using System.Security.Authentication;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using L00188315_Project.Core.Interfaces.Repositories;
+using System.Text;
+using System.Text.Json;
 using L00188315_Project.Core.Entities;
-using static Azure.Core.HttpHeader;
-using Azure;
-using System.Text.Json.Serialization;
+using L00188315_Project.Core.Interfaces.Repositories;
+using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Core.Models;
+using L00188315_Project.Infrastructure.Services.DTOs;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Account = L00188315_Project.Core.Models.Account;
 using Balance = L00188315_Project.Core.Models.Balance;
+using Transaction = L00188315_Project.Core.Models.Transaction;
 
 namespace L00188315_Project.Infrastructure.Services;
+
 public class RevolutService : IRevolutService
 {
     private HttpClient _mtlsClient;
@@ -31,7 +29,8 @@ public class RevolutService : IRevolutService
     private readonly IKeyVaultService _keyVaultService;
     private readonly IConsentRepository _consentRepository;
 
-    public RevolutService(ICacheService cacheService,
+    public RevolutService(
+        ICacheService cacheService,
         IConfiguration configuration,
         IKeyVaultService keyVaultService,
         IConsentRepository consentRepository
@@ -44,6 +43,7 @@ public class RevolutService : IRevolutService
         _httpClient = new HttpClient();
         _consentRepository = consentRepository;
     }
+
     /// <summary>
     /// Gets the access token for the Revolut API - For generating consents
     /// </summary>
@@ -60,10 +60,11 @@ public class RevolutService : IRevolutService
             var url = _configuration["Revolut:tokenUrl"];
             var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
 
-            var kvp = new List<KeyValuePair<string, string>>{
-                    KeyValuePair.Create("client_id", clientId),
-                    KeyValuePair.Create("scope", "accounts"),
-                    KeyValuePair.Create("grant_type", "client_credentials")
+            var kvp = new List<KeyValuePair<string, string>>
+            {
+                KeyValuePair.Create("client_id", clientId),
+                KeyValuePair.Create("scope", "accounts"),
+                KeyValuePair.Create("grant_type", "client_credentials"),
             };
 
             var form = new FormUrlEncodedContent(kvp);
@@ -75,7 +76,7 @@ public class RevolutService : IRevolutService
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
-            _cacheService.Set("RevolutToken", token!.access_token,token.expires_in);
+            _cacheService.Set("RevolutToken", token!.access_token, token.expires_in);
 
             return token.access_token;
         }
@@ -86,7 +87,7 @@ public class RevolutService : IRevolutService
         }
     }
 
-    public async Task<Balance> GetAccountBalanceAsync(string accountId,string userId)
+    public async Task<Balance> GetAccountBalanceAsync(string accountId, string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return null;
@@ -95,7 +96,7 @@ public class RevolutService : IRevolutService
         {
             return null;
         }
-        var response = await sendGetRequestAsync(accountId, "/balances",token);
+        var response = await sendGetRequestAsync(accountId, "/balances", token);
         return response.Data.Balance.FirstOrDefault();
     }
 
@@ -104,12 +105,12 @@ public class RevolutService : IRevolutService
         if (string.IsNullOrEmpty(userId))
             return null;
         var token = _cacheService.Get(userId);
-        if(string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(token))
         {
             return null;
-        }  
+        }
 
-        var response = await sendGetRequestAsync(string.Empty, string.Empty,token);
+        var response = await sendGetRequestAsync(string.Empty, string.Empty, token);
         return response.Data.Account;
     }
 
@@ -119,28 +120,29 @@ public class RevolutService : IRevolutService
         var consent = existingConsents
             .Where(c => c.Provider == "Revolut" && c.Expires > DateTime.Now) // check if another valid consent exists
             .FirstOrDefault();
-        if(consent != null)
+        if (consent != null)
         {
             //if user has an existing consent, return the login path
-            return await GenerateLoginPath(consent.ConsentId); 
+            return await GenerateLoginPath(consent.ConsentId);
         }
 
-        var jso = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
+        var jso = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var url = _configuration["Revolut:consentUrl"];
         var requestData = new Core.Models.Data
         {
-            Permissions = new List<string> { "ReadAccountsBasic", "ReadAccountsDetail", "ReadTransactionsDebits", "ReadTransactionsDetail", "ReadBalances" },
+            Permissions = new List<string>
+            {
+                "ReadAccountsBasic",
+                "ReadAccountsDetail",
+                "ReadTransactionsDebits",
+                "ReadTransactionsDetail",
+                "ReadBalances",
+            },
             ExpirationDateTime = DateTime.Now.AddDays(1),
             TransactionFromDateTime = DateTime.Now.AddYears(-2),
-            TransactionToDateTime = DateTime.Now
+            TransactionToDateTime = DateTime.Now,
         };
-        var consentRequest = new OpenBankingDataModel
-        {
-            Data = requestData
-        };
+        var consentRequest = new OpenBankingDataModel { Data = requestData };
         using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url))
         {
             var token = await GetAccessToken();
@@ -148,24 +150,33 @@ public class RevolutService : IRevolutService
             {
                 return string.Empty;
             }
-            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
             httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
-            httpRequestMessage.Content = new StringContent(JsonSerializer.Serialize(consentRequest), Encoding.UTF8, "application/json");
+            httpRequestMessage.Content = new StringContent(
+                JsonSerializer.Serialize(consentRequest),
+                Encoding.UTF8,
+                "application/json"
+            );
 
-            var response = await _httpClient.SendAsync(httpRequestMessage); 
+            var response = await _httpClient.SendAsync(httpRequestMessage);
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
-                await _consentRepository.CreateConsentAsync(new Consent
-                {
-                    ConsentId = content?.Data?.ConsentId!,
-                    UserId = userId,
-                    ConsentStatus = ConsentStatus.Pending,
-                    Provider = "Revolut",
-                    Scopes = string.Join(", ", requestData.Permissions),
-                    Expires = DateTime.Now.AddDays(1)
-                });
+                await _consentRepository.CreateConsentAsync(
+                    new Consent
+                    {
+                        ConsentId = content?.Data?.ConsentId!,
+                        UserId = userId,
+                        ConsentStatus = ConsentStatus.Pending,
+                        Provider = "Revolut",
+                        Scopes = string.Join(", ", requestData.Permissions),
+                        Expires = DateTime.Now.AddDays(1),
+                    }
+                );
                 return await GenerateLoginPath(content.Data.ConsentId);
             }
             else
@@ -185,9 +196,10 @@ public class RevolutService : IRevolutService
         {
             return null;
         }
-        var data = await sendGetRequestAsync(accountId, "/transactions",token);
+        var data = await sendGetRequestAsync(accountId, "/transactions", token);
         return data.Data.Transaction;
     }
+
     public async Task UpdateConsent(string consentId, ConsentStatus status)
     {
         var consent = await _consentRepository.GetConsentAsync(consentId);
@@ -196,9 +208,10 @@ public class RevolutService : IRevolutService
             throw new Exception("Consent not found");
         }
         consent.ConsentStatus = status;
-        await _consentRepository.UpdateConsentAsync(consent,status);
+        await _consentRepository.UpdateConsentAsync(consent, status);
         return;
     }
+
     /// <summary>
     /// Gets the users access token, after consent is received
     /// </summary>
@@ -210,10 +223,11 @@ public class RevolutService : IRevolutService
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
-            var kvp = new List<KeyValuePair<string, string>>{
-                    KeyValuePair.Create("code", code),
-                    KeyValuePair.Create("grant_type", "authorization_code")
-                };
+            var kvp = new List<KeyValuePair<string, string>>
+            {
+                KeyValuePair.Create("code", code),
+                KeyValuePair.Create("grant_type", "authorization_code"),
+            };
 
             var form = new FormUrlEncodedContent(kvp);
             var response = await _mtlsClient.PostAsync(url, form);
@@ -234,8 +248,9 @@ public class RevolutService : IRevolutService
             return ex.Message;
         }
     }
+
     private async Task<string> GenerateJWT(string consentId)
-    {          
+    {
         var keyPem = File.ReadAllText(_configuration["Revolut:keyPath"]!);
         var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
         var redirect = _configuration["Revolut:redirectUri"];
@@ -244,36 +259,39 @@ public class RevolutService : IRevolutService
         var rsa = RSA.Create();
         rsa.ImportFromPem(keyPem.ToCharArray());
 
-
-
-    var claimsDictionary = new Dictionary<string, object>
-    {
-        { "id_token", new Dictionary<string, object>
+        var claimsDictionary = new Dictionary<string, object>
+        {
             {
-                { "openbanking_intent_id", new Dictionary<string, object>
+                "id_token",
+                new Dictionary<string, object>
+                {
                     {
-                        { "value", consentId }
-                    }
+                        "openbanking_intent_id",
+                        new Dictionary<string, object> { { "value", consentId } }
+                    },
                 }
-            }
-        }
-    };
-        var header = new JwtHeader(new SigningCredentials(new RsaSecurityKey(rsa) { KeyId = "68d032ce-b2c3-43dd-b6a5-fb6f095f7b3b" }, SecurityAlgorithms.RsaSsaPssSha256));
+            },
+        };
+        var header = new JwtHeader(
+            new SigningCredentials(
+                new RsaSecurityKey(rsa) { KeyId = "68d032ce-b2c3-43dd-b6a5-fb6f095f7b3b" },
+                SecurityAlgorithms.RsaSsaPssSha256
+            )
+        );
         var payload = new JwtPayload
-            {
-                { "response_type", "code id_token" },
-                { "client_id", clientId },
-                { "redirect_uri", redirect },
-                { "scope", "accounts" },
-                { "claims", claimsDictionary }
-            };
+        {
+            { "response_type", "code id_token" },
+            { "client_id", clientId },
+            { "redirect_uri", redirect },
+            { "scope", "accounts" },
+            { "claims", claimsDictionary },
+        };
         var tokenString = new JwtSecurityToken(header, payload);
         var tokenHandler = new JwtSecurityTokenHandler();
 
-
         return tokenHandler.WriteToken(tokenString);
-
     }
+
     /// <summary>
     /// Configures the mTLS client used for authenticating with the Revolut API
     /// </summary>
@@ -288,17 +306,23 @@ public class RevolutService : IRevolutService
         {
             SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
             ClientCertificateOptions = ClientCertificateOption.Manual,
-            ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, certChain, policyErrors) =>
+            ServerCertificateCustomValidationCallback = (
+                httpRequestMessage,
+                cert,
+                certChain,
+                policyErrors
+            ) =>
             {
                 return true; // allow insecure / self signed certificates / dont validate certs
             },
             Credentials = null,
-            CheckCertificateRevocationList = false
+            CheckCertificateRevocationList = false,
         };
 
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }
+
     /// <summary>
     /// Helper method to generate the login path for the customer SCA
     /// </summary>
@@ -311,16 +335,18 @@ public class RevolutService : IRevolutService
         var loginPath = _configuration["Revolut:loginUrl"];
         var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
 
-
         loginPath += $"&redirect_uri={_configuration["Revolut:redirectUri"]}";
         loginPath += $"&client_id={clientId}";
         loginPath += $"&request={jwt}";
         return loginPath;
-
     }
-    private async Task<OpenBankingDataModel> sendGetRequestAsync(string? accountId, string? endpoint,string token)
-    {
 
+    private async Task<OpenBankingDataModel> sendGetRequestAsync(
+        string? accountId,
+        string? endpoint,
+        string token
+    )
+    {
         var url = _configuration["Revolut:baseUrl"] + "/accounts";
         if (!string.IsNullOrEmpty(accountId))
             url += $"/{accountId}";
@@ -329,13 +355,15 @@ public class RevolutService : IRevolutService
 
         using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url))
         {
-            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
             httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
 
             var response = await _httpClient.SendAsync(httpRequestMessage);
             if (response.IsSuccessStatusCode)
             {
-
                 var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>();
                 return content;
             }
@@ -347,4 +375,3 @@ public class RevolutService : IRevolutService
         }
     }
 }
-

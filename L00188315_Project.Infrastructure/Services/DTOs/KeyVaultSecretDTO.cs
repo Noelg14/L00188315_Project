@@ -23,6 +23,4 @@ public class KeyVaultSecretDTO
     public Tags tags { get; set; }
 }
 
-public class Tags
-{
-}
+public class Tags { }

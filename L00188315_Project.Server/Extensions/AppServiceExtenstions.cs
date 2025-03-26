@@ -1,15 +1,15 @@
-﻿using L00188315_Project.Core.Interfaces.Services;
-using L00188315_Project.Infrastructure.Services;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Identity;
-using L00188315_Project.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
+﻿using System.Net;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json.Serialization;
 using L00188315_Project.Core.Interfaces.Repositories;
+using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Infrastructure.Data;
 using L00188315_Project.Infrastructure.Repositories;
+using L00188315_Project.Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace L00188315_Project.Server.Extensions
 {
@@ -21,9 +21,13 @@ namespace L00188315_Project.Server.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddAppServices(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddAppServices(
+            this IServiceCollection services,
+            IConfiguration configuration
+        )
         {
-            services.AddMemoryCache(opt => { 
+            services.AddMemoryCache(opt =>
+            {
                 opt.ExpirationScanFrequency = TimeSpan.FromMinutes(1); // scan for expired items every minute
             });
             services.AddSingleton<MemoryCache>();
@@ -41,11 +45,11 @@ namespace L00188315_Project.Server.Extensions
             services.AddScoped<IRevolutService, RevolutService>();
             services.AddScoped<ITokenService, TokenService>();
 
-
             services.ConfigureHttpJsonOptions(options =>
             {
                 options.SerializerOptions.PropertyNameCaseInsensitive = true;
-                options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.SerializerOptions.DefaultIgnoreCondition =
+                    JsonIgnoreCondition.WhenWritingNull;
                 options.SerializerOptions.MaxDepth = 8;
             });
 

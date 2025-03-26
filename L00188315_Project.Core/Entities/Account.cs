@@ -4,7 +4,6 @@ namespace L00188315_Project.Core.Entities
 {
     public class Account
     {
-        
         public string AccountId { get; set; }
         public string Name { get; set; }
         public string Currency { get; set; }

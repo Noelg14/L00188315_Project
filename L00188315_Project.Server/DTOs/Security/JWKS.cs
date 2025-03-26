@@ -4,6 +4,7 @@ public class JWKS
 {
     public List<Key> keys { get; set; }
 }
+
 public class Key
 {
     public string kty { get; set; }
@@ -12,5 +13,4 @@ public class Key
     public string e { get; set; }
     public string n { get; set; }
     public List<string> x5c { get; set; }
-
 }

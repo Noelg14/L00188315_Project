@@ -14,19 +14,22 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 name: "ConsentId",
                 table: "Accounts",
                 type: "nvarchar(450)",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_ConsentId",
                 table: "Accounts",
-                column: "ConsentId");
+                column: "ConsentId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Accounts_Consents_ConsentId",
                 table: "Accounts",
                 column: "ConsentId",
                 principalTable: "Consents",
-                principalColumn: "ConsentId");
+                principalColumn: "ConsentId"
+            );
         }
 
         /// <inheritdoc />
@@ -34,15 +37,12 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Accounts_Consents_ConsentId",
-                table: "Accounts");
+                table: "Accounts"
+            );
 
-            migrationBuilder.DropIndex(
-                name: "IX_Accounts_ConsentId",
-                table: "Accounts");
+            migrationBuilder.DropIndex(name: "IX_Accounts_ConsentId", table: "Accounts");
 
-            migrationBuilder.DropColumn(
-                name: "ConsentId",
-                table: "Accounts");
+            migrationBuilder.DropColumn(name: "ConsentId", table: "Accounts");
         }
     }
 }

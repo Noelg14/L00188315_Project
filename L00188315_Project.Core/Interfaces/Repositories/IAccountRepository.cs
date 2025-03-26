@@ -1,9 +1,9 @@
-﻿using L00188315_Project.Core.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using L00188315_Project.Core.Entities;
 
 namespace L00188315_Project.Core.Interfaces.Repositories
 {
@@ -18,6 +18,7 @@ namespace L00188315_Project.Core.Interfaces.Repositories
         /// <param name="userId"></param>
         /// <returns></returns>
         public Task<List<Account>> GetAllAccountsAsync(string userId);
+
         /// <summary>
         /// Get an account by its id
         /// </summary>
@@ -25,6 +26,7 @@ namespace L00188315_Project.Core.Interfaces.Repositories
         /// <param name="accountId"></param>
         /// <returns></returns>
         public Task<Account> GetAccountAsync(string userId, string accountId);
+
         /// <summary>
         /// Create an account
         /// </summary>
@@ -32,6 +34,7 @@ namespace L00188315_Project.Core.Interfaces.Repositories
         /// <param name="account"></param>
         /// <returns></returns>
         public Task<Account> CreateAccountAsync(string userId, Account account);
+
         /// <summary>
         /// Update an account
         /// </summary>

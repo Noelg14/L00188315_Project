@@ -1,18 +1,18 @@
-﻿using L00188315_Project.Core.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using L00188315_Project.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace L00188315_Project.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options) { }
+
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Balance> Balances { get; set; }
@@ -26,8 +26,16 @@ namespace L00188315_Project.Infrastructure.Data
             modelBuilder.Entity<Balance>().HasKey(b => b.AccountId);
             modelBuilder.Entity<Consent>().HasKey(c => c.ConsentId);
 
-            modelBuilder.Entity<Balance>().HasOne(b => b.Account).WithOne(a => a.Balance).HasForeignKey<Balance>(b => b.AccountId);
-            modelBuilder.Entity<Transaction>().HasOne(b => b.Account).WithMany(a => a.Transactions).HasForeignKey(t => t.AccountId);
+            modelBuilder
+                .Entity<Balance>()
+                .HasOne(b => b.Account)
+                .WithOne(a => a.Balance)
+                .HasForeignKey<Balance>(b => b.AccountId);
+            modelBuilder
+                .Entity<Transaction>()
+                .HasOne(b => b.Account)
+                .WithMany(a => a.Transactions)
+                .HasForeignKey(t => t.AccountId);
 
             modelBuilder.Entity<Consent>();
             modelBuilder.Entity<Consent>().HasMany(c => c.Account);
@@ -37,9 +45,8 @@ namespace L00188315_Project.Infrastructure.Data
 
             //modelBuilder.Entity<Consent>().Property(a => a.Updated).ValueGeneratedOnUpdate();
             //modelBuilder.Entity<Consent>().Property(a => a.Created).HasDefaultValue(DateTimeOffset.Now);
-
-
         }
+
         public override int SaveChanges()
         {
             foreach (var entry in ChangeTracker.Entries<Consent>())
@@ -58,7 +65,9 @@ namespace L00188315_Project.Infrastructure.Data
             return base.SaveChanges();
         }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(
+            CancellationToken cancellationToken = default
+        )
         {
             foreach (var entry in ChangeTracker.Entries<Consent>())
             {
@@ -75,6 +84,5 @@ namespace L00188315_Project.Infrastructure.Data
 
             return await base.SaveChangesAsync(cancellationToken);
         }
-
     }
 }

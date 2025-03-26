@@ -17,7 +17,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 type: "datetime2",
                 nullable: true,
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Created",
@@ -25,21 +26,21 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 type: "datetime2",
                 nullable: true,
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "Expires",
                 table: "Consents",
                 type: "datetime2",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Expires",
-                table: "Consents");
+            migrationBuilder.DropColumn(name: "Expires", table: "Consents");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Updated",
@@ -49,7 +50,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "Created",
@@ -59,7 +61,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
     }
 }

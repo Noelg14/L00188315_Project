@@ -17,7 +17,10 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(
+                        type: "nvarchar(max)",
+                        nullable: true
+                    ),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
@@ -27,14 +30,18 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnd = table.Column<DateTimeOffset>(
+                        type: "datetimeoffset",
+                        nullable: true
+                    ),
                     LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IdentityUser", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Consents",
@@ -44,7 +51,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Scopes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Provider = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConsentStatus = table.Column<int>(type: "int", nullable: true)
+                    ConsentStatus = table.Column<int>(type: "int", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -53,23 +60,24 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         name: "FK_Consents_IdentityUser_UserId",
                         column: x => x.UserId,
                         principalTable: "IdentityUser",
-                        principalColumn: "Id");
-                });
+                        principalColumn: "Id"
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Consents_UserId",
                 table: "Consents",
-                column: "UserId");
+                column: "UserId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Consents");
+            migrationBuilder.DropTable(name: "Consents");
 
-            migrationBuilder.DropTable(
-                name: "IdentityUser");
+            migrationBuilder.DropTable(name: "IdentityUser");
         }
     }
 }

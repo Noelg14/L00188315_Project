@@ -13,14 +13,12 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Consents_IdentityUser_UserId",
-                table: "Consents");
+                table: "Consents"
+            );
 
-            migrationBuilder.DropTable(
-                name: "IdentityUser");
+            migrationBuilder.DropTable(name: "IdentityUser");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Consents_UserId",
-                table: "Consents");
+            migrationBuilder.DropIndex(name: "IX_Consents_UserId", table: "Consents");
 
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
@@ -29,7 +27,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
 
         /// <inheritdoc />
@@ -42,7 +41,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.CreateTable(
                 name: "IdentityUser",
@@ -54,32 +54,41 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnd = table.Column<DateTimeOffset>(
+                        type: "datetimeoffset",
+                        nullable: true
+                    ),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(
+                        type: "nvarchar(max)",
+                        nullable: true
+                    ),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IdentityUser", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Consents_UserId",
                 table: "Consents",
-                column: "UserId");
+                column: "UserId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Consents_IdentityUser_UserId",
                 table: "Consents",
                 column: "UserId",
                 principalTable: "IdentityUser",
-                principalColumn: "Id");
+                principalColumn: "Id"
+            );
         }
     }
 }

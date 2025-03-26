@@ -9,6 +9,7 @@ namespace L00188315_Project.Core.Models
         public Links? Links { get; set; }
         public Meta? Meta { get; set; }
     }
+
     public class Data
     {
         public List<Account>? Account { get; set; }
@@ -22,14 +23,16 @@ namespace L00188315_Project.Core.Models
         public DateTime? StatusUpdateDateTime { get; set; }
         public string? ConsentId { get; set; }
         public string? Status { get; set; }
-
     }
+
     public class Risk { }
+
     public class Links
     {
         public string? Self { get; set; }
         public string? Next { get; set; }
     }
+
     public class Meta
     {
         public int TotalPages { get; set; }
@@ -44,14 +47,16 @@ namespace L00188315_Project.Core.Models
         public string? SchemeName { get; set; }
         public string? Identification { get; set; }
         public string? Name { get; set; }
+
         [JsonPropertyName("Account")]
         public List<Account>? _Account { get; set; }
-
     }
+
     public class Transaction
     {
         public string? AccountId { get; set; }
         public Amount? Amount { get; set; }
+
         //public Balance? Balance { get; set; }
         public string? CreditDebitIndicator { get; set; }
         public DateTime? BookingDateTime { get; set; }
@@ -64,14 +69,15 @@ namespace L00188315_Project.Core.Models
         public string? TransctionId { get; set; }
         public string? TransactionInformation { get; set; }
         public SupplementaryData? SupplementaryData { get; set; }
-
     }
+
     public class Amount
     {
         [JsonPropertyName("Amount")]
         public string? _Amount { get; set; }
         public string? Currency { get; set; }
     }
+
     public class Balance
     {
         public Amount? Amount { get; set; }
@@ -79,8 +85,8 @@ namespace L00188315_Project.Core.Models
         public string? Type { get; set; }
         public string? DateTime { get; set; }
         public string? AccountId { get; set; }
-
     }
+
     public class CurrencyExchange
     {
         public Amount? InsctructedAmount { get; set; }
@@ -89,15 +95,15 @@ namespace L00188315_Project.Core.Models
         public string? UnitCurrency { get; set; }
         public string? ExchangeRate { get; set; }
     }
+
     public class ProprietaryBankTransactionCode
     {
         public string? Code { get; set; }
         public string? Issuer { get; set; }
     }
+
     public class SupplementaryData
     {
         public string? UserComments { get; set; }
     }
-
-
 }

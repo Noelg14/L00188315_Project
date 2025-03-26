@@ -14,15 +14,14 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 name: "UserId",
                 table: "Accounts",
                 type: "nvarchar(max)",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Accounts");
+            migrationBuilder.DropColumn(name: "UserId", table: "Accounts");
         }
     }
 }
