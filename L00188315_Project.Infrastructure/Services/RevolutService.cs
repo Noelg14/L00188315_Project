@@ -17,6 +17,9 @@ using System.Security.Cryptography.X509Certificates;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Entities;
 using static Azure.Core.HttpHeader;
+using Azure;
+using System.Text.Json.Serialization;
+using Balance = L00188315_Project.Core.Models.Balance;
 
 namespace L00188315_Project.Infrastructure.Services;
 public class RevolutService : IRevolutService
@@ -83,14 +86,31 @@ public class RevolutService : IRevolutService
         }
     }
 
-    public Task<string> GetAccountBalanceAsync(string accountId)
+    public async Task<Balance> GetAccountBalanceAsync(string accountId,string userId)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(userId))
+            return null;
+        var token = _cacheService.Get(userId);
+        if (string.IsNullOrEmpty(token))
+        {
+            return null;
+        }
+        var response = await sendGetRequestAsync(accountId, "/balances",token);
+        return response.Data.Balance.FirstOrDefault();
     }
 
-    public Task<List<Account>> GetAccountsAsync()
+    public async Task<List<Account>> GetAccountsAsync(string userId)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(userId))
+            return null;
+        var token = _cacheService.Get(userId);
+        if(string.IsNullOrEmpty(token))
+        {
+            return null;
+        }  
+
+        var response = await sendGetRequestAsync(string.Empty, string.Empty,token);
+        return response.Data.Account;
     }
 
     public async Task<string> GetConsentAsync(string userId)
@@ -156,9 +176,17 @@ public class RevolutService : IRevolutService
         }
     }
 
-    public Task<List<Transaction>> GetTransactionsAsync(string accountId)
+    public async Task<List<Transaction>> GetTransactionsAsync(string accountId, string userId)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(userId))
+            return null;
+        var token = _cacheService.Get(userId);
+        if (string.IsNullOrEmpty(token))
+        {
+            return null;
+        }
+        var data = await sendGetRequestAsync(accountId, "/transactions",token);
+        return data.Data.Transaction;
     }
     public async Task UpdateConsent(string consentId, ConsentStatus status)
     {
@@ -289,6 +317,34 @@ public class RevolutService : IRevolutService
         loginPath += $"&request={jwt}";
         return loginPath;
 
+    }
+    private async Task<OpenBankingDataModel> sendGetRequestAsync(string? accountId, string? endpoint,string token)
+    {
+
+        var url = _configuration["Revolut:baseUrl"] + "/accounts";
+        if (!string.IsNullOrEmpty(accountId))
+            url += $"/{accountId}";
+        if (!string.IsNullOrEmpty(accountId))
+            url += endpoint;
+
+        using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url))
+        {
+            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
+
+            var response = await _httpClient.SendAsync(httpRequestMessage);
+            if (response.IsSuccessStatusCode)
+            {
+
+                var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>();
+                return content;
+            }
+            else
+            {
+                Console.WriteLine($"Error getting transactions: {response.StatusCode}");
+                return null;
+            }
+        }
     }
 }
 

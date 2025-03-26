@@ -63,19 +63,31 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<List<Account>>> GetAccounts()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            return Ok(await _revolutService.GetAccountsAsync());
+            return Ok(await _revolutService.GetAccountsAsync(userId));
         }        
         [HttpGet("transactions")]
-        public async Task<ActionResult<List<Account>>> GetTransactions()
+        public async Task<ActionResult<List<Transaction>>> GetTransactions()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            return Ok(await _revolutService.GetAccountsAsync());
+            var accounts = await _revolutService.GetAccountsAsync(userId);
+            List<Transaction> transactions = new();
+            foreach (var account in accounts)
+            {
+                transactions.AddRange(await _revolutService.GetTransactionsAsync(account.AccountId, userId));
+            }
+            return Ok(transactions);
         }        
         [HttpGet("balances")]
-        public async Task<ActionResult<List<Account>>> GetBalances()
+        public async Task<ActionResult<List<Balance>>> GetBalances()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            return Ok(await _revolutService.GetAccountsAsync());
+            var accounts = await _revolutService.GetAccountsAsync(userId);
+            List<Balance> balances = new();
+            foreach (var account in accounts)
+            {
+                balances.Add(await _revolutService.GetAccountBalanceAsync(account.AccountId, userId));
+            }
+            return Ok(balances);
         }
     }
 }
