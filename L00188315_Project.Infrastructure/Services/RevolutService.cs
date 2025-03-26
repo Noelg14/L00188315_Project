@@ -41,7 +41,10 @@ public class RevolutService : IRevolutService
         _httpClient = new HttpClient();
         _consentRepository = consentRepository;
     }
-
+    /// <summary>
+    /// Gets the access token for the Revolut API - For generating consents
+    /// </summary>
+    /// <returns></returns>
     private async Task<string> GetAccessToken()
     {
         var accessToken = _cacheService.Get("RevolutToken");
@@ -92,7 +95,16 @@ public class RevolutService : IRevolutService
 
     public async Task<string> GetConsentAsync(string userId)
     {
-     
+        var existingConsents = await _consentRepository.GetAllConsentsAsync(userId);
+        var consent = existingConsents
+            .Where(c => c.Provider == "Revolut" && c.Expires > DateTime.Now) // check if another valid consent exists
+            .FirstOrDefault();
+        if(consent != null)
+        {
+            //if user has an existing consent, return the login path
+            return await GenerateLoginPath(consent.ConsentId); 
+        }
+
         var jso = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -131,19 +143,10 @@ public class RevolutService : IRevolutService
                     UserId = userId,
                     ConsentStatus = ConsentStatus.Pending,
                     Provider = "Revolut",
-                    Scopes = string.Join(", ", requestData.Permissions)
+                    Scopes = string.Join(", ", requestData.Permissions),
+                    Expires = DateTime.Now.AddDays(1)
                 });
-                var jwt = await GenerateJWT(content.Data.ConsentId);
-
-                var loginPath = _configuration["Revolut:loginUrl"];
-                var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
-
-
-                loginPath += $"&redirect_uri={_configuration["Revolut:redirectUri"]}";
-                loginPath += $"&client_id={clientId}";
-                loginPath += $"&request={jwt}";
-
-                return loginPath;
+                return await GenerateLoginPath(content.Data.ConsentId);
             }
             else
             {
@@ -156,6 +159,52 @@ public class RevolutService : IRevolutService
     public Task<List<Transaction>> GetTransactionsAsync(string accountId)
     {
         throw new NotImplementedException();
+    }
+    public async Task UpdateConsent(string consentId, ConsentStatus status)
+    {
+        var consent = await _consentRepository.GetConsentAsync(consentId);
+        if (consent == null)
+        {
+            throw new Exception("Consent not found");
+        }
+        consent.ConsentStatus = status;
+        await _consentRepository.UpdateConsentAsync(consent,status);
+        return;
+    }
+    /// <summary>
+    /// Gets the users access token, after consent is received
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="code"></param>
+    /// <returns></returns>
+    public async Task<string> GetUserAccessToken(string userId, string code)
+    {
+        try
+        {
+            var url = _configuration["Revolut:tokenUrl"];
+            var kvp = new List<KeyValuePair<string, string>>{
+                    KeyValuePair.Create("code", code),
+                    KeyValuePair.Create("grant_type", "authorization_code")
+                };
+
+            var form = new FormUrlEncodedContent(kvp);
+            var response = await _mtlsClient.PostAsync(url, form);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                Console.WriteLine($"Error getting access token: {response.StatusCode}");
+                return response.StatusCode.ToString();
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            var token = JsonSerializer.Deserialize<TokenDTO>(content);
+
+            _cacheService.Set($"{userId}", token.access_token, token.expires_in);
+            return token.access_token;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting access token: {ex.Message}");
+            return ex.Message;
+        }
     }
     private async Task<string> GenerateJWT(string consentId)
     {          
@@ -197,6 +246,10 @@ public class RevolutService : IRevolutService
         return tokenHandler.WriteToken(tokenString);
 
     }
+    /// <summary>
+    /// Configures the mTLS client used for authenticating with the Revolut API
+    /// </summary>
+    /// <returns></returns>
     private HttpClient ConfigureMtlsClient()
     {
         var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]!);
@@ -218,46 +271,24 @@ public class RevolutService : IRevolutService
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }
-    public async Task UpdateConsent(string consentId, ConsentStatus status)
+    /// <summary>
+    /// Helper method to generate the login path for the customer SCA
+    /// </summary>
+    /// <param name="consentId"></param>
+    /// <returns></returns>
+    private async Task<string> GenerateLoginPath(string consentId)
     {
-        var consent = await _consentRepository.GetConsentAsync(consentId);
-        if (consent == null)
-        {
-            throw new Exception("Consent not found");
-        }
-        consent.ConsentStatus = status;
-        await _consentRepository.UpdateConsentAsync(consent,status);
-        return;
-    }
+        var jwt = await GenerateJWT(consentId);
 
-    public async Task<string> GetUserAccessToken(string userId, string code)
-    {
-        try
-        {
-            var url = _configuration["Revolut:tokenUrl"];
-            var kvp = new List<KeyValuePair<string, string>>{
-                    KeyValuePair.Create("code", code),
-                    KeyValuePair.Create("grant_type", "authorization_code")
-                };
+        var loginPath = _configuration["Revolut:loginUrl"];
+        var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
 
-            var form = new FormUrlEncodedContent(kvp);
-            var response = await _mtlsClient.PostAsync(url, form);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                Console.WriteLine($"Error getting access token: {response.StatusCode}");
-                return response.StatusCode.ToString();
-            }
-            var content = await response.Content.ReadAsStringAsync();
-            var token = JsonSerializer.Deserialize<TokenDTO>(content);
-            _cacheService.Set($"{userId}", token.access_token, token.expires_in);
-            Console.WriteLine($"Token: {token.access_token}");
-            return token.access_token;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting access token: {ex.Message}");
-            return ex.Message;
-        }
+
+        loginPath += $"&redirect_uri={_configuration["Revolut:redirectUri"]}";
+        loginPath += $"&client_id={clientId}";
+        loginPath += $"&request={jwt}";
+        return loginPath;
+
     }
 }
 

@@ -64,6 +64,18 @@ namespace L00188315_Project.Server.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             return Ok(await _revolutService.GetAccountsAsync());
+        }        
+        [HttpGet("transactions")]
+        public async Task<ActionResult<List<Account>>> GetTransactions()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            return Ok(await _revolutService.GetAccountsAsync());
+        }        
+        [HttpGet("balances")]
+        public async Task<ActionResult<List<Account>>> GetBalances()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            return Ok(await _revolutService.GetAccountsAsync());
         }
     }
 }

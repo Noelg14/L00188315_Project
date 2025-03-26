@@ -20,6 +20,7 @@ namespace L00188315_Project.Core.Entities
         public List<Account>? Account { get; set; }
         public DateTime? Created { get; set; } = DateTime.Now;
         public DateTime? Updated { get; set; }
+        public DateTime? Expires { get; set; }
     }
     public enum ConsentStatus { 
         Created,
