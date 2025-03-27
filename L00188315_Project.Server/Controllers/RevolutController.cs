@@ -28,8 +28,12 @@ namespace L00188315_Project.Server.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Returns the JWKS used by revolut to verify our consent JWT
+        /// </summary>
         [HttpGet("jwks")]
         [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<JWKS> JWKS()
         {
             var jwks = new JWKS();
