@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using L00188315_Project.Core.Models;
+using L00188315_Project.Core.Entities;
+using System.Transactions;
 
 namespace L00188315_Project.Infrastructure.Services.Mapper
 {
     public class OpenBankingMapper
     {
-        public Core.Entities.Account MapToAccountEntity(Core.Models.Account modelAccount,string userId)
+        public Core.Entities.Account MapToAccountEntity(OBAccount modelAccount,string userId)
         {
             return new Core.Entities.Account
             {
@@ -24,5 +22,36 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 Updated = DateTime.Now
             };
         }
+        public Balance MapToBalanceEntity(OBBalance modelBalance, string accountId)
+        {
+            return new Core.Entities.Balance
+            {
+                AccountId = accountId,
+                Amount = modelBalance.Amount._Amount,
+                BalanceType = modelBalance.Type,
+                Currency = modelBalance.Amount.Currency,
+                LastUpdated = DateTime.TryParse(modelBalance.DateTime, out _) ? DateTime.Parse(modelBalance.DateTime) : DateTime.Now
+            };
+        }
+        public Core.Entities.Transaction MapToTransactionEntity(OBTransaction modelTransaction, string accountId)
+        {
+            return new Core.Entities.Transaction
+            {
+                AccountId = accountId,
+                Amount = modelTransaction.Amount?._Amount,
+                AmountCurrency = modelTransaction.Amount?.Currency,
+                TransactionInformation = modelTransaction.TransactionInformation,
+                TransactionId = modelTransaction.TransactionId,
+                CreditDebitIndicator = modelTransaction.CreditDebitIndicator,
+                BookingDateTime = modelTransaction.BookingDateTime,
+                ValueDateTime = modelTransaction.ValueDateTime,
+                CreditorAccount = modelTransaction.CreditorAccount?.Identification ?? string.Empty,
+                DebtorAccount = modelTransaction.DebtorAccount?.Identification ?? string.Empty,
+                ProprietaryBankTransactionCode = modelTransaction.ProprietaryBankTransactionCode?.Code,
+                Status = modelTransaction.Status,
+                UserComments = modelTransaction.SupplementaryData?.UserComments ?? string.Empty
+            };
+        }
     }
+
 }

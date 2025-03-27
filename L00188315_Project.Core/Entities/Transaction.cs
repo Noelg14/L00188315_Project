@@ -20,7 +20,7 @@ namespace L00188315_Project.Core.Entities
         public string? ProprietaryBankTransactionCode { get; set; }
         public string? ProprietaryBankTransactionIssuer { get; set; }
         public string? Status { get; set; }
-        public string? TransctionId { get; set; }
+        public string? TransactionId { get; set; }
         public string? TransactionInformation { get; set; }
         public string? UserComments { get; set; }
     }

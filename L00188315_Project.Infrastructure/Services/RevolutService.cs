@@ -16,9 +16,6 @@ using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Account = L00188315_Project.Core.Models.Account;
-using Balance = L00188315_Project.Core.Models.Balance;
-using Transaction = L00188315_Project.Core.Models.Transaction;
 
 namespace L00188315_Project.Infrastructure.Services;
 
@@ -109,7 +106,13 @@ public class RevolutService : IRevolutService
             return null;
         }
         var response = await sendGetRequestAsync(accountId, "/balances", token);
-        return response.Data.Balance.FirstOrDefault();
+
+        var balance = response.Data.Balance.Where(x => x.AccountId == accountId).FirstOrDefault();
+        if (balance == null)
+        {
+            return null;
+        }
+        return _mapper.MapToBalanceEntity( balance,accountId);
     }
 
     public async Task<List<Core.Entities.Account>> GetAccountsAsync(string userId)
@@ -225,7 +228,12 @@ public class RevolutService : IRevolutService
             return null;
         }
         var data = await sendGetRequestAsync(accountId, "/transactions", token);
-        return data.Data.Transaction;
+        var transactions = new List<Transaction>();
+        foreach (var transaction in data.Data.Transaction)
+        {
+            transactions.Add(_mapper.MapToTransactionEntity(transaction, accountId));
+        }
+        return transactions;
     }
 
     public async Task UpdateConsent(string consentId, ConsentStatus status)

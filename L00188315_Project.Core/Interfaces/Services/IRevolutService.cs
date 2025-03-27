@@ -1,7 +1,5 @@
 ﻿using L00188315_Project.Core.Entities;
-using Account = L00188315_Project.Core.Models.Account;
-using Balance = L00188315_Project.Core.Models.Balance;
-using Transaction = L00188315_Project.Core.Models.Transaction;
+
 
 namespace L00188315_Project.Core.Interfaces.Services;
 
@@ -17,7 +15,7 @@ public interface IRevolutService
     /// Get the accounts for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task<List<Core.Entities.Account>> GetAccountsAsync(string userId);
+    public Task<List<Account>> GetAccountsAsync(string userId);
 
     /// <summary>
     /// Get the transactions for the Revolut API

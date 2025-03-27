@@ -12,9 +12,12 @@ namespace L00188315_Project.Core.Models
 
     public class Data
     {
-        public List<Account>? Account { get; set; }
-        public List<Transaction>? Transaction { get; set; }
-        public List<Balance>? Balance { get; set; }
+        [JsonPropertyName("Account")]
+        public List<OBAccount>? Account { get; set; }
+        [JsonPropertyName("Transaction")]
+        public List<OBTransaction>? Transaction { get; set; }
+        [JsonPropertyName("Balance")]
+        public List<OBBalance>? Balance { get; set; }
         public List<string>? Permissions { get; set; }
         public DateTime? ExpirationDateTime { get; set; }
         public DateTime? TransactionFromDateTime { get; set; }
@@ -38,7 +41,7 @@ namespace L00188315_Project.Core.Models
         public int TotalPages { get; set; }
     }
 
-    public class Account
+    public class OBAccount
     {
         public string? AccountId { get; set; }
         public string? Currency { get; set; }
@@ -49,10 +52,10 @@ namespace L00188315_Project.Core.Models
         public string? Name { get; set; }
 
         [JsonPropertyName("Account")]
-        public List<Account>? _Account { get; set; }
+        public List<OBAccount>? _Account { get; set; }
     }
 
-    public class Transaction
+    public class OBTransaction
     {
         public string? AccountId { get; set; }
         public Amount? Amount { get; set; }
@@ -62,11 +65,11 @@ namespace L00188315_Project.Core.Models
         public DateTime? BookingDateTime { get; set; }
         public DateTime? ValueDateTime { get; set; }
         public CurrencyExchange? CurrencyExchange { get; set; }
-        public Account? CreditorAccount { get; set; }
-        public Account? DebtorAccount { get; set; }
+        public OBAccount? CreditorAccount { get; set; }
+        public OBAccount? DebtorAccount { get; set; }
         public ProprietaryBankTransactionCode? ProprietaryBankTransactionCode { get; set; }
         public string? Status { get; set; }
-        public string? TransctionId { get; set; }
+        public string? TransactionId { get; set; }
         public string? TransactionInformation { get; set; }
         public SupplementaryData? SupplementaryData { get; set; }
     }
@@ -78,7 +81,7 @@ namespace L00188315_Project.Core.Models
         public string? Currency { get; set; }
     }
 
-    public class Balance
+    public class OBBalance
     {
         public Amount? Amount { get; set; }
         public string? CreditDebitIndicator { get; set; }
