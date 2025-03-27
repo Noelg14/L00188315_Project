@@ -3,9 +3,11 @@ using System.Security.Claims;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Core.Models;
 using L00188315_Project.Infrastructure.Services;
+using L00188315_Project.Server.DTOs.Response;
 using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace L00188315_Project.Server.Controllers
 {
@@ -56,7 +58,10 @@ namespace L00188315_Project.Server.Controllers
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             _logger.LogInformation("Getting consent for {0}",userId);
 
-            return Ok(await _revolutService.GetConsentAsync(userId!));
+            var apiResponse = new ApiResponseDTO<string>();
+            apiResponse.Data = await _revolutService.GetConsentAsync(userId!);
+            apiResponse.Success = true;
+            return Ok(apiResponse);
         }
 
         [HttpGet("callback")]
@@ -84,15 +89,22 @@ namespace L00188315_Project.Server.Controllers
         }
 
         [HttpGet("accounts")] //Call 1st
-        public async Task<ActionResult<List<Account>>> GetAccounts()
+        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             _logger.LogInformation("Getting Accounts for User: {0}", userId);
-            return Ok(await _revolutService.GetAccountsAsync(userId));
+            var accounts = await _revolutService.GetAccountsAsync(userId);
+
+            var apiResponse = new ApiResponseDTO<List<Account>>
+            {
+                Data = accounts,
+                Success = accounts is null ? false : true
+            };
+            return Ok(apiResponse);
         }
 
         [HttpGet("transactions")]
-        public async Task<ActionResult<List<Transaction>>> GetTransactions(
+        public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetTransactions(
             [FromQuery] string? accountId
         )
         {
@@ -104,12 +116,18 @@ namespace L00188315_Project.Server.Controllers
             var transactions = await _revolutService.GetTransactionsAsync(accountId, userId);
 
             _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId,accountId);
+            var apiResponse = new ApiResponseDTO<List<Transaction>>
+            {
+                Data = transactions,
+                Success = transactions is null ? false : true
+            };
 
-            return Ok(transactions);
+
+            return Ok(apiResponse);
         }
 
         [HttpGet("balances")]
-        public async Task<ActionResult<List<Balance>>> GetBalances([FromQuery] string? accountId)
+        public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances([FromQuery] string? accountId)
         {
             if (string.IsNullOrEmpty(accountId))
                 return BadRequest("Account Id is required");
@@ -119,8 +137,13 @@ namespace L00188315_Project.Server.Controllers
             var balances = await _revolutService.GetAccountBalanceAsync(accountId, userId);
 
             _logger.LogInformation("Getting Balances for User: {0} & Account {1}", userId, accountId);
+            var apiResponse = new ApiResponseDTO<Balance>
+            {
+                Data = balances,
+                Success = balances is null ? false : true
+            };
 
-            return Ok(balances);
+            return Ok(apiResponse);
         }
     }
 }
