@@ -95,7 +95,7 @@ namespace L00188315_Project.Server.Controllers
             _logger.LogInformation("Getting Accounts for User: {0}", userId);
             var accounts = await _revolutService.GetAccountsAsync(userId);
 
-            var apiResponse = new ApiResponseDTO<List<Account>>
+            var apiResponse = new ApiResponseDTO<List<Core.Entities.Account>>
             {
                 Data = accounts,
                 Success = accounts is null ? false : true

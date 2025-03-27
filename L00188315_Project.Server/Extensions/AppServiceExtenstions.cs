@@ -7,6 +7,7 @@ using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Data;
 using L00188315_Project.Infrastructure.Repositories;
 using L00188315_Project.Infrastructure.Services;
+using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -41,9 +42,11 @@ namespace L00188315_Project.Server.Extensions
             services.AddSingleton<IKeyVaultService, KeyVaultService>(); // singleton, as we only want 1 instance of the cache service
 
             services.AddScoped<IConsentRepository, ConsentRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
 
             services.AddScoped<IRevolutService, RevolutService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<OpenBankingMapper>();
 
             services.ConfigureHttpJsonOptions(options =>
             {

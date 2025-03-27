@@ -12,6 +12,7 @@ using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Core.Models;
 using L00188315_Project.Infrastructure.Services.DTOs;
+using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +30,8 @@ public class RevolutService : IRevolutService
     private readonly IConfiguration _configuration;
     private readonly IKeyVaultService _keyVaultService;
     private readonly IConsentRepository _consentRepository;
+    private readonly IAccountRepository _accountRepository;
+    private readonly OpenBankingMapper _mapper;
     private readonly ILogger<RevolutService> _logger;
 
     public RevolutService(
@@ -36,7 +39,10 @@ public class RevolutService : IRevolutService
         IConfiguration configuration,
         IKeyVaultService keyVaultService,
         IConsentRepository consentRepository,
-        ILogger<RevolutService> logger
+        ILogger<RevolutService> logger,
+        IAccountRepository accountRepository,
+        OpenBankingMapper mapper
+
     )
     {
         _cacheService = cacheService;
@@ -46,6 +52,8 @@ public class RevolutService : IRevolutService
         _httpClient = new HttpClient();
         _consentRepository = consentRepository;
         _logger = logger;
+        _accountRepository = accountRepository;
+        _mapper = mapper;
     }
 
     /// <summary>
@@ -104,7 +112,7 @@ public class RevolutService : IRevolutService
         return response.Data.Balance.FirstOrDefault();
     }
 
-    public async Task<List<Account>> GetAccountsAsync(string userId)
+    public async Task<List<Core.Entities.Account>> GetAccountsAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return null;
@@ -114,8 +122,24 @@ public class RevolutService : IRevolutService
             return null;
         }
 
+        var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
+        if(existingAccounts.Count > 0)
+        {
+            _logger.LogInformation("Accounts exist - Returning");
+            return existingAccounts;
+        }
+
         var response = await sendGetRequestAsync(string.Empty, string.Empty, token);
-        return response.Data.Account;
+        var accounts = new List<Core.Entities.Account>();
+        foreach (var account in response.Data.Account)
+        {
+            var existingAccount = await _accountRepository.GetAccountAsync(userId, account.AccountId);
+            if (existingAccount == null)
+            {
+                accounts.Add(await _accountRepository.CreateAccountAsync(userId, _mapper.MapToAccountEntity(account, userId)));
+            }
+        }
+        return accounts;
     }
 
     public async Task<string> GetConsentAsync(string userId)

@@ -1,11 +1,9 @@
 ﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+
 
 namespace L00188315_Project.Infrastructure.Repositories
 {
@@ -17,24 +15,39 @@ namespace L00188315_Project.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public Task<Account> CreateAccountAsync(string userId, Account account)
+        public async Task<Account> CreateAccountAsync(string userId, Account account)
         {
-            throw new NotImplementedException();
+            account.UserId = userId;
+            _dbContext.Accounts.Add(account);
+            await _dbContext.SaveChangesAsync();
+            return account; 
+
         }
 
-        public Task<Account> GetAccountAsync(string userId, string accountId)
+        public async Task<Account> GetAccountAsync(string userId, string accountId)
         {
-            throw new NotImplementedException();
+            var account = await _dbContext.Accounts
+              .Where(x => x.AccountId == accountId && x.UserId == userId).FirstOrDefaultAsync();
+            return account;
         }
 
-        public Task<List<Account>> GetAllAccountsAsync(string userId)
+        public async Task<List<Account>> GetAllAccountsAsync(string userId)
         {
-            throw new NotImplementedException();
+            var accounts = await _dbContext.Accounts
+              .Where(x => x.UserId == userId).ToListAsync();
+            return accounts;
         }
 
-        public Task<Account> UpdateAccountAsync(string userId, Account account)
+        public async Task<Account> UpdateAccountAsync(string userId, Account account)
         {
-            throw new NotImplementedException();
+            var currentAccount = await GetAccountAsync(userId, account.AccountId);
+            if(currentAccount == null)
+            {
+                return await CreateAccountAsync(userId, account);
+            }
+            _dbContext.Accounts.Update(account);
+            await _dbContext.SaveChangesAsync();
+            return account;
         }
     }
 }

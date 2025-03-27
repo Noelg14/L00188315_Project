@@ -17,7 +17,7 @@ public interface IRevolutService
     /// Get the accounts for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task<List<Account>> GetAccountsAsync(string userId);
+    public Task<List<Core.Entities.Account>> GetAccountsAsync(string userId);
 
     /// <summary>
     /// Get the transactions for the Revolut API
