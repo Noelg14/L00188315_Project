@@ -8,6 +8,9 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:60557</SpaProxyServerUrl>
     <Configurations>Debug;Release;API Only</Configurations>
+	
+	  <!--Only Generate dc if debug-->
+	<GenerateDocumentationFile Condition="'$(Configuration)' == 'Debug'">true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

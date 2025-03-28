@@ -5,6 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;API Only</Configurations>
+	  <!--Fail if warning exist
+	    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+	  -->
   </PropertyGroup>
 
   <ItemGroup>

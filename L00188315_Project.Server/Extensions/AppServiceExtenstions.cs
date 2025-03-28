@@ -43,6 +43,8 @@ namespace L00188315_Project.Server.Extensions
 
             services.AddScoped<IConsentRepository, ConsentRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IBalanceRepository, BalanceRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             services.AddScoped<IRevolutService, RevolutService>();
             services.AddScoped<ITokenService, TokenService>();

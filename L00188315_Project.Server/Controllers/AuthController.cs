@@ -49,7 +49,7 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             var user = new IdentityUser { UserName = registerDTO.Email, Email = registerDTO.Email };
-            var result = await _userManager.CreateAsync(user, registerDTO.Password);
+            var result = await _userManager.CreateAsync(user, registerDTO.Password!);
             if (!result.Succeeded)
                 return BadRequest("Account could not be created");
             return new UserDTO
