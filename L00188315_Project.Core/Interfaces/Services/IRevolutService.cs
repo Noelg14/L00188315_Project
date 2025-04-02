@@ -1,7 +1,5 @@
 ﻿using L00188315_Project.Core.Entities;
-using Account = L00188315_Project.Core.Models.Account;
-using Balance = L00188315_Project.Core.Models.Balance;
-using Transaction = L00188315_Project.Core.Models.Transaction;
+
 
 namespace L00188315_Project.Core.Interfaces.Services;
 
@@ -11,13 +9,13 @@ public interface IRevolutService
     /// Get the consent for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetConsentAsync(string userId);
+    public Task<string> GetConsentRequestAsync(string userId);
 
     /// <summary>
     /// Get the accounts for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task<List<Core.Entities.Account>> GetAccountsAsync(string userId);
+    public Task<List<Account>> GetAccountsAsync(string userId);
 
     /// <summary>
     /// Get the transactions for the Revolut API
@@ -48,4 +46,10 @@ public interface IRevolutService
     /// <param name="code"></param>
     /// <returns>The access token</returns>
     public Task<string> GetUserAccessToken(string userId, string code);
+    /// <summary>
+    /// Get the consent by Id
+    /// </summary>
+    /// <param name="consentId"></param>
+    /// <returns></returns>
+    public Task<Consent> GetConsentByIdAsync(string consentId);
 }

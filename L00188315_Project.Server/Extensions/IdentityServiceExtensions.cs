@@ -41,7 +41,7 @@ namespace L00188315_Project.Server.Extensions
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(config["token:key"])
+                            Encoding.UTF8.GetBytes(config["token:key"]!)
                         ),
                         ValidIssuer = config["token:issuer"],
                         ValidateIssuer = true,

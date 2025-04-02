@@ -2,15 +2,15 @@
 
 public class JWKS
 {
-    public List<Key> keys { get; set; }
+    public required List<Key> keys { get; set; }
 }
 
 public class Key
 {
-    public string kty { get; set; }
-    public string use { get; set; }
-    public string kid { get; set; }
-    public string e { get; set; }
-    public string n { get; set; }
-    public List<string> x5c { get; set; }
+    public required string kty { get; set; }
+    public required string use { get; set; }
+    public required string kid { get; set; }
+    public required string e { get; set; }
+    public required string n { get; set; }
+    public required List<string> x5c { get; set; }
 }

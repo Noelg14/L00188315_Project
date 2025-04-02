@@ -1,4 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace L00188315_Project.Server.Extensions
 {
@@ -30,6 +32,10 @@ namespace L00188315_Project.Server.Extensions
                     }
                 };
                 c.AddSecurityRequirement(securityRequirement);
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Openbanking Dashboard API", Version = "v1" });
+                // using System.Reflection;
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
             return services;
