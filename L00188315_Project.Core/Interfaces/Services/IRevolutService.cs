@@ -9,7 +9,7 @@ public interface IRevolutService
     /// Get the consent for the Revolut API
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetConsentAsync(string userId);
+    public Task<string> GetConsentRequestAsync(string userId);
 
     /// <summary>
     /// Get the accounts for the Revolut API
@@ -46,4 +46,10 @@ public interface IRevolutService
     /// <param name="code"></param>
     /// <returns>The access token</returns>
     public Task<string> GetUserAccessToken(string userId, string code);
+    /// <summary>
+    /// Get the consent by Id
+    /// </summary>
+    /// <param name="consentId"></param>
+    /// <returns></returns>
+    public Task<Consent> GetConsentByIdAsync(string consentId);
 }

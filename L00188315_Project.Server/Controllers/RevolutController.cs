@@ -77,7 +77,7 @@ namespace L00188315_Project.Server.Controllers
             _logger.LogInformation("Getting consent for {0}",userId);
 
             var apiResponse = new ApiResponseDTO<string>();
-            apiResponse.Data = await _revolutService.GetConsentAsync(userId!);
+            apiResponse.Data = await _revolutService.GetConsentRequestAsync(userId!);
             apiResponse.Success = true;
             return Ok(apiResponse);
         }
@@ -89,6 +89,7 @@ namespace L00188315_Project.Server.Controllers
         /// <returns>The Access token</returns>
 
         [HttpGet("callback")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<ActionResult<string>> Callback(
@@ -96,14 +97,22 @@ namespace L00188315_Project.Server.Controllers
             [FromQuery] string id_token
         )
         {
-            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            //var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(id_token);
             var consentId = jwtSecurityToken
                 .Claims.First(x => x.Type == "openbanking_intent_id")
                 .Value;
 
-            _logger.LogInformation("Callback Recieved for User {0} with Consent {1}",userId,consentId);
+            var consent = await _revolutService.GetConsentByIdAsync(consentId);
+            if(consent is null)
+            {
+                _logger.LogError("Consent {0} not found", consentId);
+                return BadRequest(new ApiResponseDTO<string>{ Message = "Consent not found", Success = false });
+            }
+            var userId = consent.UserId; // Update consent for the user who created it.
+
+            _logger.LogInformation("Callback Received for User {0} with Consent {1}",userId,consentId);
 
 
             await _revolutService.UpdateConsent(consentId, Core.Entities.ConsentStatus.Complete); // update consent first

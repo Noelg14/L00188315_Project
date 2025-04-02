@@ -145,7 +145,7 @@ public class RevolutService : IRevolutService
         return accounts;
     }
 
-    public async Task<string> GetConsentAsync(string userId)
+    public async Task<string> GetConsentRequestAsync(string userId)
     {
         var existingConsents = await _consentRepository.GetAllConsentsAsync(userId);
         var consent = existingConsents
@@ -409,5 +409,12 @@ public class RevolutService : IRevolutService
                 return null;
             }
         }
+    }
+
+    public async Task<Consent> GetConsentByIdAsync(string consentId)
+    {
+        if(string.IsNullOrEmpty(consentId))
+            return null;
+        return await _consentRepository.GetConsentAsync(consentId);
     }
 }
