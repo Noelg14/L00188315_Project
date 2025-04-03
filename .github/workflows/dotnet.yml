@@ -18,9 +18,7 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-          os:
-            - fullname: windows-latest 
-            - fullname: ubuntu-latest
+          os: [windows-latest,ubuntu-latest]
     timeout-minutes: 5 # this should take no more than 5 mins
 
     steps:
