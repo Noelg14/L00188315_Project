@@ -5,15 +5,15 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "rg-app" {
+resource "azurerm_resource_group" "rg-atu" {
   name     = "${var.prefix}-resources"
   location = var.location
 }
 
 resource "azurerm_service_plan" "atu-sp" {
   name                = "${var.prefix}-sp"
-  location            = azurerm_resource_group.rg-app.location
-  resource_group_name = azurerm_resource_group.rg-app.name
+  location            = azurerm_resource_group.rg-atu.location
+  resource_group_name = azurerm_resource_group.rg-atu.name
   os_type             = "Linux"
   sku_name            = "F1"
 }
@@ -21,9 +21,9 @@ resource "azurerm_service_plan" "atu-sp" {
 
 resource "azurerm_linux_web_app" "ob_dash" {
   name                = "${var.prefix}-dashboard"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  service_plan_id     = azurerm_service_plan.example.id
+  location            = azurerm_resource_group.rg-atu.location
+  resource_group_name = azurerm_resource_group.rg-atu.name
+  service_plan_id     = azurerm_service_plan.atu-sp.id
 
   site_config {
     application_stack {
