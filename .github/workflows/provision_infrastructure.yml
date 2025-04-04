@@ -1,0 +1,23 @@
+name: Terraform Create
+
+on:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+      
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout Repo    
+          uses: actions/checkout@v4
+        
+        - name: "Install Terraform"
+          uses: hashicorp/setup-terraform@v3
+
+        - name: Update CWD
+          run: terraform -chdir=terraform/
+          
+        - name: Terraform init
+          id: init
+          run: terraform init 
+
