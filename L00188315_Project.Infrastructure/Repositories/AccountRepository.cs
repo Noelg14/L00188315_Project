@@ -28,7 +28,7 @@ namespace L00188315_Project.Infrastructure.Repositories
         {
             var account = await _dbContext.Accounts
               .Where(x => x.AccountId == accountId && x.UserId == userId).FirstOrDefaultAsync();
-            return account;
+            return account!;
         }
 
         public async Task<List<Account>> GetAllAccountsAsync(string userId)

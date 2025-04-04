@@ -24,7 +24,11 @@ namespace L00188315_Project.Server.Controllers
 
         private readonly IRevolutService _revolutService;
         private readonly ILogger<RevolutController> _logger;
-
+        /// <summary>
+        /// Constructor for the RevolutController
+        /// </summary>
+        /// <param name="revolutService"></param>
+        /// <param name="logger"></param>
         public RevolutController(IRevolutService revolutService,
             ILogger<RevolutController> logger)
         {
@@ -118,10 +122,21 @@ namespace L00188315_Project.Server.Controllers
             _logger.LogInformation("Consent {0} updated ", consentId);
 
             var token = await _revolutService.GetUserAccessToken(userId!, code);
+
+            var usersAccounts = await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
+            //For each account, get the transactions and balance
+            usersAccounts.ForEach(async x =>
+            {
+               await Task.WhenAll(
+                     _revolutService.GetTransactionsAsync(x.AccountId, userId!),
+                     _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
+                );
+            });
+           
 #if DEBUG
             return Ok(new { Token = token }); // if debugging, return the token
 #endif
-            return NoContent(); // if not in debug mode, return no content
+            return NoContent(); // if not in debug mode, return no content - redirect in future
         }
         /// <summary>
         /// Gets the list of revolut accounts for the user
