@@ -66,9 +66,13 @@ builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 
 builder.Host.UseSerilog((context, configuration) =>
+{
     configuration.ReadFrom.Configuration(context.Configuration)
-    .WriteTo.Console() // write to console
-    );
+        .WriteTo.Console(); // write to console
+
+    //configuration.ReadFrom.Configuration(context.Configuration).WriteTo.DatadogLogs(apiKey: context.Configuration["Datadog:ApiKey"]);
+
+});
 
 var app = builder.Build();
 

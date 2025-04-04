@@ -1,14 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using L00188315_Project.Core.Entities;
+﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Services;
-using L00188315_Project.Core.Models;
-using L00188315_Project.Infrastructure.Services;
 using L00188315_Project.Server.DTOs.Response;
 using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 
 namespace L00188315_Project.Server.Controllers
@@ -74,7 +72,7 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<string>> GetConsent()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            _logger.LogInformation("Getting consent for {0}",userId);
+            _logger.LogInformation("Getting consent for {0}", userId);
 
             var apiResponse = new ApiResponseDTO<string>();
             apiResponse.Data = await _revolutService.GetConsentRequestAsync(userId!);
@@ -90,7 +88,8 @@ namespace L00188315_Project.Server.Controllers
 
         [HttpGet("callback")]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Produces("application/json")]
         public async Task<ActionResult<string>> Callback(
             [FromQuery] string code,
@@ -105,22 +104,24 @@ namespace L00188315_Project.Server.Controllers
                 .Value;
 
             var consent = await _revolutService.GetConsentByIdAsync(consentId);
-            if(consent is null)
+            if (consent is null)
             {
                 _logger.LogError("Consent {0} not found", consentId);
-                return BadRequest(new ApiResponseDTO<string>{ Message = "Consent not found", Success = false });
+                return BadRequest(new ApiResponseDTO<string> { Message = "Consent not found", Success = false });
             }
             var userId = consent.UserId; // Update consent for the user who created it.
 
-            _logger.LogInformation("Callback Received for User {0} with Consent {1}",userId,consentId);
+            _logger.LogInformation("Callback Received for User {0} with Consent {1}", userId, consentId);
 
 
-            await _revolutService.UpdateConsent(consentId, Core.Entities.ConsentStatus.Complete); // update consent first
+            await _revolutService.UpdateConsent(consentId, ConsentStatus.Complete); // update consent first
             _logger.LogInformation("Consent {0} updated ", consentId);
 
             var token = await _revolutService.GetUserAccessToken(userId!, code);
-
-            return Ok(new { Token = token });
+#if DEBUG
+            return Ok(new { Token = token }); // if debugging, return the token
+#endif
+            return NoContent(); // if not in debug mode, return no content
         }
         /// <summary>
         /// Gets the list of revolut accounts for the user
@@ -161,7 +162,7 @@ namespace L00188315_Project.Server.Controllers
             var accounts = await _revolutService.GetAccountsAsync(userId!);
             var transactions = await _revolutService.GetTransactionsAsync(accountId, userId!);
 
-            _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId,accountId);
+            _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId, accountId);
             var apiResponse = new ApiResponseDTO<List<Transaction>>
             {
                 Data = transactions,
