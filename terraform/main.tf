@@ -3,6 +3,7 @@
 
 provider "azurerm" {
   features {}
+  subscription_id = "2c56a161-75c3-47c0-8147-15c4486b54c9"
 }
 
 resource "azurerm_resource_group" "rg-atu" {
@@ -27,7 +28,7 @@ resource "azurerm_linux_web_app" "ob_dash" {
 
   site_config {
     application_stack {
-      dotnet_version =  8.0.x
+      dotnet_version =  "8.0"
     }
   }
 }
