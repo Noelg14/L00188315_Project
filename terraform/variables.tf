@@ -11,3 +11,7 @@ variable "location" {
   description = "The Azure location where all resources in this example should be created"
   default     = "europe-north"
 }
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription where all resources in this example should be created"
+}

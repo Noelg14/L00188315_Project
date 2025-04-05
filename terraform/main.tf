@@ -3,7 +3,7 @@
 
 provider "azurerm" {
   features {}
-  subscription_id = "2c56a161-75c3-47c0-8147-15c4486b54c9"
+  subscription_id = "{$var.subscription_id}"
 }
 
 resource "azurerm_resource_group" "rg-atu" {

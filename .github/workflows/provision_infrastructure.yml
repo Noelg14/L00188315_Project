@@ -14,19 +14,17 @@ jobs:
         - name: "Install Terraform"
           uses: hashicorp/setup-terraform@v3
 
-        - name: "Install Azure CLI"
-          uses: azure/setup-azure-cli@v1
+        - name: Azure CLI Login
+          uses: azure/login@v2
           with:
-            version: latest
-
-        - name: "Login to Azure"
-          run: |
-            echo "TBD"
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
         - name: Update CWD
           run: terraform -chdir=terraform/ init
           
         - name: Terraform init
           id: init
-          run: terraform -chdir=terraform/ plan -var="location=europe-north" -var="prefix=atu_"
+          run: terraform -chdir=terraform/ plan -var="location=europe-north" -var="prefix=atu_" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
 
