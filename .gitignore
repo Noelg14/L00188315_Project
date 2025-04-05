@@ -6,6 +6,9 @@
 **/[Cc]overage/
 testCover.bat
 **/[bB]uild/
+**/terraform/procviders/
+**/terraform/.terraform
+*.hcl
 
 ## Visual Paradigm Files
 *.vpp.bak*
