@@ -1,0 +1,31 @@
+name: Terraform Create
+
+on:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+      
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout Repo    
+          uses: actions/checkout@v4
+        
+        - name: "Install Terraform"
+          uses: hashicorp/setup-terraform@v3
+
+        - name: Azure CLI Login
+          uses: azure/login@v2
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+        - name: Update CWD
+          run: terraform -chdir=terraform/ init
+          
+        - name: Terraform init
+          id: init
+          run: terraform -chdir=terraform/ plan -var="location=europe-north" -var="prefix=atu_" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
+
