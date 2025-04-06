@@ -26,10 +26,10 @@ jobs:
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-        - name: Update CWD
+        - name: Terraform Init
           run: terraform -chdir=terraform/ init
           
-        - name: Terraform init
-          id: init
-          run: terraform -chdir=terraform/ plan -var="location=europe-north" -var="prefix=atu_" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
+        - name: Terraform Plan
+          id: plan
+          run: terraform -chdir=terraform/ plan -var="location=europe-north" -var="prefix=atu_" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan -timeout=2m
 
