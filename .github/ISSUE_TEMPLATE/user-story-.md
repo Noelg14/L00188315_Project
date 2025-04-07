@@ -2,7 +2,7 @@
 name: 'User Story '
 about: Template for Creating user Stories
 title: User Story - [TITLE]
-labels: documentation, enhancement
+labels: enhancement, User Story
 assignees: Noelg14
 
 ---
