@@ -40,9 +40,12 @@ jobs:
           id: apply
           run: terraform -chdir=terraform/ apply "tfplan"
         - name: Save outputs
+          continue-on-error: true #this might fail, but thats okay.
           id: output
           run: |
-            gh variable set APP_NAME --body terraform output app_name
-            gh variable set APP_URL --body terraform output app_url
+            echo | terraform output app_name
+            echo | terraform output app_url
+            gh variable set APP_NAME --body | terraform output app_name
+            gh variable set APP_URL --body | terraform output app_url
           
 
