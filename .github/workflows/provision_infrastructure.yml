@@ -31,5 +31,5 @@ jobs:
           
         - name: Terraform Plan
           id: plan
-          run: terraform -chdir=terraform/ plan -var="location=europe-north" -var="prefix=atu_" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
+          run: terraform -chdir=terraform/ plan -var="location=northeurope" -var="prefix=atu_" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
 
