@@ -43,9 +43,10 @@ jobs:
           continue-on-error: true #this might fail, but thats okay.
           id: output
           run: |
-            echo | terraform output app_name
-            echo | terraform output app_url
-            gh variable set APP_NAME --body | terraform output app_name
-            gh variable set APP_URL --body | terraform output app_url
+            cd terraform/
+            export app_name =  terraform -chdir=terraform/ output app_name
+            export app_url = terraform -chdir=terraform/ output app_url
+            gh variable set APP_NAME --body $app_name
+            gh variable set APP_URL --body $app_url
           
 
