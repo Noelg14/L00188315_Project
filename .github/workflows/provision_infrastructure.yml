@@ -11,9 +11,13 @@ permissions:
 jobs:
     deploy:
         runs-on: ubuntu-latest
+
         steps:
         - name: Checkout Repo    
           uses: actions/checkout@v4
+          env:
+              GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+              REPO: ${{ github.event.repository.name }}
         
         - name: "Install Terraform"
           uses: hashicorp/setup-terraform@v3
@@ -35,4 +39,10 @@ jobs:
         - name: Terraform Apply
           id: apply
           run: terraform -chdir=terraform/ apply "tfplan"
+        - name: Save outputs
+          id: output
+          run: |
+            gh variable set APP_NAME --body terraform output app_name
+            gh variable set APP_URL --body terraform output app_url
+          
 
