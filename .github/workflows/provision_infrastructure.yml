@@ -3,6 +3,15 @@ name: Terraform Create
 on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
+      inputs: 
+        location:
+          description: 'Location of the resources'
+          required: true
+          default: 'northeurope'
+        prefix:
+          description: 'Prefix for the resources'
+          required: true
+          default: 'atu'
       
 permissions: write-all
         
@@ -33,7 +42,7 @@ jobs:
           
         - name: Terraform Plan
           id: plan
-          run: terraform -chdir=terraform/ plan -var="location=northeurope" -var="prefix=atu" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
+          run: terraform -chdir=terraform/ plan -var="location=${{inputs.location}}" -var="prefix=${{inputs.prefix}}" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
         - name: Terraform Apply
           id: apply
           run: terraform -chdir=terraform/ apply "tfplan"

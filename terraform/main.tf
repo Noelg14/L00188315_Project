@@ -7,26 +7,26 @@ provider "azurerm" {
   skip_provider_registration = true
 }
 
-resource "azurerm_resource_group" "rg-atu" {
-  name     = "${var.prefix}-resources"
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.prefix}-rg"
   location = var.location
 }
 
-resource "azurerm_service_plan" "atu-sp" {
+resource "azurerm_service_plan" "sp" {
   name                = "${var.prefix}-sp"
-  location            = azurerm_resource_group.rg-atu.location
-  resource_group_name = azurerm_resource_group.rg-atu.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   os_type             = "Linux"
   sku_name            = "F1"
 
 }
 
 
-resource "azurerm_linux_web_app" "ob-dash" {
+resource "azurerm_linux_web_app" "app-service" {
   name                = "${var.prefix}-dashboard"
-  location            = azurerm_resource_group.rg-atu.location
-  resource_group_name = azurerm_resource_group.rg-atu.name
-  service_plan_id     = azurerm_service_plan.atu-sp.id
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id     = azurerm_service_plan.sp.id
 
 
   site_config {
