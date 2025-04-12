@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccountServiceService } from 'src/app/services/account-service.service';
+import { AccountService } from 'src/app/services/account-service.service';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +9,7 @@ import { AccountServiceService } from 'src/app/services/account-service.service'
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private accountService: AccountServiceService,
+  constructor(private accountService: AccountService,
     private router: Router,
     private activatedRoute: ActivatedRoute) {
 
@@ -24,7 +24,13 @@ export class LoginComponent {
   returnUrl: string;
 
   onSubmit(){
+    this.accountService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.router.navigateByUrl(this.returnUrl);
+      }
 
-  }
+  });
+}
 
 }
