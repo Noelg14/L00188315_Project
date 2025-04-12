@@ -1,0 +1,4 @@
+/*Fix strange hover behaviour*/
+.btn:hover>a{
+  color: inherit;
+}
