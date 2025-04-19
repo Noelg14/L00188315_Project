@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account-service.service';
+import { LoginDto } from 'src/app/models/LoginDto';
 
 @Component({
   selector: 'app-login',
@@ -24,10 +25,18 @@ export class LoginComponent {
   returnUrl: string;
 
   onSubmit(){
-    this.accountService.login(this.loginForm.value).subscribe({
+    let postData :LoginDto =  {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
+    this.accountService.login(postData).subscribe({
       next: (response) => {
         console.log(response);
         this.router.navigateByUrl(this.returnUrl);
+      },
+      error: (error) => {
+        console.error(error);
+        alert("Invalid Credentials");
       }
 
   });

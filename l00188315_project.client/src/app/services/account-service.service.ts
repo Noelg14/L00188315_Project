@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { tap } from 'rxjs';
+import { environment } from 'src/environments/environment.development';
+import { LoginDto, LoginResponse } from '../models/LoginDto';
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +11,17 @@ export class AccountService {
 
   constructor(private httpClient: HttpClient) { }
 
+  baseUrl:string = environment.apiUrl;
 
 
-  login(data: any) {
-    return this.httpClient.post('https://localhost:7094/api/Account/Login', data).pipe(
-      tap((response: any) => {
+  login(data: LoginDto) {
+    return this.httpClient.post(this.baseUrl+'api/Account/Login', data).pipe(
+      tap((response: any | LoginResponse) => { // store the token in the broswer local store.
         localStorage.setItem('token', response.token);
       })
     );
+  }
+  register(data: any){
+    return this.httpClient.post(this.baseUrl+'api/Account/Register', data);
   }
 }
