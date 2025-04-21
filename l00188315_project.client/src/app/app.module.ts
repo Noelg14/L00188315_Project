@@ -10,6 +10,7 @@ import { LoginComponent } from './login/login/login.component';
 import { RegisterComponent } from './register/register/register.component';
 import { SharedModule } from './shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -19,12 +20,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RegisterComponent
   ],
   imports: [
-    BrowserModule, 
-    HttpClientModule, 
+    BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     CoreModule,
     SharedModule,
     ReactiveFormsModule,
+    ToastrModule.forRoot({positionClass:'toast-bottom-right',timeOut:1000,preventDuplicates:true})
+
   ],
   providers: [],
   bootstrap: [AppComponent]

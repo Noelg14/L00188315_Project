@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account-service.service';
 import { LoginDto } from 'src/app/models/LoginDto';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -12,8 +13,9 @@ import { LoginDto } from 'src/app/models/LoginDto';
 export class LoginComponent {
   constructor(private accountService: AccountService,
     private router: Router,
-    private activatedRoute: ActivatedRoute) {
-
+    private activatedRoute: ActivatedRoute,
+    private toastr: ToastrService
+  ) {
     this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
   }
 
@@ -32,11 +34,12 @@ export class LoginComponent {
     this.accountService.login(postData).subscribe({
       next: (response) => {
         console.log(response);
+        this.toastr.success('Login Successful', 'Success');
         this.router.navigateByUrl(this.returnUrl);
       },
       error: (error) => {
         console.error(error);
-        alert("Invalid Credentials");
+        this.toastr.error('Invalid Credentials', 'Error');
       }
 
   });
