@@ -50,7 +50,7 @@ jobs:
           continue-on-error: true #this might fail, but thats okay.
           id: output
           env:
-            GH_TOKEN: ${{ github.token }}
+            GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
           run: |
             cd terraform/
             app_name=$(terraform output -raw app_name)
