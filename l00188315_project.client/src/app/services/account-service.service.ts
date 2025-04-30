@@ -15,13 +15,13 @@ export class AccountService {
 
 
   login(data: LoginDto) {
-    return this.httpClient.post(this.baseUrl+'api/Account/Login', data).pipe(
+    return this.httpClient.post(this.baseUrl+'api/Login', data).pipe(
       tap((response: any | LoginResponse) => { // store the token in the broswer local store.
         localStorage.setItem('token', response.token);
       })
     );
   }
   register(data: any){
-    return this.httpClient.post(this.baseUrl+'api/Account/Register', data);
+    return this.httpClient.post(this.baseUrl+'api/Register', data);
   }
 }

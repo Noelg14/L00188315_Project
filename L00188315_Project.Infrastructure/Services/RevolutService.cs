@@ -115,7 +115,7 @@ public class RevolutService : IRevolutService
         return _mapper.MapToBalanceEntity( balance,accountId);
     }
 
-    public async Task<List<Core.Entities.Account>> GetAccountsAsync(string userId)
+    public async Task<List<Account>> GetAccountsAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return null;
@@ -212,7 +212,7 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                Console.WriteLine($"Error getting consent request: {response.StatusCode}");
+                _logger.LogError($"Error getting consent request: {response.StatusCode}");
                 return await response.Content.ReadAsStringAsync();
             }
         }

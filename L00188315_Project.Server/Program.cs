@@ -83,6 +83,10 @@ app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors(options =>
+    {
+        options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
     app.UseSwaggerDocumentation();
 }
 
