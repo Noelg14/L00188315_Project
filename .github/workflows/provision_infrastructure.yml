@@ -49,6 +49,8 @@ jobs:
         - name: Save outputs
           continue-on-error: true #this might fail, but thats okay.
           id: output
+          env:
+            GH_TOKEN: ${{ github.token }}
           run: |
             cd terraform/
             app_name=$(terraform output -raw app_name)
