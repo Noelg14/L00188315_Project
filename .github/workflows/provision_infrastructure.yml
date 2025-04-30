@@ -51,8 +51,8 @@ jobs:
           id: output
           run: |
             cd terraform/
-            app_name=$(terraform -chdir=terraform/ output -raw app_name)
-            app_url=$(terraform -chdir=terraform/ output -raw app_url)
+            app_name=$(terraform output -raw app_name)
+            app_url=$(terraform output -raw app_url)
             gh variable set APP_NAME --body "$app_name"
             gh variable set APP_URL --body "$app_url"
           
