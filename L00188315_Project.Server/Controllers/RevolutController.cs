@@ -132,10 +132,11 @@ namespace L00188315_Project.Server.Controllers
                      _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
                 );
             });
-           
-//#if DEBUG
-//            return Ok(new { Token = token }); // if debugging, return the token
-//#endif
+
+#if DEBUG
+            return RedirectPermanent("https://localhost:4200/account"); // if debugging, return the token
+            //return Ok(new { Token = token }); // if debugging, return the token
+#endif
             return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
         /// <summary>

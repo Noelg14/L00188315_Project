@@ -9,7 +9,8 @@ const routes: Routes = [
   {path:'',component: HomeComponent},
   {path:'login',component:LoginComponent},
   {path:'register',component:RegisterComponent},
-  {path:'account',component:AccountComponent},
+  {path:'account',component:AccountComponent,pathMatch:'full'  },
+  {path:'account/:id',component:AccountComponent,pathMatch:'full'},
 
   // {
   //   path:'checkout',
@@ -22,7 +23,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(
+      routes,
+      { enableTracing: true }
+    )
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
