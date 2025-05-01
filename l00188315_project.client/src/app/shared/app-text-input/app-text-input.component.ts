@@ -18,12 +18,9 @@ export class AppTextInputComponent implements ControlValueAccessor {
     this.controlDir.valueAccessor = this;
   }
 
-  writeValue(obj: any): void {
-  }
-  registerOnChange(fn: any): void {
-  }
-  registerOnTouched(fn: any): void {
-  }
+  writeValue(obj: any): void {}
+  registerOnChange(fn: any): void {}
+  registerOnTouched(fn: any): void {}
 
   get control(): FormControl {
     return this.controlDir.control as FormControl;

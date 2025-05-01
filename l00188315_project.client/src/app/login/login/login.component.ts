@@ -11,12 +11,12 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private accountService: AccountService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private toastr: ToastrService
+  constructor(private readonly accountService: AccountService,
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly toastr: ToastrService
   ) {
-    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'];
   }
 
   loginForm = new FormGroup({
@@ -35,7 +35,7 @@ export class LoginComponent {
       next: (response) => {
         console.log(response);
         this.toastr.success('Login Successful', 'Success');
-        this.router.navigateByUrl(this.returnUrl);
+        this.router.navigateByUrl(this.returnUrl??'/account');
       },
       error: (error) => {
         console.error(error);

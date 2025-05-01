@@ -9,14 +9,14 @@ import { LoginDto, LoginResponse } from '../models/LoginDto';
 })
 export class AccountService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private readonly httpClient: HttpClient) { }
 
   baseUrl:string = environment.apiUrl;
 
 
   login(data: LoginDto) {
-    return this.httpClient.post(this.baseUrl+'api/Login', data).pipe(
-      tap((response: any | LoginResponse) => { // store the token in the broswer local store.
+    return this.httpClient.post<LoginResponse>(this.baseUrl+'api/Login', data).pipe(
+      tap((response: LoginResponse) => { // store the token in the browser local store.
         localStorage.setItem('token', response.token);
       })
     );

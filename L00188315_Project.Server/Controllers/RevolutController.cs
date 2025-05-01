@@ -133,10 +133,10 @@ namespace L00188315_Project.Server.Controllers
                 );
             });
            
-#if DEBUG
-            return Ok(new { Token = token }); // if debugging, return the token
-#endif
-            return NoContent(); // if not in debug mode, return no content - redirect in future
+//#if DEBUG
+//            return Ok(new { Token = token }); // if debugging, return the token
+//#endif
+            return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
         /// <summary>
         /// Gets the list of revolut accounts for the user
@@ -150,6 +150,7 @@ namespace L00188315_Project.Server.Controllers
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             _logger.LogInformation("Getting Accounts for User: {0}", userId);
             var accounts = await _revolutService.GetAccountsAsync(userId!);
+
 
             var apiResponse = new ApiResponseDTO<List<Account>>
             {

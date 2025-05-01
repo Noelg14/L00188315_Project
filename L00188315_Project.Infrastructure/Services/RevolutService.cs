@@ -137,6 +137,7 @@ public class RevolutService : IRevolutService
         foreach (var account in response.Data.Account)
         {
             var existingAccount = await _accountRepository.GetAccountAsync(userId, account.AccountId);
+
             if (existingAccount == null)
             {
                 accounts.Add(await _accountRepository.CreateAccountAsync(userId, _mapper.MapToAccountEntity(account, userId)));
