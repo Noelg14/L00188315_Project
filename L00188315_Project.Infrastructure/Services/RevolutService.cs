@@ -119,17 +119,18 @@ public class RevolutService : IRevolutService
     {
         if (string.IsNullOrEmpty(userId))
             return null;
+
+        var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
+        if (existingAccounts.Count > 0)
+        {
+            _logger.LogInformation("Accounts exist - Returning");
+            return existingAccounts;
+        } // check if accounts already exist
+
         var token = _cacheService.Get(userId);
         if (string.IsNullOrEmpty(token))
         {
             return null;
-        }
-
-        var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
-        if(existingAccounts.Count > 0)
-        {
-            _logger.LogInformation("Accounts exist - Returning");
-            return existingAccounts;
         }
 
         var response = await sendGetRequestAsync(string.Empty, string.Empty, token);

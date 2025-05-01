@@ -1,4 +1,4 @@
-<ng-container class="mt-3">
+<ng-container class="mt-3 w-100">
   <h1>Accounts:</h1>
   <div class="d-flex justify-content-center w-100">
     <div class="d-flex flex-row justify-content-evenly align-content-between w-50 mt-2">
@@ -7,38 +7,24 @@
     </div>
   </div>
 </ng-container>
+<div class="container mt-5 justify-content-evenly align-content-between w-100">
+  <div class="row">
 
-<ng-container *ngIf="accounts">
-  <div class="d-flex flex-row justify-content-evenly align-content-between mt-5" *ngFor="let account of accounts">
+
+<ng-container *ngIf="accounts" >
+  <div class="col mx-3 mb-3" *ngFor="let account of accounts">
     <!-- <p>{{account.name}}</p>
     <p>{{account.currency}}</p>
     <p>{{account.accountId}}</p>
     <p>{{account.accountSubType}}</p> -->
     <!-- From Uiverse.io by vinodjangid07 -->
-<div class="card">
-  <p class="card-title">{{account.accountSubType}} ({{account.currency}}) </p>
-  <p class="balance">{{account.name}}</p>
-  <p class="account">
-    <svg
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-    >
-      <rect width="22" height="16" x="1" y="4" rx="2" ry="2"></rect>
-      <path d="M1 10h22"></path>
-    </svg>
-    Account: {{account.accountId}}
-  </p>
-  <div class="buttons">
-    <a [routerLink]="['/account',account.accountId]"  class="button button-transfer">
+  <div class="card">
+    <p class="card-title">{{account.accountSubType}} ({{account.currency}}) </p>
+    <p class="balance">{{account.name}}</p>
+    <p class="account">
       <svg
-        width="16"
-        height="16"
+        width="20"
+        height="20"
         fill="none"
         stroke="currentColor"
         stroke-linecap="round"
@@ -46,15 +32,33 @@
         stroke-width="2"
         viewBox="0 0 24 24"
       >
-        <path d="M7 17l9.2-9.2M17 17V7H7"></path>
+        <rect width="22" height="16" x="1" y="4" rx="2" ry="2"></rect>
+        <path d="M1 10h22"></path>
       </svg>
-      View
-    </a>
+      Account: {{account.accountId}}
+    </p>
+    <div class="buttons">
+      <a [routerLink]="['/account',account.accountId]"  class="button button-transfer">
+        <svg
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M7 17l9.2-9.2M17 17V7H7"></path>
+        </svg>
+        View
+      </a>
+
+    </div>
 
   </div>
-
-</div>
-
-
   </div>
 </ng-container>
+</div>
+
+</div>
