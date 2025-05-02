@@ -1,0 +1,9 @@
+<ng-container *ngIf="account">
+  <h1>{{account.name}}</h1>
+</ng-container>
+<ng-container *ngIf="balance">
+  <h1>{{getCurrencySymbol(balance.currency!) + balance.amount}}</h1>
+</ng-container>
+<ng-container *ngIf="transactions">
+  <h1>{{transactions.length}}</h1>
+</ng-container>

@@ -17,8 +17,8 @@ export class OpenBankingService {
     accounts(){
       return this.httpClient.get<ApiResponse<Account[]>>(this.baseUrl+'api/Revolut/accounts');
     }
-    transactions(){
-      return this.httpClient.get<ApiResponse<Transaction[]>>(this.baseUrl+'api/Revolut/transactions');
+    transactions(accountId:string){
+      return this.httpClient.get<ApiResponse<Transaction[]>>(this.baseUrl+`api/Revolut/transactions?accountId=${accountId}`);
     }
     balances(accountId:string){
       return this.httpClient.get<ApiResponse<Balance>>(this.baseUrl+`api/Revolut/balances?accountId=${accountId}`);

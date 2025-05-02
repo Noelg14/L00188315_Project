@@ -38,7 +38,7 @@
       Account: {{account.accountId}}
     </p>
     <div class="buttons">
-      <a [routerLink]="['/account',account.accountId]"  class="button button-transfer">
+      <a [routerLink]="['/account',account.accountId]" [state]="account" class="button button-transfer">
         <svg
           width="16"
           height="16"
