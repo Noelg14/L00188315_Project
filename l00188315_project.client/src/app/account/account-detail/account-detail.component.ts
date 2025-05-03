@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, Observable } from 'rxjs';
 import { Account } from 'src/app/models/account';
 import { Balance } from 'src/app/models/balance';
 import { Transaction } from 'src/app/models/transaction';
 import { OpenBankingService } from 'src/app/services/open-banking.service';
+import { formatDate } from "@angular/common";
 
 @Component({
   selector: 'app-account-detail',
@@ -12,6 +12,7 @@ import { OpenBankingService } from 'src/app/services/open-banking.service';
   styleUrls: ['./account-detail.component.css']
 })
 export class AccountDetailComponent implements OnInit {
+[x: string]: any;
   account?:Account;
   balance?:Balance;
   transactions?:Transaction[];

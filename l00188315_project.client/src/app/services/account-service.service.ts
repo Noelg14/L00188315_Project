@@ -22,6 +22,10 @@ export class AccountService {
     );
   }
   register(data: any){
-    return this.httpClient.post(this.baseUrl+'api/Register', data);
+    return this.httpClient.post<LoginResponse>(this.baseUrl+'api/Register', data).pipe(
+      tap((response: LoginResponse) => { // store the token in the browser local store.
+        localStorage.setItem('token', response.token);
+      })
+    );
   }
 }

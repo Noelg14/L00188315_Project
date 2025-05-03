@@ -1,9 +1,47 @@
-<ng-container *ngIf="account">
-  <h1>{{account.name}}</h1>
-</ng-container>
-<ng-container *ngIf="balance">
-  <h1>{{getCurrencySymbol(balance.currency!) + balance.amount}}</h1>
-</ng-container>
-<ng-container *ngIf="transactions">
-  <h1>{{transactions.length}}</h1>
-</ng-container>
+<div class="mt-5 container">
+  <button class="btn btn-primary" routerLink="/account">Back</button>
+  <ng-container *ngIf="account" class="col-6">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Account Name : {{account.name}}</li>
+      <li class="list-group-item">Account Id: {{account.accountId}}</li>
+      <li class="list-group-item">Account Type: {{account.accountType}}</li>
+      <li class="list-group-item">IBAN: {{account.iban}}</li>
+      <li class="list-group-item" *ngIf="account.sortCode">Sort Code : {{account.sortCode}}</li>
+    </ul>
+  </ng-container>
+  <ng-container *ngIf="balance" class="col-6">
+    <h3>Balances:</h3>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Balance: {{getCurrencySymbol(balance.currency!) + balance.amount}}</li>
+      <li class="list-group-item">Last Updated: {{balance.lastUpdated | date:'dd/MM/yyyy HH:mm:ss'}}</li>
+    </ul>
+  </ng-container>
+  <ng-container *ngIf="transactions">
+    <h1>Transactions</h1>
+    <hr>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Transaction Date</th>
+          <th>Currency</th>
+          <th>Amount</th>
+          <th>Detail</th>
+          <th>Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of transactions">
+          <td>{{transaction.bookingDateTime|date:'dd/MM/yyyy HH:mm:ss'}}</td>
+          <td>{{transaction.amountCurrency}}</td>
+          <td>{{transaction.amount}}</td>
+          <td>{{transaction.transactionInformation}} </td>
+          <td>{{transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator}}</td>
+          <td>{{transaction.status}}</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </ng-container>
+
+</div>

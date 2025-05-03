@@ -12,6 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { AccountModule } from './account/account.module';
 import { HttpInterceptorInterceptor } from './interceptor/http-interceptor.interceptor';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -28,8 +29,8 @@ import { HttpInterceptorInterceptor } from './interceptor/http-interceptor.inter
     SharedModule,
     ReactiveFormsModule,
     ToastrModule.forRoot({positionClass:'toast-bottom-right',timeOut:1000,preventDuplicates:true}),
-    AccountModule
-
+    AccountModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     {

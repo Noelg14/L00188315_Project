@@ -21,8 +21,8 @@ namespace L00188315_Project.Infrastructure.Services;
 
 public class RevolutService : IRevolutService
 {
-    private HttpClient _mtlsClient;
-    private HttpClient _httpClient;
+    private readonly HttpClient _mtlsClient;
+    private readonly HttpClient _httpClient;
     private readonly ICacheService _cacheService;
     private readonly IConfiguration _configuration;
     private readonly IKeyVaultService _keyVaultService;
@@ -39,7 +39,6 @@ public class RevolutService : IRevolutService
         ILogger<RevolutService> logger,
         IAccountRepository accountRepository,
         OpenBankingMapper mapper
-
     )
     {
         _cacheService = cacheService;
@@ -81,7 +80,6 @@ public class RevolutService : IRevolutService
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 Console.WriteLine($"Error getting access token: {response.StatusCode}");
-                //return response.StatusCode.ToString();
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
@@ -107,7 +105,7 @@ public class RevolutService : IRevolutService
         }
         var response = await sendGetRequestAsync(accountId, "/balances", token);
 
-        var balance = response.Data.Balance.Where(x => x.AccountId == accountId).FirstOrDefault();
+        var balance = response.Data.Balance.FirstOrDefault(x => x.AccountId == accountId);
         if (balance == null)
         {
             return null;
