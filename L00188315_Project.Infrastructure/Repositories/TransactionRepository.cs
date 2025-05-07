@@ -1,6 +1,8 @@
 ﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
+using L00188315_Project.Core.Models;
 using L00188315_Project.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,24 +13,30 @@ namespace L00188315_Project.Infrastructure.Repositories
 {
     public class TransactionRepository(AppDbContext _dbContext) : ITransactionRepository
     {
-        public Task CreateTransactionsAsync(List<Transaction> transactions)
+        public async Task CreateTransactionsAsync(List<Transaction> transactions)
         {
-            throw new NotImplementedException();
+            await _dbContext.Transactions.AddRangeAsync(transactions);
+            await _dbContext.SaveChangesAsync();
+            return;
         }
 
-        public Task<IReadOnlyList<Transaction>> GetAllTransactionsAsync(string userId)
+        public async Task<IReadOnlyList<Transaction>> GetAllTransactionsAsync(string userId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Transactions
+                .Where(t => t.Account.UserId == userId)
+                .ToListAsync();
         }
 
-        public Task<IReadOnlyList<Transaction>> GetAllTransactionsByAccountIdAsync(string userId, string accountId)
+        public async Task<IReadOnlyList<Transaction>> GetAllTransactionsByAccountIdAsync(string userId, string accountId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Transactions
+                .Where(t => t.Account.UserId == userId && t.AccountId == accountId)
+                .ToListAsync();
         }
 
-        public Task<Transaction> GetTransactionByIdAsync(string transactionId)
+        public async Task<Transaction> GetTransactionByIdAsync(string transactionId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Transactions.FindAsync(transactionId);
         }
     }
 }

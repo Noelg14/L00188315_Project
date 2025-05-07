@@ -28,6 +28,8 @@ public class RevolutService : IRevolutService
     private readonly IKeyVaultService _keyVaultService;
     private readonly IConsentRepository _consentRepository;
     private readonly IAccountRepository _accountRepository;
+    private readonly IBalanceRepository _balanceRepository;
+    private readonly ITransactionRepository _transactionRepository;
     private readonly OpenBankingMapper _mapper;
     private readonly ILogger<RevolutService> _logger;
 
@@ -38,6 +40,8 @@ public class RevolutService : IRevolutService
         IConsentRepository consentRepository,
         ILogger<RevolutService> logger,
         IAccountRepository accountRepository,
+        IBalanceRepository balanceRepository,
+        ITransactionRepository transactionRepository,
         OpenBankingMapper mapper
     )
     {
@@ -50,6 +54,8 @@ public class RevolutService : IRevolutService
         _logger = logger;
         _accountRepository = accountRepository;
         _mapper = mapper;
+        _balanceRepository = balanceRepository;
+        _transactionRepository = transactionRepository;
     }
 
     /// <summary>
@@ -110,7 +116,9 @@ public class RevolutService : IRevolutService
         {
             return null;
         }
-        return _mapper.MapToBalanceEntity( balance,accountId);
+        var balanceEntity = _mapper.MapToBalanceEntity(balance, accountId);
+        await _balanceRepository.CreateBalanceAsync(userId, balanceEntity);
+        return balanceEntity;
     }
 
     public async Task<List<Account>> GetAccountsAsync(string userId)
@@ -132,7 +140,7 @@ public class RevolutService : IRevolutService
         }
 
         var response = await sendGetRequestAsync(string.Empty, string.Empty, token);
-        var accounts = new List<Core.Entities.Account>();
+        var accounts = new List<Account>();
         foreach (var account in response.Data.Account)
         {
             var existingAccount = await _accountRepository.GetAccountAsync(userId, account.AccountId);
@@ -349,7 +357,7 @@ public class RevolutService : IRevolutService
                 policyErrors
             ) =>
             {
-                return true; // allow insecure / self signed certificates / dont validate certs
+                return true; // allow insecure / self signed certificates / don't validate certs
             },
             Credentials = null,
             CheckCertificateRevocationList = false,

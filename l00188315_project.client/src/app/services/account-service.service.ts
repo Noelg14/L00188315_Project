@@ -3,13 +3,19 @@ import { Injectable } from '@angular/core';
 import { tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LoginDto, LoginResponse } from '../models/LoginDto';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
 
-  constructor(private readonly httpClient: HttpClient) { }
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly toastr : ToastrService
+  ) {
+    this.validateToken();
+  }
 
   baseUrl:string = environment.apiUrl;
 
@@ -27,5 +33,15 @@ export class AccountService {
         localStorage.setItem('token', response.token);
       })
     );
+  }
+  validateToken(){
+    let token = localStorage.getItem("token") ?? '';
+    token?.split('.')
+    let data:any = btoa(token[1])
+    if(data.exp < Date.now()){
+      this.toastr.error("Your token has expired, please login again.")
+      return false;
+    }
+    return true;
   }
 }
