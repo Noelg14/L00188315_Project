@@ -13,5 +13,5 @@ export class AppComponent implements OnInit {
   ngOnInit() {}
 
 
-  title = 'l00188315_project.client';
+  title = 'OpenBanking Dashboard';
 }

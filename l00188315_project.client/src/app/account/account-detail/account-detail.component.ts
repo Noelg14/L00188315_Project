@@ -12,7 +12,6 @@ import { formatDate } from "@angular/common";
   styleUrls: ['./account-detail.component.css']
 })
 export class AccountDetailComponent implements OnInit {
-[x: string]: any;
   account?:Account;
   balance?:Balance;
   transactions?:Transaction[];
@@ -24,7 +23,7 @@ export class AccountDetailComponent implements OnInit {
 
     this.loadDetails();
   }
-
+    title = "Account | "+(this.account?.currency ?? '');
 
     loadDetails(){
       const accountId = this.activatedRoute.snapshot.paramMap.get('id') as string;
@@ -36,16 +35,20 @@ export class AccountDetailComponent implements OnInit {
       });
       this.obService.balances(accountId).subscribe({
         next: response =>{
-          this.balance = response.data;
+          if(response.data.amount)
+            this.balance = response.data;
+
         },
         error: err =>{ console.error(err)}
       });
       this.obService.transactions(accountId).subscribe({
         next: response =>{
-          this.transactions = response.data;
+          if(response.data.length > 0)
+            this.transactions = response.data;
         },
         error: err =>{ console.error(err)}
       })
+
     }
     getCurrencySymbol(currency: string): string {
       switch (currency) {

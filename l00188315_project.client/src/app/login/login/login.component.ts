@@ -25,6 +25,7 @@ export class LoginComponent {
   })
 
   returnUrl: string;
+  title = "Login"
 
   onSubmit(){
     let postData :LoginDto =  {

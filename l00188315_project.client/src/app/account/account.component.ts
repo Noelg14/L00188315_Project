@@ -13,6 +13,9 @@ export class AccountComponent implements OnInit{
   }
   public accounts : Account[] | null = null;
   public balances : Balance[] | null = null;
+
+  title = "Accounts"
+
   ngOnInit(): void {
   this.openBankingService.accounts().subscribe({
       next: (response) => {
