@@ -241,6 +241,7 @@ public class RevolutService : IRevolutService
         {
             transactions.Add(_mapper.MapToTransactionEntity(transaction, accountId));
         }
+        await _transactionRepository.CreateTransactionsAsync(transactions);
         return transactions;
     }
 
@@ -355,8 +356,7 @@ public class RevolutService : IRevolutService
                 cert,
                 certChain,
                 policyErrors
-            ) =>
-            {
+            ) =>{
                 return true; // allow insecure / self signed certificates / don't validate certs
             },
             Credentials = null,

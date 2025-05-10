@@ -4,6 +4,7 @@ import { tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LoginDto, LoginResponse } from '../models/LoginDto';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class AccountService {
 
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly toastr : ToastrService
+    private readonly toastr : ToastrService,
+    private readonly router: Router
   ) {
     this.validateToken();
   }
@@ -40,6 +42,7 @@ export class AccountService {
     let data:any = btoa(token[1])
     if(data.exp < Date.now()){
       this.toastr.error("Your token has expired, please login again.")
+      this.router.navigateByUrl('/login');
       return false;
     }
     return true;
