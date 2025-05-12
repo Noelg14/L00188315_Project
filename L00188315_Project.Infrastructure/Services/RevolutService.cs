@@ -39,7 +39,6 @@ public class RevolutService : IRevolutService
         ILogger<RevolutService> logger,
         IAccountRepository accountRepository,
         OpenBankingMapper mapper
-
     )
     {
         _cacheService = cacheService;
@@ -126,7 +125,7 @@ public class RevolutService : IRevolutService
         }
 
         var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
-        if(existingAccounts.Count > 0)
+        if (existingAccounts.Count > 0)
         {
             _logger.LogInformation("Accounts exist - Returning");
             return existingAccounts;
@@ -241,7 +240,7 @@ public class RevolutService : IRevolutService
         var consent = await _consentRepository.GetConsentAsync(consentId);
         if (consent == null)
         {
-            throw new Exception("Consent not found");
+            throw new KeyNotFoundException("Consent not found");
         }
         consent.ConsentStatus = status;
         await _consentRepository.UpdateConsentAsync(consent, status);
@@ -413,7 +412,7 @@ public class RevolutService : IRevolutService
 
     public async Task<Consent> GetConsentByIdAsync(string consentId)
     {
-        if(string.IsNullOrEmpty(consentId))
+        if (string.IsNullOrEmpty(consentId))
             return null;
         return await _consentRepository.GetConsentAsync(consentId);
     }
