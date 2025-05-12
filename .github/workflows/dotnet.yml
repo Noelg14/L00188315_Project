@@ -32,8 +32,7 @@ jobs:
       run: dotnet restore .
 
     - name: Compile
-      run: dotnet build --confiuration Debug #-warnaserror 
-      continue-on-error: true #this might fail, but thats okay (for now)
+      run: dotnet build --configuration Debug #-warnaserror 
       #Warning acts as an error
     
     - name: Test
@@ -49,8 +48,7 @@ jobs:
       run: dotnet restore .
 
     - name: Compile
-      run: dotnet build --confiuration Release --no-restore -warnaserror #Warning acts as an error
-      continue-on-error: true #this might fail, but thats okay (for now)
+      run: dotnet build --configuration Release --no-restore -warnaserror #Warning acts as an error
 
     - name: Publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app
