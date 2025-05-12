@@ -29,15 +29,15 @@ jobs:
         dotnet-version: 8.0.x
     
     - name: Restore dependencies
-      run: dotnet restore L00188315_Project
+      run: dotnet restore .
 
     - name: Compile
-      run: dotnet build --confiuration Debug L00188315_Project #-warnaserror 
+      run: dotnet build --confiuration Debug #-warnaserror 
       continue-on-error: true #this might fail, but thats okay (for now)
       #Warning acts as an error
     
     - name: Test
-      run: dotnet test L00188315_Project
+      run: dotnet test
 
   build:
     runs-on: ubuntu-latest
@@ -46,14 +46,14 @@ jobs:
 
     steps:
     - name: Restore dependencies
-      run: dotnet restore L00188315_Project
+      run: dotnet restore .
 
     - name: Compile
-      run: dotnet build --confiuration Release --no-restore -warnaserror L00188315_Project #Warning acts as an error
+      run: dotnet build --confiuration Release --no-restore -warnaserror #Warning acts as an error
       continue-on-error: true #this might fail, but thats okay (for now)
 
     - name: Publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app L00188315_Project
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
