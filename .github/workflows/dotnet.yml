@@ -32,23 +32,25 @@ jobs:
       run: dotnet restore .
 
     - name: Compile
-      run: dotnet build --configuration Debug #-warnaserror 
+      run: dotnet build -c 'API Only' #-warnaserror # build backend ONLY
       #Warning acts as an error
     
     - name: Test
-      run: dotnet test
+      run: dotnet test 
 
   build:
+    
     runs-on: ubuntu-latest
     name: Build project artefact
     needs: test
 
     steps:
+    - uses: actions/checkout@v4
     - name: Restore dependencies
       run: dotnet restore .
 
     - name: Compile
-      run: dotnet build --configuration Release --no-restore -warnaserror #Warning acts as an error
+      run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
 
     - name: Publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app
