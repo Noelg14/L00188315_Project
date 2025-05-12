@@ -53,13 +53,13 @@ jobs:
       run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
 
     - name: Publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app
+      run: dotnet publish -c Release -o ./app
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
       with:
         name: ${{github.repository}}
-        path: ${{env.DOTNET_ROOT}}/app
+        path: ./app
 
   deploy:
     runs-on: ubuntu-latest
