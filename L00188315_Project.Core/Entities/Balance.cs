@@ -9,6 +9,7 @@ namespace L00188315_Project.Core.Entities
 {
     public class Balance
     {
+        public string BalanceId { get; set; } = Guid.NewGuid().ToString();
         public string? Amount { get; set; }
         public string? Currency { get; set; }
         public string? BalanceType { get; set; }

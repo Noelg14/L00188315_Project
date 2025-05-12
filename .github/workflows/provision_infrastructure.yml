@@ -3,6 +3,15 @@ name: Terraform Create
 on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
+      inputs: 
+        location:
+          description: 'Location of the resources'
+          required: true
+          default: 'northeurope'
+        prefix:
+          description: 'Prefix for the resources'
+          required: true
+          default: 'atu'
       
 permissions: write-all
         
@@ -14,7 +23,7 @@ jobs:
         - name: Checkout Repo    
           uses: actions/checkout@v4
           env:
-              GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+              GH_TOKEN: ${{ github.token }}
               REPO: ${{ github.event.repository.name }}
         
         - name: "Install Terraform"
@@ -33,18 +42,20 @@ jobs:
           
         - name: Terraform Plan
           id: plan
-          run: terraform -chdir=terraform/ plan -var="location=northeurope" -var="prefix=atu" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
+          run: terraform -chdir=terraform/ plan -var="location=${{ inputs.location }}" -var="prefix=${{ inputs.prefix }}" -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -out=tfplan
         - name: Terraform Apply
           id: apply
           run: terraform -chdir=terraform/ apply "tfplan"
         - name: Save outputs
           continue-on-error: true #this might fail, but thats okay.
           id: output
+          env:
+            GH_TOKEN: ${{ secrets.GH_TOKEN_PAT }}
           run: |
             cd terraform/
-            export app_name =  terraform -chdir=terraform/ output app_name
-            export app_url = terraform -chdir=terraform/ output app_url
-            gh variable set APP_NAME --body $app_name
-            gh variable set APP_URL --body $app_url
+            app_name=$(terraform output -raw app_name)
+            app_url=$(terraform output -raw app_url)
+            gh variable set APP_NAME --body "$app_name"
+            gh variable set APP_URL --body "$app_url"
           
 

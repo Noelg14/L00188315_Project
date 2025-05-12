@@ -23,14 +23,13 @@ namespace L00188315_Project.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Account>().HasKey(a => a.AccountId);
             modelBuilder.Entity<Transaction>().HasKey(t => t.TransactionId);
-            modelBuilder.Entity<Balance>().HasKey(b => b.AccountId);
+            modelBuilder.Entity<Balance>().HasKey(b => b.BalanceId);
             modelBuilder.Entity<Consent>().HasKey(c => c.ConsentId);
 
             modelBuilder
                 .Entity<Balance>()
                 .HasOne(b => b.Account)
-                .WithOne(a => a.Balance)
-                .HasForeignKey<Balance>(b => b.AccountId);
+                .WithOne(a => a.Balance);
             modelBuilder
                 .Entity<Transaction>()
                 .HasOne(b => b.Account)

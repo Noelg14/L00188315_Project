@@ -24,7 +24,7 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
         }
         public Balance MapToBalanceEntity(OBBalance modelBalance, string accountId)
         {
-            return new Core.Entities.Balance
+            return new Balance
             {
                 AccountId = accountId,
                 Amount = modelBalance.Amount._Amount,
