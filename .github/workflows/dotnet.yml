@@ -53,7 +53,11 @@ jobs:
       run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
 
     - name: Publish
-      run: dotnet publish -c Release -o ./app
+      run: dotnet publish -c Release -o ./app /p:WebPublishMethod=FileSystem /p:DeployTarget=WebPublish
+    - name: remove runtime configs
+      run: |
+        rm Project_Tests.runtimeconfig.json
+        rm L00188315_Project.Infrastructure.runtimeconfig.json
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
