@@ -56,9 +56,8 @@ jobs:
       run: dotnet publish -c Release -o ./app /p:WebPublishMethod=FileSystem /p:DeployTarget=WebPublish
       
     - name: remove un-needed runtime configs
-      run: |
-        rm ./app/Project_Tests.runtimeconfig.json
-        rm ./app/L00188315_Project.Infrastructure.runtimeconfig.json
+      run: rm ./app/L00188315_Project.Infrastructure.runtimeconfig.json
+      continue-on-error: true
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
