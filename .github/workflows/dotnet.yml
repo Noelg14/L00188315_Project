@@ -55,11 +55,11 @@ jobs:
 
     - name: Publish
       run: | 
-      dotnet publish 
-      -c Release 
-      --no-restore
-      --no-build
-      --property:PublishDir=./app
+        dotnet publish 
+        -c Release 
+        --no-restore
+        --no-build
+        --property:PublishDir=./app
       
     - name: List App Directory
       run: ls -R ./app
