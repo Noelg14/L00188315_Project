@@ -53,9 +53,12 @@ jobs:
       run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
 
     - name: Publish
-      run: dotnet publish -c Release -o ./app /p:WebPublishMethod=FileSystem /p:DeployTarget=WebPublish
+      run: dotnet publish -c Release -o ./app --self-contained true -r linux-x64 /p:PublishTrimmed=false --no-build
       
-    - name: remove un-needed runtime configs
+    - name: List App Directory
+      run: ls -R ./app
+
+    - name: Remove un-needed runtime configs
       run: rm ./app/L00188315_Project.Infrastructure.runtimeconfig.json
       continue-on-error: true
 
