@@ -55,19 +55,11 @@ jobs:
 
     - name: Publish
       run: | 
-<<<<<<< Updated upstream
-        dotnet publish 
-        --configuration Release 
-        --no-restore
-        --no-build
-        --property:PublishDir=./app
-=======
       dotnet publish 
       -c Release 
       --no-restore
       --no-build
       --property:PublishDir=./app
->>>>>>> Stashed changes
       
     - name: List App Directory
       run: ls -R ./app
