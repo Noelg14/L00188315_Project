@@ -54,12 +54,7 @@ jobs:
       run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
 
     - name: Publish
-      run: | 
-        dotnet publish 
-        --configuration Release 
-        --no-restore
-        --no-build
-        --property:PublishDir=./app
+      run: dotnet publish --configuration Release --no-restore --no-build --property:PublishDir=./app
       
     - name: List App Directory
       run: ls -R ./app
