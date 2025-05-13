@@ -56,7 +56,7 @@ jobs:
     - name: Publish
       run: | 
         dotnet publish 
-        -c Release 
+        --configuration Release 
         --no-restore
         --no-build
         --property:PublishDir=./app
