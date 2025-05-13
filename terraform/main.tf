@@ -27,7 +27,7 @@ resource "azurerm_windows_web_app" "app-service" {
   site_config {
     always_on           = false
     application_stack {
-      dotnet_version =  "8.0"
+      dotnet_version =  "v8.0"
     }
   }
 }
