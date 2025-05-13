@@ -3,10 +3,11 @@
 
 name: .NET
 
-on: # manual trigger only until I can verify approval
+on: 
+  workflow_dispatch:
+  # manual trigger only until I can verify approval
   # pull_request:
   #   branches: [ "main" ]
-  workflow_dispatch:
 
 permissions: write-all
 
@@ -54,11 +55,11 @@ jobs:
 
     - name: Publish
       run: | 
-      dotnet publish 
-      --configuration Release 
-      --no-restore
-      --no-build
-      --property:PublishDir=./app
+        dotnet publish 
+        --configuration Release 
+        --no-restore
+        --no-build
+        --property:PublishDir=./app
       
     - name: List App Directory
       run: ls -R ./app
