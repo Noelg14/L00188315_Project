@@ -11,7 +11,7 @@ resource "azurerm_service_plan" "atu-sp" {
   name                = "${var.prefix}-sp"
   location            = var.location
   resource_group_name = "ATU_CSD_2025"
-  os_type             = "Linux"
+  os_type             = "Windows"
   sku_name            = "F1"
 
 }

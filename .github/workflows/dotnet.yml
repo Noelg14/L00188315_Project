@@ -53,7 +53,7 @@ jobs:
       run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
 
     - name: Publish
-      run: dotnet publish -c Release -o ./app --self-contained true -r linux-x64 /p:PublishTrimmed=false --no-build
+      run: dotnet publish -c Release -o ./app --self-contained true /p:PublishTrimmed=false --no-build
       
     - name: List App Directory
       run: ls -R ./app
