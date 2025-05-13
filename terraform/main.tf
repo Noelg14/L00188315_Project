@@ -17,7 +17,7 @@ resource "azurerm_service_plan" "atu-sp" {
 }
 
 
-resource "azurerm_linux_web_app" "app-service" {
+resource "azurerm_windows_web_app" "app-service" {
   name                = "${var.prefix}-dashboard"
   location            = var.location
   resource_group_name = "ATU_CSD_2025"
