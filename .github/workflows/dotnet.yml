@@ -8,14 +8,12 @@ on:
   # manual trigger only until I can verify approval
   pull_request:
     branches: [ "main" ]
-    types: [opened,closed]
+    types: [opened]
 
 permissions: write-all
 
 jobs:
   test:
-    #run when opened
-    if: github.event.pull_request.merged == false 
     runs-on: ${{matrix.os}}
 
     strategy:

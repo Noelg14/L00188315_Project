@@ -5,12 +5,9 @@ name: Build Project Artefact
 
 on: 
   workflow_dispatch:
-  # manual trigger only until I can verify approval
-  # pull_request:
-  #   branches: [ "main" ]
-  #   workflow_run:
-  #     workflows: [.NET] 
-  #     types: [completed]
+  push:
+    branches:
+      - master # build when merged in master
 
 permissions: write-all
 
