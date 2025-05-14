@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { OpenBankingService } from '../services/open-banking.service';
 import { Account } from '../models/account';
 import { Balance } from '../models/balance';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-account',
@@ -9,7 +10,11 @@ import { Balance } from '../models/balance';
   styleUrls: ['./account.component.css']
 })
 export class AccountComponent implements OnInit{
-  constructor(private readonly openBankingService:OpenBankingService) {
+  constructor(
+    private readonly openBankingService:OpenBankingService,
+    private readonly toastr: ToastrService
+
+  ) {
   }
   public accounts : Account[] | null = null;
   public balances : Balance[] | null = null;
@@ -22,6 +27,7 @@ export class AccountComponent implements OnInit{
         this.accounts = response.data;
       },
       error: (error) => {
+        this.toastr.error(error.error.message,error.status)
         console.error(error);
       }
     });
@@ -33,6 +39,7 @@ export class AccountComponent implements OnInit{
         window.location.href = response.data;
       },
       error: (error) => {
+        this.toastr.error(error.error.message,error.status)
         console.error(error);
       }
     })

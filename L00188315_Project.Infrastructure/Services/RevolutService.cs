@@ -125,6 +125,7 @@ public class RevolutService : IRevolutService
 
     public async Task<List<Account>> GetAccountsAsync(string userId)
     {
+
         if (string.IsNullOrEmpty(userId))
             return null;
 
@@ -138,7 +139,7 @@ public class RevolutService : IRevolutService
         var token = _cacheService.Get(userId);
         if (string.IsNullOrEmpty(token))
         {
-            return null;
+            throw new TokenNullException("No Token for Revolut - Refresh Link");
         }
 
         var response = await sendGetRequestAsync(string.Empty, string.Empty, token);
@@ -238,7 +239,7 @@ public class RevolutService : IRevolutService
             return null;
         }
         var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(userId, accountId);
-        if(existingTransactions is not null)
+        if(existingTransactions.Count > 1 || existingTransactions is null)
         {
             return existingTransactions;
         }

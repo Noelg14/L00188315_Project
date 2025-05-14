@@ -1,10 +1,14 @@
+using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Infrastructure.Data;
+using L00188315_Project.Infrastructure.Data.Identity;
+using L00188315_Project.Server.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
-using L00188315_Project.Core.Interfaces.Services;
-using L00188315_Project.Server.Extensions;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 #if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly.
@@ -127,5 +131,22 @@ app.MapGet(
 #endif
 
 //app.MapFallbackToFile("/index.html");
+//  Migrate in code 
+using var scope = app.Services.CreateScope(); // create a scope for this
+var services = scope.ServiceProvider;
+var context = services.GetRequiredService<AppDbContext>(); // get the db context from the scope service
+var Idcontext = services.GetRequiredService<AppIdentityDbContext>(); // get the db context from the scope service
+var userManager = services.GetRequiredService<UserManager<IdentityUser>>(); // get the db context from the scope service
+var logger = services.GetRequiredService<ILogger<Program>>();
+
+try
+{
+    await context.Database.MigrateAsync(); //apply migration if pending
+    await Idcontext.Database.MigrateAsync(); //apply migration if pending
+}
+catch (Exception e)
+{
+    logger.LogError(e.Message);
+}
 
 app.Run();

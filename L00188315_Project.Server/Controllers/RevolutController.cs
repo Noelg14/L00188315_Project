@@ -149,17 +149,33 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts()
         {
-            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            _logger.LogInformation("Getting Accounts for User: {0}", userId);
-            var accounts = await _revolutService.GetAccountsAsync(userId!);
-
-
-            var apiResponse = new ApiResponseDTO<List<Account>>
+            try
             {
-                Data = accounts,
-                Success = accounts is null ? false : true
-            };
-            return Ok(apiResponse);
+                var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+                _logger.LogInformation("Getting Accounts for User: {0}", userId);
+                var accounts = await _revolutService.GetAccountsAsync(userId!);
+                if (accounts is not null)
+                {
+                    foreach (var account in accounts)
+                    {
+                        await _revolutService.GetAccountBalanceAsync(account.AccountId, userId!); // get the balance for each account
+                    }
+                    accounts = await _revolutService.GetAccountsAsync(userId!); // get the accounts again to update the balances
+                }
+
+
+                var apiResponse = new ApiResponseDTO<List<Account>>
+                {
+                    Data = accounts,
+                    Success = accounts is null ? false : true
+                };
+                return Ok(apiResponse);
+            }catch(TokenNullException ex)
+            {
+                _logger.LogError("Token is null: {0}", ex.Message);
+                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null, Please Relink Accounts", Success = false });
+            }
+
         }
         /// <summary>
         /// Gets the transaction for a specified account
@@ -193,7 +209,7 @@ namespace L00188315_Project.Server.Controllers
             }catch(TokenNullException ex)
             {
                 _logger.LogError("Token is null: {0}", ex.Message);
-                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null", Success = false });
+                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null, Please Relink Accounts", Success = false });
 
             }
 
@@ -230,7 +246,7 @@ namespace L00188315_Project.Server.Controllers
             catch (TokenNullException ex)
             {
                 _logger.LogError("Token is null: {0}", ex.Message);
-                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null", Success = false });
+                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null, Please Relink Accounts", Success = false });
 
             }
         }
