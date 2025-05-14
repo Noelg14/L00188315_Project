@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 using L00188315_Project.Core.Interfaces.Services;
@@ -56,15 +57,20 @@ builder
       .AddJsonOptions(options =>
       {
           options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+          options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+          options.JsonSerializerOptions.WriteIndented = true;
       });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+if (Debugger.IsAttached)
+{
+    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerDocumentation();
+}
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddAppServices(builder.Configuration); //custom extenstion method.
 builder.Services.AddIdentityServices(builder.Configuration);
-builder.Services.AddSwaggerDocumentation();
 
 builder.Host.UseSerilog((context, configuration) =>
 {

@@ -1,9 +1,10 @@
-﻿using System.Text;
-using L00188315_Project.Infrastructure.Data.Identity;
+﻿using L00188315_Project.Infrastructure.Data.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+using System.Text;
 
 namespace L00188315_Project.Server.Extensions
 {
@@ -22,7 +23,14 @@ namespace L00188315_Project.Server.Extensions
         {
             services.AddDbContext<AppIdentityDbContext>(opt =>
             {
-                opt.UseSqlServer(config.GetConnectionString("IdentityConnection"));
+                if (config.GetValue<string>("database:type") == "sqlite")
+                {
+                    opt.UseSqlite(config.GetConnectionString("IdentityConnection"));
+                }
+                else
+                {
+                    opt.UseSqlServer(config.GetConnectionString("IdentityConnection"));
+                }
             });
 
             services

@@ -1,5 +1,6 @@
 ﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Server.DTOs.Response;
 using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
@@ -125,16 +126,16 @@ namespace L00188315_Project.Server.Controllers
 
             var usersAccounts = await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
             //For each account, get the transactions and balance
-            usersAccounts.ForEach(async x =>
-            {
-               await Task.WhenAll(
-                     _revolutService.GetTransactionsAsync(x.AccountId, userId!),
-                     _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
-                );
-            });
+            //usersAccounts.ForEach(async x =>
+            //{
+            //   await Task.WhenAll(
+            //         _revolutService.GetTransactionsAsync(x.AccountId, userId!),
+            //         _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
+            //    );
+            //});
 
 #if DEBUG
-            return RedirectPermanent("https://localhost:4200/account"); // if debugging, return to the angular app
+            return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
             //return Ok(new { Token = token }); // if debugging, return the token
 #endif
             return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
@@ -174,20 +175,28 @@ namespace L00188315_Project.Server.Controllers
         {
             if (string.IsNullOrEmpty(accountId))
                 return BadRequest("Account Id is required");
-
-            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            var accounts = await _revolutService.GetAccountsAsync(userId!);
-            var transactions = await _revolutService.GetTransactionsAsync(accountId, userId!);
-
-            _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId, accountId);
-            var apiResponse = new ApiResponseDTO<List<Transaction>>
+            try
             {
-                Data = transactions,
-                Success = transactions is null ? false : true
-            };
+                var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+                var accounts = await _revolutService.GetAccountsAsync(userId!);
+                var transactions = await _revolutService.GetTransactionsAsync(accountId, userId!);
+
+                _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId, accountId);
+                var apiResponse = new ApiResponseDTO<List<Transaction>>
+                {
+                    Data = transactions,
+                    Success = transactions is null ? false : true
+                };
 
 
-            return Ok(apiResponse);
+                return Ok(apiResponse);
+            }catch(TokenNullException ex)
+            {
+                _logger.LogError("Token is null: {0}", ex.Message);
+                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null", Success = false });
+
+            }
+
         }
         /// <summary>
         /// Gets the balance for a specified account
@@ -197,24 +206,33 @@ namespace L00188315_Project.Server.Controllers
 
         [HttpGet("balances")]
         [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances([FromQuery] string? accountId)
         {
             if (string.IsNullOrEmpty(accountId))
                 return BadRequest("Account Id is required");
-
-            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-            var accounts = await _revolutService.GetAccountsAsync(userId!);
-            var balances = await _revolutService.GetAccountBalanceAsync(accountId, userId!);
-
-            _logger.LogInformation("Getting Balances for User: {0} & Account {1}", userId, accountId);
-            var apiResponse = new ApiResponseDTO<Balance>
+            try
             {
-                Data = balances,
-                Success = balances is null ? false : true
-            };
+                var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+                var accounts = await _revolutService.GetAccountsAsync(userId!);
+                var balances = await _revolutService.GetAccountBalanceAsync(accountId, userId!);
 
-            return Ok(apiResponse);
+                _logger.LogInformation("Getting Balances for User: {0} & Account {1}", userId, accountId);
+                var apiResponse = new ApiResponseDTO<Balance>
+                {
+                    Data = balances,
+                    Success = balances is null ? false : true
+                };
+
+                return Ok(apiResponse);
+            }
+            catch (TokenNullException ex)
+            {
+                _logger.LogError("Token is null: {0}", ex.Message);
+                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null", Success = false });
+
+            }
         }
     }
 }

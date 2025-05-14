@@ -43,8 +43,8 @@
 
   <div >
     <h1 class="h1">Transactions</h1>
-    <div [ngSwitch]="transactions">
-      <div *ngSwitchCase="transactions !== undefined">
+    <div *ngIf="transactions">
+      <div>
         <hr>
         <table class="table table-hover">
           <thead>
@@ -69,7 +69,7 @@
 
           </tbody>
         </table></div>
-      <div *ngSwitchDefault>
+      <div *ngIf="!transactions">
         <h3 class="text-danger">No Transactions found</h3>
       </div>
     </div>

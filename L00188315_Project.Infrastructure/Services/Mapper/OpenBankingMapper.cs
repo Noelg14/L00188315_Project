@@ -26,7 +26,7 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
         {
             return new Balance
             {
-                AccountId = accountId,
+                //AccountId = accountId,
                 Amount = modelBalance.Amount._Amount,
                 BalanceType = modelBalance.Type,
                 Currency = modelBalance.Amount.Currency,
@@ -37,7 +37,7 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
         {
             return new Core.Entities.Transaction
             {
-                AccountId = accountId,
+                //AccountId = accountId,
                 Amount = modelTransaction.Amount?._Amount,
                 AmountCurrency = modelTransaction.Amount?.Currency,
                 TransactionInformation = modelTransaction.TransactionInformation,

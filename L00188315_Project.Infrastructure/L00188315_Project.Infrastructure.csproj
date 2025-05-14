@@ -27,4 +27,8 @@
     <ProjectReference Include="..\L00188315_Project.Core\L00188315_Project.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
 </Project>

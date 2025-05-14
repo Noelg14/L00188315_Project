@@ -1,13 +1,7 @@
 ﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
-using L00188315_Project.Core.Models;
 using L00188315_Project.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace L00188315_Project.Infrastructure.Repositories
 {
@@ -20,17 +14,17 @@ namespace L00188315_Project.Infrastructure.Repositories
             return;
         }
 
-        public async Task<IReadOnlyList<Transaction>> GetAllTransactionsAsync(string userId)
+        public async Task<List<Transaction>> GetAllTransactionsAsync(string userId)
         {
             return await _dbContext.Transactions
                 .Where(t => t.Account.UserId == userId)
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<Transaction>> GetAllTransactionsByAccountIdAsync(string userId, string accountId)
+        public async Task<List<Transaction>> GetAllTransactionsByAccountIdAsync(string userId, string accountId)
         {
             return await _dbContext.Transactions
-                .Where(t => t.Account.UserId == userId && t.AccountId == accountId)
+                .Where(t => t.Account.UserId == userId && t.Account.AccountId == accountId)
                 .ToListAsync();
         }
 

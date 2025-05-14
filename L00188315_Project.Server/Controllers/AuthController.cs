@@ -52,7 +52,7 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             var existingUser = await _userManager.FindByEmailAsync(registerDTO.Email);
-            if (registerDTO is not null)
+            if (existingUser is not null)
                 return BadRequest("User already exists");
                 
             var user = new IdentityUser { UserName = registerDTO.Email, Email = registerDTO.Email };

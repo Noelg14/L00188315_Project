@@ -35,7 +35,14 @@ namespace L00188315_Project.Server.Extensions
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                if(configuration["database:type"] == "sqlite")
+                {
+                    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+                }
+                else
+                {
+                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                }
             });
 
             services.AddSingleton<ICacheService, CacheService>(); // singleton, as we only want 1 instance of the cache service
@@ -56,6 +63,8 @@ namespace L00188315_Project.Server.Extensions
                 options.SerializerOptions.DefaultIgnoreCondition =
                     JsonIgnoreCondition.WhenWritingNull;
                 options.SerializerOptions.MaxDepth = 8;
+                options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.SerializerOptions.WriteIndented = true;
             });
 
             return services;

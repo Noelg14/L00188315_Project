@@ -34,7 +34,9 @@ namespace L00188315_Project.Infrastructure.Repositories
         public async Task<List<Account>> GetAllAccountsAsync(string userId)
         {
             var accounts = await _dbContext.Accounts
-              .Where(x => x.UserId == userId).ToListAsync();
+              .Include(x => x.Balance)
+              .Where(x => x.UserId == userId)
+              .ToListAsync();
             return accounts;
         }
 

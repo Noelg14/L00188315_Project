@@ -11,6 +11,7 @@ using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Core.Models;
+using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Infrastructure.Services.DTOs;
 using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.Extensions.Configuration;
@@ -107,7 +108,7 @@ public class RevolutService : IRevolutService
         var token = _cacheService.Get(userId);
         if (string.IsNullOrEmpty(token))
         {
-            return null;
+            throw new TokenNullException("No Token for Revolut");
         }
         var response = await sendGetRequestAsync(accountId, "/balances", token);
 
@@ -117,6 +118,7 @@ public class RevolutService : IRevolutService
             return null;
         }
         var balanceEntity = _mapper.MapToBalanceEntity(balance, accountId);
+        balanceEntity.Account = await _accountRepository.GetAccountAsync(userId,accountId);
         await _balanceRepository.CreateBalanceAsync(userId, balanceEntity);
         return balanceEntity;
     }
@@ -235,11 +237,18 @@ public class RevolutService : IRevolutService
         {
             return null;
         }
+        var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(userId, accountId);
+        if(existingTransactions is not null)
+        {
+            return existingTransactions;
+        }
         var data = await sendGetRequestAsync(accountId, "/transactions", token);
         var transactions = new List<Transaction>();
         foreach (var transaction in data.Data.Transaction)
         {
-            transactions.Add(_mapper.MapToTransactionEntity(transaction, accountId));
+            var entity = _mapper.MapToTransactionEntity(transaction, accountId);
+            entity.RootAccountId = accountId;
+            transactions.Add(entity);
         }
         await _transactionRepository.CreateTransactionsAsync(transactions);
         return transactions;
