@@ -4,6 +4,7 @@ using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace L00188315_Project.Server.Controllers
 {
@@ -70,15 +71,17 @@ namespace L00188315_Project.Server.Controllers
         }
 
         [HttpGet("me")]
+        [Authorize]
         public async Task<ActionResult<UserDTO>> GetLoggedInUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
-
+            if(user == null)
+                return Unauthorized();
             return new UserDTO
             {
                 Email = user.Email,
-                DisplayName = user.UserName,
+                DisplayName = user.UserName ?? user.Email,
                 Token = _tokenService.CreateToken(user),
                 UserId = user.Id,
             };

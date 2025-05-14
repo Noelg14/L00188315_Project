@@ -46,13 +46,13 @@ public class RevolutService : IRevolutService
         OpenBankingMapper mapper
     )
     {
+        _logger = logger;
         _cacheService = cacheService;
         _configuration = configuration;
         _keyVaultService = keyVaultService;
         _mtlsClient = ConfigureMtlsClient();
         _httpClient = new HttpClient();
         _consentRepository = consentRepository;
-        _logger = logger;
         _accountRepository = accountRepository;
         _mapper = mapper;
         _balanceRepository = balanceRepository;
@@ -329,6 +329,9 @@ public class RevolutService : IRevolutService
         var rsa = RSA.Create();
         rsa.ImportFromPem(keyPem.ToCharArray());
 
+        _logger.LogInformation("Loaded PEM from Path, Size: {0}", keyPem.Length);
+        _logger.LogInformation("Loaded RSA from PEM, Key Size: {0}", rsa.KeySize);
+
         var claimsDictionary = new Dictionary<string, object>
         {
             {
@@ -369,11 +372,12 @@ public class RevolutService : IRevolutService
     private HttpClient ConfigureMtlsClient()
     {
         var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]!);
-        _logger.LogDebug("Loading certificate from PFX file, Size : {0}",pfxBytes.Length);
+        _logger.LogInformation("Loading certificate from PFX file");
+        _logger.LogInformation("PFX Size : {0}", pfxBytes.Length);
 
         var certWithKey = new X509Certificate2(pfxBytes);
-        _logger.LogDebug("Loaded certificate from PFX file {0}",certWithKey.SubjectName);
-        _logger.LogDebug("Loaded certificate from PFX file {0}",certWithKey.Thumbprint);
+        _logger.LogInformation("Loaded certificate from PFX file {0}", certWithKey.Thumbprint ?? "");
+        _logger.LogInformation("Loaded certificate {0}", certWithKey.SubjectName.Name ?? "");
 
         var clientHandler = new HttpClientHandler
         {
@@ -391,7 +395,7 @@ public class RevolutService : IRevolutService
             Credentials = null,
             CheckCertificateRevocationList = false,
         };
-        _logger.LogDebug("Cert Added to handler");
+        _logger.LogInformation("Cert Added to handler");
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }

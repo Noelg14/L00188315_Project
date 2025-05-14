@@ -86,7 +86,7 @@ namespace L00188315_Project.Server.Controllers
             }
             catch (ConsentException ex)
             {
-                _logger.LogError("Consent cannot be generated : {0}", ex.Message);
+                _logger.LogError("Consent cannot be generated : {0}", ex.Message ?? string.Empty);
                 return BadRequest(
                     new ApiResponseDTO<string>
                     {
