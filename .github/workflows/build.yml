@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master # build when merged in master
+      - main # build when merged in master
 
 permissions: write-all
 
