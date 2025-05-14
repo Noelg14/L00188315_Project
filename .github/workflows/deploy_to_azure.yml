@@ -3,7 +3,7 @@ name: Deploy App to Azure.
 on: 
   workflow_call:
   workflow_run:
-    workflows: [.NET]
+    workflows: [Build Project Artefact]
     types:
       - completed
 
