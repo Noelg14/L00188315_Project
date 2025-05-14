@@ -39,4 +39,11 @@
     <ProjectReference Include="..\L00188315_Project.Infrastructure\L00188315_Project.Infrastructure.csproj" />
   </ItemGroup>
 
+<Target Name="BuildClientApp" BeforeTargets="Publish">
+  <Message Importance="high" Text="Running Angular build..." />
+  <Exec Command="npm ci" WorkingDirectory="$(SpaRoot)" />
+  <Exec Command="npm run build --output-path=$(ProjectDir)wwwroot --configuration production" WorkingDirectory="$(SpaRoot)" />
+</Target>
+
+
 </Project>
