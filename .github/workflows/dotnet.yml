@@ -57,18 +57,18 @@ jobs:
       run: dotnet publish --configuration Release --no-restore --no-build --property:PublishDir=./app
       
     - name: List App Directory
-      run: ls -la ./app
+      run: ls -la ./L00188315_Project.Server/app/
       continue-on-error: true
 
     - name: Remove un-needed runtime configs
-      run: rm ./app/L00188315_Project.Infrastructure.runtimeconfig.json
+      run: rm ./L00188315_Project.Server/app/L00188315_Project.Infrastructure.runtimeconfig.json
       continue-on-error: true
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
       with:
         name: "publish"
-        path: ./app
+        path: ./L00188315_Project.Server/app/
 
   deploy:
     runs-on: ubuntu-latest
