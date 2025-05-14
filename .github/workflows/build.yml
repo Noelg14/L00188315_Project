@@ -8,9 +8,9 @@ on:
   # manual trigger only until I can verify approval
   # pull_request:
   #   branches: [ "main" ]
-  workflow_run:
-    workflows: [.NET] 
-    types: [completed]
+  #   workflow_run:
+  #     workflows: [.NET] 
+  #     types: [completed]
 
 permissions: write-all
 
@@ -28,9 +28,6 @@ jobs:
       with:
        node-version: '22'
 
-    - name: Debug wf
-      run: ls -la
-
     - name: Restore dependencies
       run: dotnet restore .
 
@@ -43,10 +40,11 @@ jobs:
 
     - name: Publish
       run: dotnet publish --configuration Release --no-restore --property:PublishDir=./app
-      
-    - name: List App Directory
+
+    - name: List Directory
       run: ls -la ./L00188315_Project.Server/app/
       continue-on-error: true
+      
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
