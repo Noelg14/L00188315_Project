@@ -1,6 +1,5 @@
 ﻿using L00188315_Project.Core.Entities;
 
-
 namespace L00188315_Project.Core.Interfaces.Services;
 
 public interface IRevolutService
@@ -46,6 +45,7 @@ public interface IRevolutService
     /// <param name="code"></param>
     /// <returns>The access token</returns>
     public Task<string> GetUserAccessToken(string userId, string code);
+
     /// <summary>
     /// Get the consent by Id
     /// </summary>

@@ -8,8 +8,8 @@ namespace L00188315_Project.Core.Entities
 {
     public class Transaction
     {
-        public string? AccountId { get; set; }
-        public Account Account { get; set; }
+        public string? RootAccountId { get; set; }
+        public Account? Account { get; set; } = null!;
         public string? Amount { get; set; }
         public string? AmountCurrency { get; set; }
         public string? CreditDebitIndicator { get; set; }

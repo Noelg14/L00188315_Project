@@ -12,7 +12,7 @@
     </div>
 
   </ng-container>
-  <ng-container *ngIf="balance" class="col-6">
+  <ng-container *ngIf="account?.balance" class="col-6">
     <div class="col-6">
       <h3>Balance:</h3>
       <div>
@@ -21,18 +21,18 @@
           <tbody>
             <tr>
               <td>Balance: </td>
-              <td>{{getCurrencySymbol(balance.currency!) + balance.amount}}</td>
+              <td>{{getCurrencySymbol(account?.balance?.currency!) + account?.balance?.amount}}</td>
             </tr>
             <tr>
               <td>Last Updated: </td>
-              <td>{{balance.lastUpdated | date:'dd/MM/yyyy HH:mm:ss'}} </td>
+              <td>{{account?.balance?.lastUpdated | date:'dd/MM/yyyy HH:mm:ss'}} </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
   </ng-container>
-  <ng-container *ngIf="balance === undefined">  <div class="col-6">
+  <ng-container *ngIf="account?.balance === null">  <div class="col-6">
     <h3>Balance:</h3>
     <div>
       <h5 class="text-danger">Balance could not be loaded</h5>
@@ -43,8 +43,11 @@
 
   <div >
     <h1 class="h1">Transactions</h1>
-    <div [ngSwitch]="transactions">
-      <div *ngSwitchCase="transactions !== undefined">
+    <div *ngIf="transactions === undefined">
+      <h3 class="text-danger">No Transactions found</h3>
+    </div>
+    <div *ngIf="transactions">
+      <div>
         <hr>
         <table class="table table-hover">
           <thead>
@@ -69,9 +72,7 @@
 
           </tbody>
         </table></div>
-      <div *ngSwitchDefault>
-        <h3 class="text-danger">No Transactions found</h3>
-      </div>
+
     </div>
 
   </div>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AccountService } from 'src/app/services/account-service.service';
 
 @Component({
   selector: 'app-navbar',
@@ -8,9 +9,21 @@ import { Component, OnInit } from '@angular/core';
 export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     console.log("[INIT] NavbarComponent initialized");
+    this.accountService.loadCurrentUser().subscribe(
+      user => {
+        console.log(user)
+      }
+    )
     const storedTheme = localStorage.getItem("theme") ?? "light";// default to light
     this.setTheme(storedTheme)
   }
+  /**
+   *
+   */
+  constructor(
+    public readonly accountService : AccountService
+  )
+  {}
 
   toggleTheme(){
     let checked = <HTMLInputElement>document.querySelector("#toggle")

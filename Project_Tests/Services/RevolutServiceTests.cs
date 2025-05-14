@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Services;
 using L00188315_Project.Infrastructure.Services.Mapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using L00188315_Project.Core.Entities;
 
 namespace Project_Tests.Services
 {
@@ -47,9 +47,8 @@ namespace Project_Tests.Services
                 _accountRepository,
                 _balanceRepository,
                 _transactionRepository,
-                _mapper);
-
+                _mapper
+            );
         }
-
     }
 }

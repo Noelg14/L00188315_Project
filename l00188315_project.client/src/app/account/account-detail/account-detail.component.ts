@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Account } from 'src/app/models/account';
 import { Balance } from 'src/app/models/balance';
 import { Transaction } from 'src/app/models/transaction';
 import { OpenBankingService } from 'src/app/services/open-banking.service';
-import { formatDate } from "@angular/common";
+
 
 @Component({
   selector: 'app-account-detail',
@@ -14,13 +15,13 @@ import { formatDate } from "@angular/common";
 export class AccountDetailComponent implements OnInit {
   account?:Account;
   balance?:Balance;
-  transactions?:Transaction[];
+  transactions?: Transaction[] | null;
 
   constructor(
     private readonly obService : OpenBankingService,
-    private readonly activatedRoute: ActivatedRoute) {}
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly toastr : ToastrService) {}
   ngOnInit(): void {
-
     this.loadDetails();
   }
     title = "Account | "+(this.account?.currency ?? '');
@@ -31,22 +32,22 @@ export class AccountDetailComponent implements OnInit {
         next: response =>{
           this.account = response.data.filter(x => x.accountId === accountId)[0];
         },
-        error: err =>{ console.error(err)}
-      });
-      this.obService.balances(accountId).subscribe({
-        next: response =>{
-          if(response.data.amount)
-            this.balance = response.data;
-
-        },
-        error: err =>{ console.error(err)}
+        error: err =>{
+          this.toastr.error(err.error.message,err.status)
+          console.error(err)
+        }
       });
       this.obService.transactions(accountId).subscribe({
         next: response =>{
           if(response.data.length > 0)
             this.transactions = response.data;
+
+          console.log(this.transactions)
         },
-        error: err =>{ console.error(err)}
+        error: err =>{
+          this.toastr.error(err.error.message,err.status)
+          console.error(err)}
+
       })
 
     }

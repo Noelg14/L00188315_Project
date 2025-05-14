@@ -1,4 +1,5 @@
-﻿using L00188315_Project.Core.Interfaces.Services;
+﻿using System.Security.Claims;
+using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -52,13 +53,28 @@ namespace L00188315_Project.Server.Controllers
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             var existingUser = await _userManager.FindByEmailAsync(registerDTO.Email);
-            if (registerDTO is not null)
+            if (existingUser is not null)
                 return BadRequest("User already exists");
-                
-            var user = new IdentityUser { UserName = registerDTO.Email, Email = registerDTO.Email };
+
+            var user = new IdentityUser { UserName = registerDTO.Name, Email = registerDTO.Email };
             var result = await _userManager.CreateAsync(user, registerDTO.Password!);
             if (!result.Succeeded)
                 return BadRequest("Account could not be created");
+            return new UserDTO
+            {
+                Email = user.Email,
+                DisplayName = user.UserName,
+                Token = _tokenService.CreateToken(user),
+                UserId = user.Id,
+            };
+        }
+
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDTO>> GetLoggedInUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+
             return new UserDTO
             {
                 Email = user.Email,

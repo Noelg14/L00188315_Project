@@ -7,7 +7,6 @@ namespace L00188315_Project.Infrastructure.Repositories
 {
     public class BalanceRepository(AppDbContext _dbContext) : IBalanceRepository
     {
-
         public async Task<Balance> CreateBalanceAsync(string userId, Balance balance)
         {
             _dbContext.Balances.Add(balance);
@@ -22,7 +21,9 @@ namespace L00188315_Project.Infrastructure.Repositories
 
         public async Task<Balance> GetBalanceAsync(string userId, string accountId)
         {
-            return _dbContext.Balances.Where(b => b.AccountId == accountId && b.Account.UserId == userId).FirstOrDefault();
+            return _dbContext
+                .Balances.Where(b => b.Account.AccountId == accountId && b.Account.UserId == userId)
+                .FirstOrDefault();
         }
 
         public async Task<Balance> UpdateBalanceAsync(string userId, Balance balance)

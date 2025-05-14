@@ -14,8 +14,10 @@ namespace L00188315_Project.Core.Models
     {
         [JsonPropertyName("Account")]
         public List<OBAccount>? Account { get; set; }
+
         [JsonPropertyName("Transaction")]
         public List<OBTransaction>? Transaction { get; set; }
+
         [JsonPropertyName("Balance")]
         public List<OBBalance>? Balance { get; set; }
         public List<string>? Permissions { get; set; }

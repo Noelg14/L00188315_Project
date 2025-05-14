@@ -22,7 +22,14 @@ namespace L00188315_Project.Server.Extensions
         {
             services.AddDbContext<AppIdentityDbContext>(opt =>
             {
-                opt.UseSqlServer(config.GetConnectionString("IdentityConnection"));
+                if (config.GetValue<string>("database:type") == "sqlite")
+                {
+                    opt.UseSqlite(config.GetConnectionString("IdentityConnection"));
+                }
+                else
+                {
+                    opt.UseSqlServer(config.GetConnectionString("IdentityConnection"));
+                }
             });
 
             services

@@ -24,7 +24,7 @@ namespace L00188315_Project.Core.Interfaces.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public Task<IReadOnlyList<Transaction>> GetAllTransactionsAsync(string userId);
+        public Task<List<Transaction>> GetAllTransactionsAsync(string userId);
 
         /// <summary>
         /// Get all transactions for a user by account id
@@ -32,7 +32,7 @@ namespace L00188315_Project.Core.Interfaces.Repositories
         /// <param name="userId"></param>
         /// <param name="accountId"></param>
         /// <returns></returns>
-        public Task<IReadOnlyList<Transaction>> GetAllTransactionsByAccountIdAsync(
+        public Task<List<Transaction>> GetAllTransactionsByAccountIdAsync(
             string userId,
             string accountId
         );

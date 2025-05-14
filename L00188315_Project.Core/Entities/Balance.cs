@@ -14,7 +14,7 @@ namespace L00188315_Project.Core.Entities
         public string? Currency { get; set; }
         public string? BalanceType { get; set; }
         public DateTime LastUpdated { get; set; }
-        public string AccountId { get; set; }
-        public Account Account { get; set; }
+        public string? RootAccountId { get; set; }
+        public Account? Account { get; set; } = null!;
     }
 }
