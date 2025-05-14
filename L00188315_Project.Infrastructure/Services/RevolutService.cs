@@ -73,7 +73,10 @@ public class RevolutService : IRevolutService
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
+            _logger.LogDebug("Getting access token from Revolut API: {0}",url);
+
             var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
+            _logger.LogDebug("Got Client ID from Keyvault");
 
             var kvp = new List<KeyValuePair<string, string>>
             {
@@ -83,10 +86,12 @@ public class RevolutService : IRevolutService
             };
 
             var form = new FormUrlEncodedContent(kvp);
+            _logger.LogDebug("Sending request to Revolut API"); ;
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Console.WriteLine($"Error getting access token: {response.StatusCode}");
+                _logger.LogInformation($"Error getting access token: {response.StatusCode}");
+                _logger.LogDebug($"Failed:  {response.Content.ToString()}");
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
@@ -298,7 +303,7 @@ public class RevolutService : IRevolutService
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Console.WriteLine($"Error getting access token: {response.StatusCode}");
+             _logger.LogError($"Error getting access token: {response.StatusCode}");
                 return response.StatusCode.ToString();
             }
             var content = await response.Content.ReadAsStringAsync();
@@ -309,7 +314,7 @@ public class RevolutService : IRevolutService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error getting access token: {ex.Message}");
+            _logger.LogError($"Error getting access token: {ex.Message}");
             return ex.Message;
         }
     }
@@ -364,8 +369,11 @@ public class RevolutService : IRevolutService
     private HttpClient ConfigureMtlsClient()
     {
         var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]!);
+        _logger.LogDebug("Loading certificate from PFX file, Size : {0}",pfxBytes.Length);
 
         var certWithKey = new X509Certificate2(pfxBytes);
+        _logger.LogDebug("Loaded certificate from PFX file {0}",certWithKey.SubjectName);
+        _logger.LogDebug("Loaded certificate from PFX file {0}",certWithKey.Thumbprint);
 
         var clientHandler = new HttpClientHandler
         {
@@ -383,7 +391,7 @@ public class RevolutService : IRevolutService
             Credentials = null,
             CheckCertificateRevocationList = false,
         };
-
+        _logger.LogDebug("Cert Added to handler");
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }

@@ -132,7 +132,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("L00188315_Project.Core.Entities.Transaction", b =>
                 {
-                    b.Property<string>("TransactionId")
+                    b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Amount")
@@ -165,6 +165,9 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TransactionInformation")
                         .HasColumnType("TEXT");
 
@@ -174,7 +177,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("ValueDateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("TransactionId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RootAccountId");
 

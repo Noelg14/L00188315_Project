@@ -8,6 +8,7 @@ namespace L00188315_Project.Core.Entities
 {
     public class Transaction
     {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? RootAccountId { get; set; }
         public Account? Account { get; set; } = null!;
         public string? Amount { get; set; }
