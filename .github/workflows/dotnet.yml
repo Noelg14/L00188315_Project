@@ -56,17 +56,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore .
 
-<<<<<<< Updated upstream
-    - name: Compile
-      run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
-=======
     - name: Build Angular
       run: |
         cd L00188315_Project.client
         npm ci
         npm run build
         cd ..
->>>>>>> Stashed changes
 
     - name: Publish
       run: dotnet publish --configuration Release --no-restore --no-build --property:PublishDir=./app
