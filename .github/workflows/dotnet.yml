@@ -8,7 +8,7 @@ on:
   # manual trigger only until I can verify approval
   pull_request:
     branches: [ "main" ]
-    types: [opened]
+    types: [ opened , ]
 
 permissions: write-all
 
@@ -52,7 +52,7 @@ jobs:
       run: |
         cd l00188315_project.client
         npm ci
-        ng build --output-path=./dist
+        npm run build --output-path=./dist
   
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
