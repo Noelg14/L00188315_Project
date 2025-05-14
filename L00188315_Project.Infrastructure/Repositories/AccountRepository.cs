@@ -4,12 +4,12 @@ using L00188315_Project.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
-
 namespace L00188315_Project.Infrastructure.Repositories
 {
     public class AccountRepository : IAccountRepository
     {
         private readonly AppDbContext _dbContext;
+
         public AccountRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -20,30 +20,30 @@ namespace L00188315_Project.Infrastructure.Repositories
             account.UserId = userId;
             _dbContext.Accounts.Add(account);
             await _dbContext.SaveChangesAsync();
-            return account; 
-
+            return account;
         }
 
         public async Task<Account> GetAccountAsync(string userId, string accountId)
         {
-            var account = await _dbContext.Accounts
-              .Where(x => x.AccountId == accountId && x.UserId == userId).FirstOrDefaultAsync();
+            var account = await _dbContext
+                .Accounts.Where(x => x.AccountId == accountId && x.UserId == userId)
+                .FirstOrDefaultAsync();
             return account!;
         }
 
         public async Task<List<Account>> GetAllAccountsAsync(string userId)
         {
-            var accounts = await _dbContext.Accounts
-              .Include(x => x.Balance)
-              .Where(x => x.UserId == userId)
-              .ToListAsync();
+            var accounts = await _dbContext
+                .Accounts.Include(x => x.Balance)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
             return accounts;
         }
 
         public async Task<Account> UpdateAccountAsync(string userId, Account account)
         {
             var currentAccount = await GetAccountAsync(userId, account.AccountId);
-            if(currentAccount == null)
+            if (currentAccount == null)
             {
                 return await CreateAccountAsync(userId, account);
             }

@@ -8,9 +8,7 @@ namespace L00188315_Project.Infrastructure.Exceptions
 {
     public class TokenNullException : Exception
     {
-        public TokenNullException(string message) : base(message)
-        {
-        }
+        public TokenNullException(string message)
+            : base(message) { }
     }
-
 }

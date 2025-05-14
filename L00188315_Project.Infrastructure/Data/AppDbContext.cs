@@ -35,7 +35,7 @@ namespace L00188315_Project.Infrastructure.Data
                 .WithOne(a => a.Account)
                 .HasForeignKey<Balance>(b => b.RootAccountId)
                 .IsRequired(false)
-                 .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder
                 .Entity<Balance>()
                 .HasOne(a => a.Account)

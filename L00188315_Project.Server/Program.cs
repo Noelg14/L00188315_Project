@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Data;
 using L00188315_Project.Infrastructure.Data.Identity;
@@ -6,9 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 #if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly.
@@ -58,12 +58,12 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder
     .Services.AddControllers()
-      .AddJsonOptions(options =>
-      {
-          options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-          options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-          options.JsonSerializerOptions.WriteIndented = true;
-      });
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 if (Debugger.IsAttached)
@@ -76,14 +76,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAppServices(builder.Configuration); //custom extenstion method.
 builder.Services.AddIdentityServices(builder.Configuration);
 
-builder.Host.UseSerilog((context, configuration) =>
-{
-    configuration.ReadFrom.Configuration(context.Configuration)
-        .WriteTo.Console(); // write to console
+builder.Host.UseSerilog(
+    (context, configuration) =>
+    {
+        configuration.ReadFrom.Configuration(context.Configuration).WriteTo.Console(); // write to console
 
-    //configuration.ReadFrom.Configuration(context.Configuration).WriteTo.DatadogLogs(apiKey: context.Configuration["Datadog:ApiKey"]);
-
-});
+        //configuration.ReadFrom.Configuration(context.Configuration).WriteTo.DatadogLogs(apiKey: context.Configuration["Datadog:ApiKey"]);
+    }
+);
 
 var app = builder.Build();
 
@@ -131,7 +131,7 @@ app.MapGet(
 #endif
 
 //app.MapFallbackToFile("/index.html");
-//  Migrate in code 
+//  Migrate in code
 using var scope = app.Services.CreateScope(); // create a scope for this
 var services = scope.ServiceProvider;
 var context = services.GetRequiredService<AppDbContext>(); // get the db context from the scope service

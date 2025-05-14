@@ -1,10 +1,9 @@
-﻿using L00188315_Project.Infrastructure.Data.Identity;
+﻿using System.Text;
+using L00188315_Project.Infrastructure.Data.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
-using System.Text;
 
 namespace L00188315_Project.Server.Extensions
 {

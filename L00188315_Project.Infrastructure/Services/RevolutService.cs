@@ -118,14 +118,13 @@ public class RevolutService : IRevolutService
             return null;
         }
         var balanceEntity = _mapper.MapToBalanceEntity(balance, accountId);
-        balanceEntity.Account = await _accountRepository.GetAccountAsync(userId,accountId);
+        balanceEntity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
         await _balanceRepository.CreateBalanceAsync(userId, balanceEntity);
         return balanceEntity;
     }
 
     public async Task<List<Account>> GetAccountsAsync(string userId)
     {
-
         if (string.IsNullOrEmpty(userId))
             return null;
 
@@ -146,11 +145,19 @@ public class RevolutService : IRevolutService
         var accounts = new List<Account>();
         foreach (var account in response.Data.Account)
         {
-            var existingAccount = await _accountRepository.GetAccountAsync(userId, account.AccountId);
+            var existingAccount = await _accountRepository.GetAccountAsync(
+                userId,
+                account.AccountId
+            );
 
             if (existingAccount == null)
             {
-                accounts.Add(await _accountRepository.CreateAccountAsync(userId, _mapper.MapToAccountEntity(account, userId)));
+                accounts.Add(
+                    await _accountRepository.CreateAccountAsync(
+                        userId,
+                        _mapper.MapToAccountEntity(account, userId)
+                    )
+                );
             }
         }
         return accounts;
@@ -238,8 +245,11 @@ public class RevolutService : IRevolutService
         {
             return null;
         }
-        var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(userId, accountId);
-        if(existingTransactions.Count > 1 || existingTransactions is null)
+        var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(
+            userId,
+            accountId
+        );
+        if (existingTransactions.Count > 1 || existingTransactions is null)
         {
             return existingTransactions;
         }
@@ -366,7 +376,8 @@ public class RevolutService : IRevolutService
                 cert,
                 certChain,
                 policyErrors
-            ) =>{
+            ) =>
+            {
                 return true; // allow insecure / self signed certificates / don't validate certs
             },
             Credentials = null,

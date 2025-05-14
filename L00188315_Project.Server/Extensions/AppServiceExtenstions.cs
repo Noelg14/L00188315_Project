@@ -35,7 +35,7 @@ namespace L00188315_Project.Server.Extensions
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                if(configuration["database:type"] == "sqlite")
+                if (configuration["database:type"] == "sqlite")
                 {
                     options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
                 }

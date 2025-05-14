@@ -1,4 +1,6 @@
-﻿using L00188315_Project.Core.Entities;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Server.DTOs.Response;
@@ -6,9 +8,6 @@ using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-
 
 namespace L00188315_Project.Server.Controllers
 {
@@ -25,13 +24,13 @@ namespace L00188315_Project.Server.Controllers
 
         private readonly IRevolutService _revolutService;
         private readonly ILogger<RevolutController> _logger;
+
         /// <summary>
         /// Constructor for the RevolutController
         /// </summary>
         /// <param name="revolutService"></param>
         /// <param name="logger"></param>
-        public RevolutController(IRevolutService revolutService,
-            ILogger<RevolutController> logger)
+        public RevolutController(IRevolutService revolutService, ILogger<RevolutController> logger)
         {
             _revolutService = revolutService;
             _logger = logger;
@@ -62,7 +61,7 @@ namespace L00188315_Project.Server.Controllers
                             "MIIEezCCAmOgAwIBAgIFANgQUp0wDQYJKoZIhvcNAQELBQAwYDELMAkGA1UEBhMCVUsxDzANBgNVBAgMBkxvbmRvbjEQMA4GA1UECgwHUmV2b2x1dDEQMA4GA1UECwwHU2FuZGJveDEcMBoGA1UEAwwTc2FuZGJveC5yZXZvbHV0LmNvbTAeFw0yNTAyMjIwMDM5NThaFw0yNjAyMjIwMDM5NThaMIGdMQswCQYDVQQGEwJHQjEVMBMGA1UECgwMTm9lbCBHcmlmZmluMRswGQYDVQQLDBIwMDE1ODAwMDAxMDNVQXZBQU0xHzAdBgNVBAMMFjJraVhReW8wdGVkalcyc29talNnSDcxOTA3BgNVBGEMMFBTRFVLLVJFVkNBLTk5MzVjNzMxLThmMTAtNGVmNi1iMjQ1LTEwNzQxOWQ2ZTQ0ZjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM2+EkvcZHqe6UfFwc4gY4Eb5dhuxVws74ohnrIgPi58pa2pu37CL+VgcYrVyhEqQv5q6OlkWWtw5boQBPAdcgXfIEqeoeyCoweJL0cbr8voJ44tSM+5furwt1PrIgfVxHu+B2NtfdwZwUY5eJ8h7i/lk6vfGnm3OWHP+1t5wjzFEi0xU8b7dnoTZa6sixVFhWH3DV+55exJQwqRJRrCy9eZxv953M9SOumL/jNnen19R12a+F4IX9caVWboUIzXGdfDJ/6IvlO2NBCRATQiJHuAQqYZ4hKb4v2h8FUgzWq4R5NXK3z6HwV0AHBpWFIPH/nA724zWwIAZ/cqAfwFKXUCAwEAATANBgkqhkiG9w0BAQsFAAOCAgEAYvOrmql2pA7Kt+uTxxBgiHqQi/+fgq76VR6+QtjdvbCD+e7YB2AcFZDUKW6/jRvmrW3W+DL6divG0YhKs67xpxPdPgE0CPVPhJHLFzXoriObJgfigdqWlgd7EOun6L0iMhr0dnURGai+J+MAnpIjgKeX2qKS4dysmKpRF9SChtuKV6PNuINuQTzZENqKP7lK9Q6bDs9KEroWiMeEVRx6RtjoaIniNOwGJDYcSx0zHoFd15JHLgX/5wP/vmgL2X4qGvho5d014va8Flj32L2uUdZ2LlbhObzGTYtfY0nAjdmbd1nJ0F1XBqzg6mS8WaNtGFL+lcV28MTv0OtaFVuG4tB5CkN83SbSMniedqy0CBA23UQzdr+xpZhv6P3piMvohdDowZpdo0O8/uYI+Q/2Xz8IIU3aglTSm98mmpjI7x9xqniyAH+gyhS2pebUVavTzna0spX0bugTezIrCEGg5B10ztmzkhPSJEBq512ums0b7oN40e3S0FLdhIZXpH6I6JCtaLvqPEiuL5M5FPlWbXd/LVPYRHO3FmN7y2MToXKnH82kUFtEr/7PjVV59K206pef6EgqhOrbLfOnuNjv1nc6461e0NWNCMn2tKqyqKTCrl6a489BMGRn9alvmcPvjP4MRSRqOj1Shh0EON2M4Yr3lvJS3wqQtlkAjz63Tfg=",
                         },
                     },
-                }
+                },
             };
             return Ok(jwks);
         }
@@ -84,13 +83,13 @@ namespace L00188315_Project.Server.Controllers
             apiResponse.Success = true;
             return Ok(apiResponse);
         }
+
         /// <summary>
         /// Callback for the consent flow
         /// </summary>
         /// <param name="code">Auth Code to be swapped for access token</param>
         /// <param name="id_token">JWT token containing information about the consent</param>
         /// <returns>The Access token</returns>
-
         [HttpGet("callback")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -111,13 +110,18 @@ namespace L00188315_Project.Server.Controllers
             if (consent is null)
             {
                 _logger.LogError("Consent {0} not found", consentId);
-                return BadRequest(new ApiResponseDTO<string> { Message = "Consent not found", Success = false });
-            }   
+                return BadRequest(
+                    new ApiResponseDTO<string> { Message = "Consent not found", Success = false }
+                );
+            }
 
             var userId = consent.UserId; // Update consent for the user who created it.
 
-            _logger.LogInformation("Callback Received for User {0} with Consent {1}", userId, consentId);
-
+            _logger.LogInformation(
+                "Callback Received for User {0} with Consent {1}",
+                userId,
+                consentId
+            );
 
             await _revolutService.UpdateConsent(consentId, ConsentStatus.Complete); // update consent first
             _logger.LogInformation("Consent {0} updated ", consentId);
@@ -140,6 +144,7 @@ namespace L00188315_Project.Server.Controllers
 #endif
             return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
+
         /// <summary>
         /// Gets the list of revolut accounts for the user
         /// </summary>
@@ -163,20 +168,26 @@ namespace L00188315_Project.Server.Controllers
                     accounts = await _revolutService.GetAccountsAsync(userId!); // get the accounts again to update the balances
                 }
 
-
                 var apiResponse = new ApiResponseDTO<List<Account>>
                 {
                     Data = accounts,
-                    Success = accounts is null ? false : true
+                    Success = accounts is null ? false : true,
                 };
                 return Ok(apiResponse);
-            }catch(TokenNullException ex)
+            }
+            catch (TokenNullException ex)
             {
                 _logger.LogError("Token is null: {0}", ex.Message);
-                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null, Please Relink Accounts", Success = false });
+                return BadRequest(
+                    new ApiResponseDTO<Balance>
+                    {
+                        Message = "Token is null, Please Relink Accounts",
+                        Success = false,
+                    }
+                );
             }
-
         }
+
         /// <summary>
         /// Gets the transaction for a specified account
         /// </summary>
@@ -197,34 +208,44 @@ namespace L00188315_Project.Server.Controllers
                 var accounts = await _revolutService.GetAccountsAsync(userId!);
                 var transactions = await _revolutService.GetTransactionsAsync(accountId, userId!);
 
-                _logger.LogInformation("Getting Transactions for User: {0} & Account {1}", userId, accountId);
+                _logger.LogInformation(
+                    "Getting Transactions for User: {0} & Account {1}",
+                    userId,
+                    accountId
+                );
                 var apiResponse = new ApiResponseDTO<List<Transaction>>
                 {
                     Data = transactions,
-                    Success = transactions is null ? false : true
+                    Success = transactions is null ? false : true,
                 };
 
-
                 return Ok(apiResponse);
-            }catch(TokenNullException ex)
+            }
+            catch (TokenNullException ex)
             {
                 _logger.LogError("Token is null: {0}", ex.Message);
-                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null, Please Relink Accounts", Success = false });
-
+                return BadRequest(
+                    new ApiResponseDTO<Balance>
+                    {
+                        Message = "Token is null, Please Relink Accounts",
+                        Success = false,
+                    }
+                );
             }
-
         }
+
         /// <summary>
         /// Gets the balance for a specified account
         /// </summary>
         /// <param name="accountId">Account to get the balance</param>
         /// <returns>An <see cref="ApiResponseDTO{T}"/> with transactions</returns>
-
         [HttpGet("balances")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [Produces("application/json")]
-        public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances([FromQuery] string? accountId)
+        public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
+            [FromQuery] string? accountId
+        )
         {
             if (string.IsNullOrEmpty(accountId))
                 return BadRequest("Account Id is required");
@@ -234,11 +255,15 @@ namespace L00188315_Project.Server.Controllers
                 var accounts = await _revolutService.GetAccountsAsync(userId!);
                 var balances = await _revolutService.GetAccountBalanceAsync(accountId, userId!);
 
-                _logger.LogInformation("Getting Balances for User: {0} & Account {1}", userId, accountId);
+                _logger.LogInformation(
+                    "Getting Balances for User: {0} & Account {1}",
+                    userId,
+                    accountId
+                );
                 var apiResponse = new ApiResponseDTO<Balance>
                 {
                     Data = balances,
-                    Success = balances is null ? false : true
+                    Success = balances is null ? false : true,
                 };
 
                 return Ok(apiResponse);
@@ -246,8 +271,13 @@ namespace L00188315_Project.Server.Controllers
             catch (TokenNullException ex)
             {
                 _logger.LogError("Token is null: {0}", ex.Message);
-                return BadRequest(new ApiResponseDTO<Balance> { Message = "Token is null, Please Relink Accounts", Success = false });
-
+                return BadRequest(
+                    new ApiResponseDTO<Balance>
+                    {
+                        Message = "Token is null, Please Relink Accounts",
+                        Success = false,
+                    }
+                );
             }
         }
     }

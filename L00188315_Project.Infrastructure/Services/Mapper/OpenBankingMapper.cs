@@ -1,12 +1,12 @@
-﻿using L00188315_Project.Core.Models;
+﻿using System.Transactions;
 using L00188315_Project.Core.Entities;
-using System.Transactions;
+using L00188315_Project.Core.Models;
 
 namespace L00188315_Project.Infrastructure.Services.Mapper
 {
     public class OpenBankingMapper
     {
-        public Core.Entities.Account MapToAccountEntity(OBAccount modelAccount,string userId)
+        public Core.Entities.Account MapToAccountEntity(OBAccount modelAccount, string userId)
         {
             return new Core.Entities.Account
             {
@@ -14,14 +14,20 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 AccountSubType = modelAccount.AccountSubType,
                 AccountType = modelAccount.AccountType,
                 Currency = modelAccount.Currency,
-                Iban = modelAccount._Account?.Find(x => x.SchemeName == "UK.OBIE.IBAN")?.Identification ?? string.Empty,
+                Iban =
+                    modelAccount._Account?.Find(x => x.SchemeName == "UK.OBIE.IBAN")?.Identification
+                    ?? string.Empty,
                 Name = modelAccount._Account?.FirstOrDefault()?.Name ?? "Account",
-                SortCode = modelAccount._Account?.Find(x => x.SchemeName == "UK.OBIE.SortCodeAccountNumber")?.Identification ?? string.Empty,
+                SortCode =
+                    modelAccount
+                        ._Account?.Find(x => x.SchemeName == "UK.OBIE.SortCodeAccountNumber")
+                        ?.Identification ?? string.Empty,
                 UserId = userId,
                 Created = DateTime.Now,
-                Updated = DateTime.Now
+                Updated = DateTime.Now,
             };
         }
+
         public Balance MapToBalanceEntity(OBBalance modelBalance, string accountId)
         {
             return new Balance
@@ -30,10 +36,16 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 Amount = modelBalance.Amount._Amount,
                 BalanceType = modelBalance.Type,
                 Currency = modelBalance.Amount.Currency,
-                LastUpdated = DateTime.TryParse(modelBalance.DateTime, out _) ? DateTime.Parse(modelBalance.DateTime) : DateTime.Now
+                LastUpdated = DateTime.TryParse(modelBalance.DateTime, out _)
+                    ? DateTime.Parse(modelBalance.DateTime)
+                    : DateTime.Now,
             };
         }
-        public Core.Entities.Transaction MapToTransactionEntity(OBTransaction modelTransaction, string accountId)
+
+        public Core.Entities.Transaction MapToTransactionEntity(
+            OBTransaction modelTransaction,
+            string accountId
+        )
         {
             return new Core.Entities.Transaction
             {
@@ -47,11 +59,12 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 ValueDateTime = modelTransaction.ValueDateTime,
                 CreditorAccount = modelTransaction.CreditorAccount?.Identification ?? string.Empty,
                 DebtorAccount = modelTransaction.DebtorAccount?.Identification ?? string.Empty,
-                ProprietaryBankTransactionCode = modelTransaction.ProprietaryBankTransactionCode?.Code,
+                ProprietaryBankTransactionCode = modelTransaction
+                    .ProprietaryBankTransactionCode
+                    ?.Code,
                 Status = modelTransaction.Status,
-                UserComments = modelTransaction.SupplementaryData?.UserComments ?? string.Empty
+                UserComments = modelTransaction.SupplementaryData?.UserComments ?? string.Empty,
             };
         }
     }
-
 }

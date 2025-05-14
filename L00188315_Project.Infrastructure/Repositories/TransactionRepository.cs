@@ -16,15 +16,20 @@ namespace L00188315_Project.Infrastructure.Repositories
 
         public async Task<List<Transaction>> GetAllTransactionsAsync(string userId)
         {
-            return await _dbContext.Transactions
-                .Where(t => t.Account.UserId == userId)
+            return await _dbContext
+                .Transactions.Where(t => t.Account.UserId == userId)
                 .ToListAsync();
         }
 
-        public async Task<List<Transaction>> GetAllTransactionsByAccountIdAsync(string userId, string accountId)
+        public async Task<List<Transaction>> GetAllTransactionsByAccountIdAsync(
+            string userId,
+            string accountId
+        )
         {
-            return await _dbContext.Transactions
-                .Where(t => t.Account.UserId == userId && t.Account.AccountId == accountId)
+            return await _dbContext
+                .Transactions.Where(t =>
+                    t.Account.UserId == userId && t.Account.AccountId == accountId
+                )
                 .ToListAsync();
         }
 
