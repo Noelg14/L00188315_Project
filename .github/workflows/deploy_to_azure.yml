@@ -1,0 +1,42 @@
+name: Deploy App to Azure.
+
+on: 
+  workflow_call:
+  workflow_run:
+    workflows: [.NET]
+    types:
+      - completed
+
+permissions: write-all
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: "publish"
+          path: ./app
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7126B6E6242F41278650E774CACCFCF8 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A34E9AB11A5A4F979CC46A3C8E075855 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0AD9FFD26BFF47FFABF78A86999164E8 }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{vars.APP_NAME}}
+          package: ./app
+          

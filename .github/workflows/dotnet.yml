@@ -6,13 +6,16 @@ name: .NET
 on: 
   workflow_dispatch:
   # manual trigger only until I can verify approval
-  # pull_request:
-  #   branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    types: [opened,closed]
 
 permissions: write-all
 
 jobs:
   test:
+    #run when opened
+    if: github.event.pull_request.merged == false 
     runs-on: ${{matrix.os}}
 
     strategy:
@@ -40,7 +43,8 @@ jobs:
       run: dotnet test 
 
   build:
-    
+    #run when closed + merged
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Build project artefact
     needs: test
