@@ -221,7 +221,7 @@ public class RevolutService : IRevolutService
             else
             {
                 _logger.LogError($"Error getting consent request: {response.StatusCode}");
-                return await response.Content.ReadAsStringAsync();
+                throw new ConsentException(response.Content.ToString());
             }
         }
     }
