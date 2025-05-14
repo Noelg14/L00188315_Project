@@ -28,7 +28,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    
+
     - name: Restore dependencies
       run: dotnet restore .
 
@@ -47,11 +47,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup .Node
+      uses: actions/setup-node@v4
+      with:
+       node-version: '22'
+
     - name: Restore dependencies
       run: dotnet restore .
 
+<<<<<<< Updated upstream
     - name: Compile
       run: dotnet build -c Release --no-restore #-warnaserror #Warning acts as an error
+=======
+    - name: Build Angular
+      run: |
+        cd L00188315_Project.client
+        npm ci
+        npm run build
+        cd ..
+>>>>>>> Stashed changes
 
     - name: Publish
       run: dotnet publish --configuration Release --no-restore --no-build --property:PublishDir=./app
@@ -60,10 +75,13 @@ jobs:
       run: ls -la ./L00188315_Project.Server/app/
       continue-on-error: true
 
+<<<<<<< Updated upstream
     - name: Remove un-needed runtime configs
       run: rm ./L00188315_Project.Server/app/L00188315_Project.Infrastructure.runtimeconfig.json
       continue-on-error: true
 
+=======
+>>>>>>> Stashed changes
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
       with:
