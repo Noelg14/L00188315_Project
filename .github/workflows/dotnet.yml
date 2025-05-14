@@ -50,6 +50,7 @@ jobs:
     - name: Build Angular
       if: ${{matrix.language == 'typescript'}}
       run: |
+        cd l00188315_project.client
         npm ci
         ng build --output-path=./dist
   
