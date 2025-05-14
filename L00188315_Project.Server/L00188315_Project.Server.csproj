@@ -32,9 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\l00188315_project.client\l00188315_project.client.esproj">
+    <!-- <ProjectReference Include="..\l00188315_project.client\l00188315_project.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    </ProjectReference> -->
     <ProjectReference Include="..\L00188315_Project.Core\L00188315_Project.Core.csproj" />
     <ProjectReference Include="..\L00188315_Project.Infrastructure\L00188315_Project.Infrastructure.csproj" />
   </ItemGroup>
@@ -42,7 +42,7 @@
 <Target Name="BuildClientApp" BeforeTargets="Publish">
   <Message Importance="high" Text="Running Angular build..." />
   <Exec Command="npm ci" WorkingDirectory="$(SpaRoot)" />
-  <Exec Command="npm run build --output-path=$(ProjectDir)wwwroot --configuration production" WorkingDirectory="$(SpaRoot)" />
+  <Exec Command="npm run build --aot --output-hashing=all --output-path=$(ProjectDir)wwwroot " WorkingDirectory="$(SpaRoot)" />
 </Target>
 
 
