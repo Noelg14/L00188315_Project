@@ -58,7 +58,7 @@ jobs:
 
     - name: Build Angular
       run: |
-        cd L00188315_Project.client
+        cd l00188315_project.client
         npm ci
         npm run build
         cd ..
