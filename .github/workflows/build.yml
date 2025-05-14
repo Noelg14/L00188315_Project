@@ -1,0 +1,55 @@
+    # This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Build Project Artefact
+
+on: 
+  workflow_dispatch:
+  # manual trigger only until I can verify approval
+  # pull_request:
+  #   branches: [ "main" ]
+  workflow_run:
+    workflows: [.NET] 
+    types: [completed]
+
+permissions: write-all
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+    name: Build project artefact
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .Node
+      uses: actions/setup-node@v4
+      with:
+       node-version: '22'
+
+    - name: Debug wf
+      run: ls -la
+
+    - name: Restore dependencies
+      run: dotnet restore .
+
+    - name: Build Angular
+      run: |
+        cd l00188315_project.client
+        npm ci
+        npm run build
+        cd ..
+
+    - name: Publish
+      run: dotnet publish --configuration Release --no-restore --property:PublishDir=./app
+      
+    - name: List App Directory
+      run: ls -la ./L00188315_Project.Server/app/
+      continue-on-error: true
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v4
+      with:
+        name: "publish"
+        path: ./L00188315_Project.Server/app/

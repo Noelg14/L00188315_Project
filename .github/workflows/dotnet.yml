@@ -28,7 +28,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    
+
     - name: Restore dependencies
       run: dotnet restore .
 
@@ -47,9 +47,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup .Node
+      uses: actions/setup-node@v4
+      with:
+       node-version: '22'
+
     - name: Restore dependencies
       run: dotnet restore .
 
+    - name: Build Angular
+      run: |
+        cd L00188315_Project.client
+        npm ci
+        npm run build
+        cd ..
 
     - name: Publish
       run: dotnet publish --configuration Release --no-restore --property:PublishDir=./app
@@ -57,13 +69,6 @@ jobs:
     - name: List App Directory
       run: ls -la ./L00188315_Project.Server/app/
       continue-on-error: true
-
-    - name: Download Certificates from Azure KV
-      uses: azure/cli@v2
-      with:
-        azcliversion: latest
-        inlineScript: |
-          az keyvault list 
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
