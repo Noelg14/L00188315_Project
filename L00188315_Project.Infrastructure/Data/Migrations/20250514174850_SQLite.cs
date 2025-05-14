@@ -33,6 +33,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     AccountId = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Currency = table.Column<string>(type: "TEXT", nullable: false),
@@ -47,7 +48,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accounts", x => x.AccountId);
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Accounts_Consents_ConsentId",
                         column: x => x.ConsentId,
@@ -73,7 +74,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         name: "FK_Balances_Accounts_RootAccountId",
                         column: x => x.RootAccountId,
                         principalTable: "Accounts",
-                        principalColumn: "AccountId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -103,7 +104,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         name: "FK_Transactions_Accounts_RootAccountId",
                         column: x => x.RootAccountId,
                         principalTable: "Accounts",
-                        principalColumn: "AccountId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 

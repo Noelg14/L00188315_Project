@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AccountService } from '../services/account-service.service';
 
 @Component({
   selector: 'app-home',
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-
+/**
+ *
+ */
+constructor(
+  public readonly accountService:AccountService
+) {
+}
 }

@@ -3,6 +3,7 @@ using L00188315_Project.Server.DTOs.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace L00188315_Project.Server.Controllers
 {
@@ -55,7 +56,7 @@ namespace L00188315_Project.Server.Controllers
             if (existingUser is not null)
                 return BadRequest("User already exists");
                 
-            var user = new IdentityUser { UserName = registerDTO.Email, Email = registerDTO.Email };
+            var user = new IdentityUser { UserName = registerDTO.Name, Email = registerDTO.Email };
             var result = await _userManager.CreateAsync(user, registerDTO.Password!);
             if (!result.Succeeded)
                 return BadRequest("Account could not be created");
@@ -67,6 +68,20 @@ namespace L00188315_Project.Server.Controllers
                 UserId = user.Id,
             };
         }
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDTO>> GetLoggedInUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+
+            return new UserDTO
+            {
+                Email = user.Email,
+                DisplayName = user.UserName,
+                Token = _tokenService.CreateToken(user),
+                UserId = user.Id
+            };
+        } 
 
         [HttpGet("emailexists")]
         public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)

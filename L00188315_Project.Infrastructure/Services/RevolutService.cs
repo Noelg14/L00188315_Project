@@ -248,7 +248,7 @@ public class RevolutService : IRevolutService
         foreach (var transaction in data.Data.Transaction)
         {
             var entity = _mapper.MapToTransactionEntity(transaction, accountId);
-            entity.RootAccountId = accountId;
+            entity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
             transactions.Add(entity);
         }
         await _transactionRepository.CreateTransactionsAsync(transactions);

@@ -4,6 +4,7 @@ namespace L00188315_Project.Core.Entities
 {
     public class Account
     {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string AccountId { get; set; }
         public string Name { get; set; }
         public string Currency { get; set; }

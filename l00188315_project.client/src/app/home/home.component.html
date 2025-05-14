@@ -10,7 +10,7 @@
     </p>
   </div>
   <div class="flex-row mt-2">
-    <div class="d-flex justify-content-evenly">
+    <div class="d-flex justify-content-evenly" *ngIf="(accountService.currentUser$ | async) === null">
         <button class="btn btn-primary btn-lg"><a class="text-decoration-none text-white" [routerLink]="'/login'">Login</a></button>
         <button class="btn btn-outline-primary btn-lg"><a [routerLink]="'/register'" class="text-decoration-none">Register</a></button>
     </div>

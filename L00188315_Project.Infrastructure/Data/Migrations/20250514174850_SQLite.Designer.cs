@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L00188315_Project.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250514152951_SQLite")]
+    [Migration("20250514174850_SQLite")]
     partial class SQLite
     {
         /// <inheritdoc />
@@ -22,7 +22,11 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("L00188315_Project.Core.Entities.Account", b =>
                 {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("AccountId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AccountSubType")
@@ -63,7 +67,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("AccountId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ConsentId");
 

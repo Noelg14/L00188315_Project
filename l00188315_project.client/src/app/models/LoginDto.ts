@@ -4,6 +4,8 @@ export interface LoginDto {
 }
 export interface LoginResponse {
   token:string
+  email:string
+  displayName:string
 }
 
 export interface RegisterDto {

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L00188315_Project.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20250514152955_SQLiteID")]
+    [Migration("20250514174855_SQLiteID")]
     partial class SQLiteID
     {
         /// <inheritdoc />
