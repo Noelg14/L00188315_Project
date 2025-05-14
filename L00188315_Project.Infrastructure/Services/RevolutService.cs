@@ -11,6 +11,7 @@ using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Core.Models;
+using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Infrastructure.Services.DTOs;
 using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.Extensions.Configuration;
@@ -107,7 +108,7 @@ public class RevolutService : IRevolutService
         var token = _cacheService.Get(userId);
         if (string.IsNullOrEmpty(token))
         {
-            return null;
+            throw new TokenNullException("No Token for Revolut");
         }
         var response = await sendGetRequestAsync(accountId, "/balances", token);
 
@@ -117,6 +118,7 @@ public class RevolutService : IRevolutService
             return null;
         }
         var balanceEntity = _mapper.MapToBalanceEntity(balance, accountId);
+        balanceEntity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
         await _balanceRepository.CreateBalanceAsync(userId, balanceEntity);
         return balanceEntity;
     }
@@ -136,18 +138,26 @@ public class RevolutService : IRevolutService
         var token = _cacheService.Get(userId);
         if (string.IsNullOrEmpty(token))
         {
-            return null;
+            throw new TokenNullException("No Token for Revolut - Refresh Link");
         }
 
         var response = await sendGetRequestAsync(string.Empty, string.Empty, token);
         var accounts = new List<Account>();
         foreach (var account in response.Data.Account)
         {
-            var existingAccount = await _accountRepository.GetAccountAsync(userId, account.AccountId);
+            var existingAccount = await _accountRepository.GetAccountAsync(
+                userId,
+                account.AccountId
+            );
 
             if (existingAccount == null)
             {
-                accounts.Add(await _accountRepository.CreateAccountAsync(userId, _mapper.MapToAccountEntity(account, userId)));
+                accounts.Add(
+                    await _accountRepository.CreateAccountAsync(
+                        userId,
+                        _mapper.MapToAccountEntity(account, userId)
+                    )
+                );
             }
         }
         return accounts;
@@ -235,11 +245,21 @@ public class RevolutService : IRevolutService
         {
             return null;
         }
+        var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(
+            userId,
+            accountId
+        );
+        if (existingTransactions.Count > 1 || existingTransactions is null)
+        {
+            return existingTransactions;
+        }
         var data = await sendGetRequestAsync(accountId, "/transactions", token);
         var transactions = new List<Transaction>();
         foreach (var transaction in data.Data.Transaction)
         {
-            transactions.Add(_mapper.MapToTransactionEntity(transaction, accountId));
+            var entity = _mapper.MapToTransactionEntity(transaction, accountId);
+            entity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
+            transactions.Add(entity);
         }
         await _transactionRepository.CreateTransactionsAsync(transactions);
         return transactions;
@@ -356,7 +376,8 @@ public class RevolutService : IRevolutService
                 cert,
                 certChain,
                 policyErrors
-            ) =>{
+            ) =>
+            {
                 return true; // allow insecure / self signed certificates / don't validate certs
             },
             Credentials = null,

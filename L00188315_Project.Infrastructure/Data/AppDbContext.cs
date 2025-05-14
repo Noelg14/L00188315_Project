@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using L00188315_Project.Core.Entities;
+﻿using L00188315_Project.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace L00188315_Project.Infrastructure.Data
@@ -21,20 +16,31 @@ namespace L00188315_Project.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Account>().HasKey(a => a.AccountId);
+            modelBuilder.Entity<Account>().HasKey(a => a.Id);
             modelBuilder.Entity<Transaction>().HasKey(t => t.TransactionId);
             modelBuilder.Entity<Balance>().HasKey(b => b.BalanceId);
             modelBuilder.Entity<Consent>().HasKey(c => c.ConsentId);
 
             modelBuilder
-                .Entity<Balance>()
-                .HasOne(b => b.Account)
-                .WithOne(a => a.Balance);
+                .Entity<Account>()
+                .HasMany(t => t.Transactions)
+                .WithOne(a => a.Account)
+                .HasForeignKey(t => t.RootAccountId)
+                .HasPrincipalKey(a => a.Id)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder
-                .Entity<Transaction>()
-                .HasOne(b => b.Account)
-                .WithMany(a => a.Transactions)
-                .HasForeignKey(t => t.AccountId);
+                .Entity<Account>()
+                .HasOne(b => b.Balance)
+                .WithOne(a => a.Account)
+                .HasForeignKey<Balance>(b => b.RootAccountId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder
+                .Entity<Balance>()
+                .HasOne(a => a.Account)
+                .WithOne(b => b.Balance)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Consent>();
             modelBuilder.Entity<Consent>().HasMany(c => c.Account);

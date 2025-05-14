@@ -1,5 +1,8 @@
+import { Account } from "./account"
+
 export interface Transaction {
-  accountId: string
+  rootAccountId: string
+  account : Account| null
   amount: string
   amountCurrency: string
   creditDebitIndicator: string | null

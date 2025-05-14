@@ -1,8 +1,13 @@
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Infrastructure.Data;
+using L00188315_Project.Infrastructure.Data.Identity;
 using L00188315_Project.Server.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,27 +58,32 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder
     .Services.AddControllers()
-      .AddJsonOptions(options =>
-      {
-          options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-      });
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+if (Debugger.IsAttached)
+{
+    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerDocumentation();
+}
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddAppServices(builder.Configuration); //custom extenstion method.
 builder.Services.AddIdentityServices(builder.Configuration);
-builder.Services.AddSwaggerDocumentation();
 
-builder.Host.UseSerilog((context, configuration) =>
-{
-    configuration.ReadFrom.Configuration(context.Configuration)
-        .WriteTo.Console(); // write to console
+builder.Host.UseSerilog(
+    (context, configuration) =>
+    {
+        configuration.ReadFrom.Configuration(context.Configuration).WriteTo.Console(); // write to console
 
-    //configuration.ReadFrom.Configuration(context.Configuration).WriteTo.DatadogLogs(apiKey: context.Configuration["Datadog:ApiKey"]);
-
-});
+        //configuration.ReadFrom.Configuration(context.Configuration).WriteTo.DatadogLogs(apiKey: context.Configuration["Datadog:ApiKey"]);
+    }
+);
 
 var app = builder.Build();
 
@@ -121,5 +131,22 @@ app.MapGet(
 #endif
 
 //app.MapFallbackToFile("/index.html");
+//  Migrate in code
+using var scope = app.Services.CreateScope(); // create a scope for this
+var services = scope.ServiceProvider;
+var context = services.GetRequiredService<AppDbContext>(); // get the db context from the scope service
+var Idcontext = services.GetRequiredService<AppIdentityDbContext>(); // get the db context from the scope service
+var userManager = services.GetRequiredService<UserManager<IdentityUser>>(); // get the db context from the scope service
+var logger = services.GetRequiredService<ILogger<Program>>();
+
+try
+{
+    await context.Database.MigrateAsync(); //apply migration if pending
+    await Idcontext.Database.MigrateAsync(); //apply migration if pending
+}
+catch (Exception e)
+{
+    logger.LogError(e.Message);
+}
 
 app.Run();
