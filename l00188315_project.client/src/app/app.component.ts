@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 
 
@@ -9,11 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
 
-  title = 'l00188315_project.client';
+  title = 'OpenBanking Dashboard';
 }

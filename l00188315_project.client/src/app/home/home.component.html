@@ -1,2 +1,18 @@
-<p class="h1 text-capitalize">home works!</p>
-
+<div class="d-flex mt-1 flex-column">
+  <h2 class="flex-row text-center w-100 justify-content-center">Welcome to the OpenBanking Account Dashboard</h2>
+  <div class="flex-row">
+    <h4 class="mx-1">Your Finances, All in One Place</h4>
+    <p class="flex-column px-3 justify-content-center align-content-center">
+      Unlock the full potential of Open Banking with a powerful, secure dashboard that puts you in control.<br>
+      Seamlessly connect your bank accounts, credit cards, and financial services to get a real-time overview of your spending, income, and financial health.<br>
+      Our intuitive interface makes it easy to track your money and discover insights that help you make smarter financial decisions—whether you’re managing personal finances or running a small business.<br>
+      Built with bank-grade security and backed by Open Banking standards, our platform ensures your data is always protected and never shared without your permission.
+    </p>
+  </div>
+  <div class="flex-row mt-2">
+    <div class="d-flex justify-content-evenly">
+        <button class="btn btn-primary btn-lg"><a class="text-decoration-none text-white" [routerLink]="'/login'">Login</a></button>
+        <button class="btn btn-outline-primary btn-lg"><a [routerLink]="'/register'" class="text-decoration-none">Register</a></button>
+    </div>
+  </div>
+ </div>

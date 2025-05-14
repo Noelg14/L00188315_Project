@@ -51,7 +51,8 @@ builder.WebHost.ConfigureKestrel(options =>
 
 // Add services to the container.
 
-builder.Services.AddControllers()
+builder
+    .Services.AddControllers()
       .AddJsonOptions(options =>
       {
           options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -83,6 +84,10 @@ app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors(options =>
+    {
+        options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
     app.UseSwaggerDocumentation();
 }
 

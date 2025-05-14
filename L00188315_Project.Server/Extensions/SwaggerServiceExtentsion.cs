@@ -32,8 +32,10 @@ namespace L00188315_Project.Server.Extensions
                     }
                 };
                 c.AddSecurityRequirement(securityRequirement);
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Openbanking Dashboard API", Version = "v1" });
-                // using System.Reflection;
+                c.SwaggerDoc(
+                    "v1",
+                    new OpenApiInfo { Title = "Openbanking Dashboard API", Version = "v1" }
+                );
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });

@@ -1,0 +1,80 @@
+<div class="mt-5 container">
+<div class="row">
+  <ng-container *ngIf="account" class="col-6">
+    <div class="col-6">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Account Name : {{account.name}}</li>
+        <li class="list-group-item">Account Id: {{account.accountId}}</li>
+        <li class="list-group-item">Account Type: {{account.accountType}}</li>
+        <li class="list-group-item">IBAN: {{account.iban}}</li>
+        <li class="list-group-item" *ngIf="account.sortCode">Sort Code : {{account.sortCode}}</li>
+      </ul>
+    </div>
+
+  </ng-container>
+  <ng-container *ngIf="balance" class="col-6">
+    <div class="col-6">
+      <h3>Balance:</h3>
+      <div>
+        <table class="table table-bordered ">
+          <th></th>
+          <tbody>
+            <tr>
+              <td>Balance: </td>
+              <td>{{getCurrencySymbol(balance.currency!) + balance.amount}}</td>
+            </tr>
+            <tr>
+              <td>Last Updated: </td>
+              <td>{{balance.lastUpdated | date:'dd/MM/yyyy HH:mm:ss'}} </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="balance === undefined">  <div class="col-6">
+    <h3>Balance:</h3>
+    <div>
+      <h5 class="text-danger">Balance could not be loaded</h5>
+    </div>
+  </div>
+</ng-container>
+</div>
+
+  <div >
+    <h1 class="h1">Transactions</h1>
+    <div [ngSwitch]="transactions">
+      <div *ngSwitchCase="transactions !== undefined">
+        <hr>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Transaction Date</th>
+              <th>Currency</th>
+              <th>Amount</th>
+              <th>Detail</th>
+              <th>Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of transactions">
+              <td>{{transaction.bookingDateTime|date:'dd/MM/yyyy HH:mm:ss'}}</td>
+              <td>{{transaction.amountCurrency}}</td>
+              <td>{{transaction.amount}}</td>
+              <td>{{transaction.transactionInformation}} </td>
+              <td>{{transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator}}</td>
+              <td>{{transaction.status}}</td>
+            </tr>
+
+          </tbody>
+        </table></div>
+      <div *ngSwitchDefault>
+        <h3 class="text-danger">No Transactions found</h3>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="btn btn-primary btn-lg col-6 mt-1" routerLink="/account">Back</button>
+</div>

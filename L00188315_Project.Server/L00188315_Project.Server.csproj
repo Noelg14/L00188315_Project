@@ -37,6 +37,10 @@
     </ProjectReference> -->
     <ProjectReference Include="..\L00188315_Project.Core\L00188315_Project.Core.csproj" />
     <ProjectReference Include="..\L00188315_Project.Infrastructure\L00188315_Project.Infrastructure.csproj" />
+    <None Include="wwwroot\**">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
   </ItemGroup>
 
 </Project>

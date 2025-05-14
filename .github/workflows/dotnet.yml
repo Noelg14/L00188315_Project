@@ -64,7 +64,7 @@ jobs:
         cd ..
 
     - name: Publish
-      run: dotnet publish --configuration Release --no-restore --no-build --property:PublishDir=./app
+      run: dotnet publish --configuration Release --no-restore --property:PublishDir=./app
       
     - name: List App Directory
       run: ls -la ./L00188315_Project.Server/app/

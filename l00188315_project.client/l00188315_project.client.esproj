@@ -19,6 +19,6 @@
     <!-- Allows the build (or compile) script located on package.json to run on Build -->
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
-    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\l00188315_project.client\</BuildOutputFolder>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\l00188315_project.Server\app\wwwroot</BuildOutputFolder>
   </PropertyGroup>
 </Project>

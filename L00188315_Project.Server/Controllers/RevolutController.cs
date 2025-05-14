@@ -67,7 +67,7 @@ namespace L00188315_Project.Server.Controllers
         }
 
         /// <summary>
-        /// Generates the Consent and  Login path for Revolut
+        /// Generates the Consent and Login path for Revolut
         /// </summary>
         /// <returns>Login path for revolut</returns>
         [HttpGet("consent")]
@@ -100,7 +100,6 @@ namespace L00188315_Project.Server.Controllers
             [FromQuery] string id_token
         )
         {
-            //var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(id_token);
             var consentId = jwtSecurityToken
@@ -112,7 +111,8 @@ namespace L00188315_Project.Server.Controllers
             {
                 _logger.LogError("Consent {0} not found", consentId);
                 return BadRequest(new ApiResponseDTO<string> { Message = "Consent not found", Success = false });
-            }
+            }   
+
             var userId = consent.UserId; // Update consent for the user who created it.
 
             _logger.LogInformation("Callback Received for User {0} with Consent {1}", userId, consentId);
@@ -132,11 +132,12 @@ namespace L00188315_Project.Server.Controllers
                      _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
                 );
             });
-           
+
 #if DEBUG
-            return Ok(new { Token = token }); // if debugging, return the token
+            return RedirectPermanent("https://localhost:4200/account"); // if debugging, return to the angular app
+            //return Ok(new { Token = token }); // if debugging, return the token
 #endif
-            return NoContent(); // if not in debug mode, return no content - redirect in future
+            return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
         /// <summary>
         /// Gets the list of revolut accounts for the user
@@ -151,7 +152,8 @@ namespace L00188315_Project.Server.Controllers
             _logger.LogInformation("Getting Accounts for User: {0}", userId);
             var accounts = await _revolutService.GetAccountsAsync(userId!);
 
-            var apiResponse = new ApiResponseDTO<List<Core.Entities.Account>>
+
+            var apiResponse = new ApiResponseDTO<List<Account>>
             {
                 Data = accounts,
                 Success = accounts is null ? false : true
