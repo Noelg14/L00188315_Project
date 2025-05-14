@@ -21,13 +21,15 @@ namespace L00188315_Project.Infrastructure.Services;
 
 public class RevolutService : IRevolutService
 {
-    private HttpClient _mtlsClient;
-    private HttpClient _httpClient;
+    private readonly HttpClient _mtlsClient;
+    private readonly HttpClient _httpClient;
     private readonly ICacheService _cacheService;
     private readonly IConfiguration _configuration;
     private readonly IKeyVaultService _keyVaultService;
     private readonly IConsentRepository _consentRepository;
     private readonly IAccountRepository _accountRepository;
+    private readonly IBalanceRepository _balanceRepository;
+    private readonly ITransactionRepository _transactionRepository;
     private readonly OpenBankingMapper _mapper;
     private readonly ILogger<RevolutService> _logger;
 
@@ -38,6 +40,8 @@ public class RevolutService : IRevolutService
         IConsentRepository consentRepository,
         ILogger<RevolutService> logger,
         IAccountRepository accountRepository,
+        IBalanceRepository balanceRepository,
+        ITransactionRepository transactionRepository,
         OpenBankingMapper mapper
     )
     {
@@ -50,6 +54,8 @@ public class RevolutService : IRevolutService
         _logger = logger;
         _accountRepository = accountRepository;
         _mapper = mapper;
+        _balanceRepository = balanceRepository;
+        _transactionRepository = transactionRepository;
     }
 
     /// <summary>
@@ -80,7 +86,6 @@ public class RevolutService : IRevolutService
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 Console.WriteLine($"Error getting access token: {response.StatusCode}");
-                //return response.StatusCode.ToString();
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
@@ -106,36 +111,40 @@ public class RevolutService : IRevolutService
         }
         var response = await sendGetRequestAsync(accountId, "/balances", token);
 
-        var balance = response.Data.Balance.Where(x => x.AccountId == accountId).FirstOrDefault();
+        var balance = response.Data.Balance.FirstOrDefault(x => x.AccountId == accountId);
         if (balance == null)
         {
             return null;
         }
-        return _mapper.MapToBalanceEntity( balance,accountId);
+        var balanceEntity = _mapper.MapToBalanceEntity(balance, accountId);
+        await _balanceRepository.CreateBalanceAsync(userId, balanceEntity);
+        return balanceEntity;
     }
 
-    public async Task<List<Core.Entities.Account>> GetAccountsAsync(string userId)
+    public async Task<List<Account>> GetAccountsAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return null;
-        var token = _cacheService.Get(userId);
-        if (string.IsNullOrEmpty(token))
-        {
-            return null;
-        }
 
         var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
         if (existingAccounts.Count > 0)
         {
             _logger.LogInformation("Accounts exist - Returning");
             return existingAccounts;
+        } // check if accounts already exist
+
+        var token = _cacheService.Get(userId);
+        if (string.IsNullOrEmpty(token))
+        {
+            return null;
         }
 
         var response = await sendGetRequestAsync(string.Empty, string.Empty, token);
-        var accounts = new List<Core.Entities.Account>();
+        var accounts = new List<Account>();
         foreach (var account in response.Data.Account)
         {
             var existingAccount = await _accountRepository.GetAccountAsync(userId, account.AccountId);
+
             if (existingAccount == null)
             {
                 accounts.Add(await _accountRepository.CreateAccountAsync(userId, _mapper.MapToAccountEntity(account, userId)));
@@ -211,7 +220,7 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                Console.WriteLine($"Error getting consent request: {response.StatusCode}");
+                _logger.LogError($"Error getting consent request: {response.StatusCode}");
                 return await response.Content.ReadAsStringAsync();
             }
         }
@@ -232,6 +241,7 @@ public class RevolutService : IRevolutService
         {
             transactions.Add(_mapper.MapToTransactionEntity(transaction, accountId));
         }
+        await _transactionRepository.CreateTransactionsAsync(transactions);
         return transactions;
     }
 
@@ -346,9 +356,8 @@ public class RevolutService : IRevolutService
                 cert,
                 certChain,
                 policyErrors
-            ) =>
-            {
-                return true; // allow insecure / self signed certificates / dont validate certs
+            ) =>{
+                return true; // allow insecure / self signed certificates / don't validate certs
             },
             Credentials = null,
             CheckCertificateRevocationList = false,
