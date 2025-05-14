@@ -250,7 +250,7 @@ public class RevolutService : IRevolutService
         var consent = await _consentRepository.GetConsentAsync(consentId);
         if (consent == null)
         {
-            throw new Exception("Consent not found");
+            throw new KeyNotFoundException("Consent not found");
         }
         consent.ConsentStatus = status;
         await _consentRepository.UpdateConsentAsync(consent, status);
@@ -421,7 +421,7 @@ public class RevolutService : IRevolutService
 
     public async Task<Consent> GetConsentByIdAsync(string consentId)
     {
-        if(string.IsNullOrEmpty(consentId))
+        if (string.IsNullOrEmpty(consentId))
             return null;
         return await _consentRepository.GetConsentAsync(consentId);
     }

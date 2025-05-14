@@ -11,13 +11,13 @@ resource "azurerm_service_plan" "atu-sp" {
   name                = "${var.prefix}-sp"
   location            = var.location
   resource_group_name = "ATU_CSD_2025"
-  os_type             = "Linux"
+  os_type             = "Windows"
   sku_name            = "F1"
 
 }
 
 
-resource "azurerm_linux_web_app" "app-service" {
+resource "azurerm_windows_web_app" "app-service" {
   name                = "${var.prefix}-dashboard"
   location            = var.location
   resource_group_name = "ATU_CSD_2025"
@@ -27,7 +27,7 @@ resource "azurerm_linux_web_app" "app-service" {
   site_config {
     always_on           = false
     application_stack {
-      dotnet_version =  "8.0"
+      dotnet_version =  "v8.0"
     }
   }
 }
