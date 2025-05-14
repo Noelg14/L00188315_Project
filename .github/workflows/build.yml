@@ -20,6 +20,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Azure CLI Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        enable-AzPSSession: true
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
     - name: Setup .Node
       uses: actions/setup-node@v4
       with:
@@ -41,7 +49,12 @@ jobs:
     - name: List Directory
       run: ls -la ./L00188315_Project.Server/app/
       continue-on-error: true
-      
+    
+    - name: Download Keyvault files
+      run: |
+        az keyvault secret download --vault-name ${{vars.KEYVAULT}} --name private-Key --file ./L00188315_Project.Server/app/private.key
+        az keyvault secret download --vault-name ${{vars.KEYVAULT}} --name transportPem --file ./L00188315_Project.Server/app/transport.pem
+        az keyvault certificate download --vault-name ${{vars.KEYVAULT}} --name revolutPfx --file ./L00188315_Project.Server/app/combined.pfx
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
