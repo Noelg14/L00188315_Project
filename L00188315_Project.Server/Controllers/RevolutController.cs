@@ -77,11 +77,25 @@ namespace L00188315_Project.Server.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             _logger.LogInformation("Getting consent for {0}", userId);
+            try
+            {
+                var apiResponse = new ApiResponseDTO<string>();
+                apiResponse.Data = await _revolutService.GetConsentRequestAsync(userId!);
+                apiResponse.Success = true;
+                return Ok(apiResponse);
+            }
+            catch (ConsentException ex)
+            {
+                _logger.LogError("Consent cannot be generated : {0}", ex.Message ?? string.Empty);
+                return BadRequest(
+                    new ApiResponseDTO<string>
+                    {
+                        Message = ex.Message,
+                        Success = false,
+                    }
+                );
+            }
 
-            var apiResponse = new ApiResponseDTO<string>();
-            apiResponse.Data = await _revolutService.GetConsentRequestAsync(userId!);
-            apiResponse.Success = true;
-            return Ok(apiResponse);
         }
 
         /// <summary>

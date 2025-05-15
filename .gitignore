@@ -384,3 +384,5 @@ acc_resp.json
 balances_resp.json
 transaction_resp.json
 /L00188315_Project.Server/wwwroot
+L00188315_Project.Server/app.db-shm
+L00188315_Project.Server/app.db-wal

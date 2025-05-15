@@ -11,4 +11,9 @@ namespace L00188315_Project.Infrastructure.Exceptions
         public TokenNullException(string message)
             : base(message) { }
     }
+    public class ConsentException : Exception
+    {
+        public ConsentException(string message)
+            : base(message) { }
+    }
 }

@@ -17,7 +17,7 @@ namespace L00188315_Project.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Account>().HasKey(a => a.Id);
-            modelBuilder.Entity<Transaction>().HasKey(t => t.TransactionId);
+            modelBuilder.Entity<Transaction>().HasKey(t => t.Id);
             modelBuilder.Entity<Balance>().HasKey(b => b.BalanceId);
             modelBuilder.Entity<Consent>().HasKey(c => c.ConsentId);
 

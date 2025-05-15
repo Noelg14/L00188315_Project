@@ -46,13 +46,13 @@ public class RevolutService : IRevolutService
         OpenBankingMapper mapper
     )
     {
+        _logger = logger;
         _cacheService = cacheService;
         _configuration = configuration;
         _keyVaultService = keyVaultService;
         _mtlsClient = ConfigureMtlsClient();
         _httpClient = new HttpClient();
         _consentRepository = consentRepository;
-        _logger = logger;
         _accountRepository = accountRepository;
         _mapper = mapper;
         _balanceRepository = balanceRepository;
@@ -73,7 +73,10 @@ public class RevolutService : IRevolutService
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
+            _logger.LogDebug("Getting access token from Revolut API: {0}",url);
+
             var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
+            _logger.LogDebug("Got Client ID from Keyvault");
 
             var kvp = new List<KeyValuePair<string, string>>
             {
@@ -83,10 +86,12 @@ public class RevolutService : IRevolutService
             };
 
             var form = new FormUrlEncodedContent(kvp);
+            _logger.LogDebug("Sending request to Revolut API"); ;
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Console.WriteLine($"Error getting access token: {response.StatusCode}");
+                _logger.LogInformation($"Error getting access token: {response.StatusCode}");
+                _logger.LogDebug($"Failed:  {response.Content.ToString()}");
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
@@ -231,7 +236,7 @@ public class RevolutService : IRevolutService
             else
             {
                 _logger.LogError($"Error getting consent request: {response.StatusCode}");
-                return await response.Content.ReadAsStringAsync();
+                throw new ConsentException(response.Content.ToString());
             }
         }
     }
@@ -298,7 +303,7 @@ public class RevolutService : IRevolutService
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Console.WriteLine($"Error getting access token: {response.StatusCode}");
+             _logger.LogError($"Error getting access token: {response.StatusCode}");
                 return response.StatusCode.ToString();
             }
             var content = await response.Content.ReadAsStringAsync();
@@ -309,7 +314,7 @@ public class RevolutService : IRevolutService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error getting access token: {ex.Message}");
+            _logger.LogError($"Error getting access token: {ex.Message}");
             return ex.Message;
         }
     }
@@ -323,6 +328,9 @@ public class RevolutService : IRevolutService
         // Load the certificate and key from PEM files
         var rsa = RSA.Create();
         rsa.ImportFromPem(keyPem.ToCharArray());
+
+        _logger.LogInformation("Loaded PEM from Path, Size: {0}", keyPem.Length);
+        _logger.LogInformation("Loaded RSA from PEM, Key Size: {0}", rsa.KeySize);
 
         var claimsDictionary = new Dictionary<string, object>
         {
@@ -364,8 +372,12 @@ public class RevolutService : IRevolutService
     private HttpClient ConfigureMtlsClient()
     {
         var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]!);
+        _logger.LogInformation("Loading certificate from PFX file");
+        _logger.LogInformation("PFX Size : {0}", pfxBytes.Length);
 
         var certWithKey = new X509Certificate2(pfxBytes);
+        _logger.LogInformation("Loaded certificate from PFX file {0}", certWithKey.Thumbprint ?? "");
+        _logger.LogInformation("Loaded certificate {0}", certWithKey.SubjectName.Name ?? "");
 
         var clientHandler = new HttpClientHandler
         {
@@ -383,7 +395,7 @@ public class RevolutService : IRevolutService
             Credentials = null,
             CheckCertificateRevocationList = false,
         };
-
+        _logger.LogInformation("Cert Added to handler");
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }
