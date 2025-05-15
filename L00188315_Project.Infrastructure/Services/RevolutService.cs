@@ -182,6 +182,8 @@ public class RevolutService : IRevolutService
 
         var jso = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var url = _configuration["Revolut:consentUrl"];
+        _logger.LogInformation("Retrieved consent URL: {0}", url);
+
         var requestData = new Core.Models.Data
         {
             Permissions = new List<string>
@@ -202,7 +204,8 @@ public class RevolutService : IRevolutService
             var token = await GetAccessToken();
             if (string.IsNullOrEmpty(token))
             {
-                return string.Empty;
+                _logger.LogInformation("No Token for Revolut");
+                throw new TokenNullException("Token is null");
             }
             httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
                 "Bearer",
@@ -214,6 +217,7 @@ public class RevolutService : IRevolutService
                 Encoding.UTF8,
                 "application/json"
             );
+            _logger.LogInformation("Sending consent request to Revolut API");
 
             var response = await _httpClient.SendAsync(httpRequestMessage);
 
@@ -235,7 +239,7 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                _logger.LogError($"Error getting consent request: {response.StatusCode}");
+                _logger.LogError($"Error getting consent request {response.StatusCode}: {response.Content.ToString()} ");
                 throw new ConsentException(response.Content.ToString());
             }
         }
@@ -347,8 +351,8 @@ public class RevolutService : IRevolutService
         };
         var header = new JwtHeader(
             new SigningCredentials(
-                new RsaSecurityKey(rsa) { KeyId = "68d032ce-b2c3-43dd-b6a5-fb6f095f7b3b" },
-                SecurityAlgorithms.RsaSsaPssSha256
+                new RsaSecurityKey(rsa) { KeyId = "68d032ce-b2c3-43dd-b6a5-fb6f095f7b3b" }, // kid of our JWKS
+                SecurityAlgorithms.RsaSsaPssSha256 // as requested by Revolut
             )
         );
         var payload = new JwtPayload
