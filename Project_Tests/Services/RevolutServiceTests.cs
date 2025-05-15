@@ -5,7 +5,7 @@ using L00188315_Project.Infrastructure.Services;
 using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
+using Moq;
 
 namespace Project_Tests.Services
 {
@@ -14,39 +14,39 @@ namespace Project_Tests.Services
         private readonly IRevolutService _service;
         private readonly HttpClient _mtlsClient;
         private readonly HttpClient _httpClient;
-        private readonly ICacheService _cacheService;
-        private readonly IConfiguration _configuration;
-        private readonly IKeyVaultService _keyVaultService;
-        private readonly IConsentRepository _consentRepository;
-        private readonly IAccountRepository _accountRepository;
-        private readonly IBalanceRepository _balanceRepository;
-        private readonly ITransactionRepository _transactionRepository;
+        private readonly Mock<ICacheService> _cacheService;
+        private readonly Mock<IConfiguration> _configuration;
+        private readonly Mock<IKeyVaultService> _keyVaultService;
+        private readonly Mock<IConsentRepository> _consentRepository;
+        private readonly Mock<IAccountRepository> _accountRepository;
+        private readonly Mock<IBalanceRepository> _balanceRepository;
+        private readonly Mock<ITransactionRepository> _transactionRepository;
         private readonly OpenBankingMapper _mapper;
         private readonly ILogger<RevolutService> _logger;
 
         public RevolutServiceTests()
         {
-            _mtlsClient = Substitute.For<HttpClient>();
-            _httpClient = Substitute.For<HttpClient>();
-            _cacheService = Substitute.For<ICacheService>();
-            _configuration = Substitute.For<IConfiguration>();
-            _keyVaultService = Substitute.For<IKeyVaultService>();
-            _consentRepository = Substitute.For<IConsentRepository>();
-            _accountRepository = Substitute.For<IAccountRepository>();
-            _balanceRepository = Substitute.For<IBalanceRepository>();
-            _transactionRepository = Substitute.For<ITransactionRepository>();
+            _mtlsClient = new HttpClient();
+            _httpClient = new HttpClient();
+            _cacheService = new Mock<ICacheService>();
+            _configuration = new Mock<IConfiguration>();
+            _keyVaultService = new Mock<IKeyVaultService>();
+            _consentRepository = new Mock<IConsentRepository>();
+            _accountRepository = new Mock<IAccountRepository>();
+            _balanceRepository = new Mock<IBalanceRepository>();
+            _transactionRepository = new Mock<ITransactionRepository>();
             _mapper = new OpenBankingMapper();
-            _logger = Substitute.For<ILogger<RevolutService>>();
+            _logger = new Mock<ILogger<RevolutService>>().Object;
 
             _service = new RevolutService(
-                _cacheService,
-                _configuration,
-                _keyVaultService,
-                _consentRepository,
+                _cacheService.Object,
+                _configuration.Object,
+                _keyVaultService.Object,
+                _consentRepository.Object,
                 _logger,
-                _accountRepository,
-                _balanceRepository,
-                _transactionRepository,
+                _accountRepository.Object,
+                _balanceRepository.Object,
+                _transactionRepository.Object,
                 _mapper
             );
         }
