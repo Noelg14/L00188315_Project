@@ -73,10 +73,10 @@ public class RevolutService : IRevolutService
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
-            _logger.LogDebug("Getting access token from Revolut API: {0}", url);
+            _logger.LogInformation("Getting access token from Revolut API: {0}", url);
 
             var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
-            _logger.LogDebug("Got Client ID from Keyvault");
+            _logger.LogInformation("Got Client ID from Keyvault");
 
             var kvp = new List<KeyValuePair<string, string>>
             {
@@ -86,23 +86,23 @@ public class RevolutService : IRevolutService
             };
 
             var form = new FormUrlEncodedContent(kvp);
-            _logger.LogDebug("Sending request to Revolut API");
-            ;
+            _logger.LogInformation("Sending request to Revolut API");
+
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogInformation($"Error getting access token: {response.StatusCode}");
-                _logger.LogDebug($"Failed:  {response.Content.ToString()}");
+                _logger.LogError($"Error getting access token: {response.StatusCode}");
+                _logger.LogError($"Failed:  {response.Content.ToString()}");
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
             _cacheService.Set("RevolutToken", token!.access_token, token.expires_in);
-
+            _logger.LogInformation("Got token for to generate consent");
             return token.access_token;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error getting access token: {ex.Message}");
+            _logger.LogError($"Error getting access token: {ex.Message}");
             return ex.Message;
         }
     }
@@ -205,7 +205,7 @@ public class RevolutService : IRevolutService
             var token = await GetAccessToken();
             if (string.IsNullOrEmpty(token))
             {
-                _logger.LogInformation("No Token for Revolut");
+                _logger.LogInformation("");
                 throw new TokenNullException("Token is null");
             }
             httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
