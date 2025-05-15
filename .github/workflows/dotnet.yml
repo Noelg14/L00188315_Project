@@ -29,12 +29,12 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Restore dependencies
+    - name: Restore project dependencies
       run: dotnet restore .
 
-    - name: Compile
-      run: dotnet build -c 'API Only' --no-restore #-warnaserror # build backend ONLY
+    - name: Compile Backend Application
+      run: dotnet build -c 'API Only' --no-restore -warnaserror # build backend ONLY
       #Warning acts as an error
     
-    - name: Test
+    - name: Test Dotnet Application
       run: dotnet test 

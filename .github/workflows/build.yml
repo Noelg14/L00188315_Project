@@ -28,25 +28,25 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Setup .Node
+    - name: Setup Nodejs
       uses: actions/setup-node@v4
       with:
        node-version: '22'
 
-    - name: Restore dependencies
+    - name: Restore dotnet dependencies
       run: dotnet restore .
 
-    - name: Build Angular
+    - name: Build Angular Application
       run: |
         cd l00188315_project.client
         npm ci
         npm run build
         cd ..
 
-    - name: Publish
+    - name: Publish .NET Application
       run: dotnet publish --configuration Release --no-restore --property:PublishDir=./app
 
-    - name: List Directory
+    - name: List Build Directory
       run: ls -la ./L00188315_Project.Server/app/
       continue-on-error: true
     
