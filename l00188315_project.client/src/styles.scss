@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+@import "../node_modules/bootstrap/scss/_functions";
+@import "../node_modules/bootstrap/scss/_variables";
+@import "../node_modules/bootstrap/scss/_maps";
+@import "../node_modules/bootstrap/scss/_utilities";
+@import "../node_modules/bootstrap/scss/_mixins";
+@import "../node_modules/bootstrap/scss/_buttons";
+@import "../node_modules/bootstrap/scss/_reboot";
+@import "../node_modules/bootstrap/scss/_root";
+/* You can add global styles to this file, and also import other style files */
+
+:root{
+  font-family: 'Roboto',sans-serif;
+}
+
+
+$primary:       #265e33;
+$secondary:     #8dbeed;
+$success:       $green;
+$info:          $cyan;
+$warning:       $yellow;
+$danger:        $red;
+$light:         $gray-300;
+$dark:          $gray-900;
+
+
+
+$theme-colors: (
+  "primary":    $primary,
+  "secondary":  $secondary,
+  "success":    $success,
+  "info":       $info,
+  "warning":    $warning,
+  "danger":     $danger,
+  "light":      $light,
+  "dark":       $dark
+
+);
+
+
+@import '../node_modules/bootstrap/scss/bootstrap.scss';

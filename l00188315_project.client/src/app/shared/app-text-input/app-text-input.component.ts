@@ -4,7 +4,7 @@ import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 @Component({
   selector: 'app-text-input',
   templateUrl: './app-text-input.component.html',
-  styleUrls: ['./app-text-input.component.css']
+  styleUrls: ['./app-text-input.component.scss']
 })
 export class AppTextInputComponent implements ControlValueAccessor {
 
