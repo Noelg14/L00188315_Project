@@ -13,6 +13,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { AccountModule } from './account/account.module';
 import { HttpInterceptorInterceptor } from './interceptor/http-interceptor.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxSpinner, NgxSpinnerModule } from 'ngx-spinner';
+import { LoadingInterceptor } from './interceptor/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -31,12 +33,18 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ToastrModule.forRoot({positionClass:'toast-bottom-right',timeOut:1000,preventDuplicates:true}),
     AccountModule,
     BrowserAnimationsModule,
+    NgxSpinnerModule
   ],
   providers: [
     {
       provide : HTTP_INTERCEPTORS,
       useClass: HttpInterceptorInterceptor,
       multi   : true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
+      multi: true
     },
   ],
   bootstrap: [AppComponent]

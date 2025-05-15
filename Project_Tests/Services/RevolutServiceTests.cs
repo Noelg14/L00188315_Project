@@ -1,4 +1,7 @@
-﻿using L00188315_Project.Core.Entities;
+﻿using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Services;
@@ -7,9 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
 
 namespace Project_Tests.Services
 {
@@ -39,26 +39,29 @@ namespace Project_Tests.Services
             _transactionRepository = new Mock<ITransactionRepository>();
             _mapper = new OpenBankingMapper();
             _logger = new Mock<ILogger<RevolutService>>().Object;
-
         }
 
         //Helper method to set up the mock httpClient
-        private HttpClient ConfigureMockClient<T>(T responseData) {
+        private HttpClient ConfigureMockClient<T>(T responseData)
+        {
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
             HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonSerializer.Serialize(responseData))
+                Content = new StringContent(JsonSerializer.Serialize(responseData)),
             };
             // Set up the SendAsync method behavior.
             httpMessageHandlerMock
                 .Protected() // <= this is most important part that it need to setup.
                 .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(responseMessage);
             // create the HttpClient
             return new HttpClient(httpMessageHandlerMock.Object)
             {
-                BaseAddress = new System.Uri("http://localhost") // It should be in valid uri format.
+                BaseAddress = new System.Uri("http://localhost"), // It should be in valid uri format.
             };
         }
     }

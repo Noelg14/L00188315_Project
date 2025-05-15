@@ -1,11 +1,11 @@
-﻿using L00188315_Project.Core.Interfaces.Services;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace Project_Tests;
 
@@ -13,10 +13,13 @@ public class TokenServiceTests
 {
     private readonly ITokenService _tokenService;
     private readonly Mock<IConfiguration> _configuration;
+
     public TokenServiceTests()
     {
         _configuration = new Mock<IConfiguration>();
-        _configuration.Setup(x => x["Token:Key"]).Returns("rjkq56RxW41yLcKSZn8trUD2qaCbiZQgcyg53DgkKR58ezBRpAjziKUBnSYnQRzU"); // random key
+        _configuration
+            .Setup(x => x["Token:Key"])
+            .Returns("rjkq56RxW41yLcKSZn8trUD2qaCbiZQgcyg53DgkKR58ezBRpAjziKUBnSYnQRzU"); // random key
         _tokenService = new TokenService(_configuration.Object);
     }
 
@@ -28,14 +31,14 @@ public class TokenServiceTests
         {
             Id = "1",
             Email = "email@email.ie",
-            UserName = "username"
-
+            UserName = "username",
         };
         //Act
         var token = _tokenService.CreateToken(user);
         //Assert
         Assert.NotNull(token);
     }
+
     [Fact]
     public void CreateToken_Uses_Correct_Key()
     {
@@ -44,8 +47,7 @@ public class TokenServiceTests
         {
             Id = "1",
             Email = "email@email.ie",
-            UserName = "username"
-
+            UserName = "username",
         };
         //Act
         var token = _tokenService.CreateToken(user);
@@ -53,15 +55,19 @@ public class TokenServiceTests
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Object["Token:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration.Object["Token:Key"])
+            ),
             ValidateIssuer = false,
-            ValidateAudience = false
+            ValidateAudience = false,
         };
-        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+        var principal = tokenHandler.ValidateToken(
+            token,
+            tokenValidationParameters,
+            out SecurityToken validatedToken
+        );
         var validToken = validatedToken as JwtSecurityToken;
         //Assert
         Assert.NotNull(validToken);
-
     }
 }
-

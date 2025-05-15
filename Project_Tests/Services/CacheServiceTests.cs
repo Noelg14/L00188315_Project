@@ -8,7 +8,6 @@ namespace Project_Tests;
 
 public class CacheServiceTests
 {
-
     [Fact]
     public void Cache_Can_Set_Value()
     {
@@ -22,6 +21,7 @@ public class CacheServiceTests
         // Assert
         Assert.Equal(value, result);
     }
+
     [Fact]
     public void Cache_Can_Get_Value()
     {
@@ -36,6 +36,7 @@ public class CacheServiceTests
         // Assert
         Assert.Equal(value, result);
     }
+
     [Fact]
     public void Cache_Can_Clear_Value()
     {
@@ -45,9 +46,10 @@ public class CacheServiceTests
         // Act
         _cacheService.Clear(key);
         // Assert
-       _cacheService.Get(key);
+        _cacheService.Get(key);
         Assert.Equal(string.Empty, _cacheService.Get(key));
     }
+
     [Fact]
     public void Cache_Get_Returns_Empty_String_When_Value_Not_Found()
     {
@@ -59,6 +61,7 @@ public class CacheServiceTests
         // Assert
         Assert.Equal(string.Empty, result);
     }
+
     public IMemoryCache GetSystemUnderTest()
     {
         var services = new ServiceCollection();

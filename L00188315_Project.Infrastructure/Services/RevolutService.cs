@@ -73,7 +73,7 @@ public class RevolutService : IRevolutService
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
-            _logger.LogDebug("Getting access token from Revolut API: {0}",url);
+            _logger.LogDebug("Getting access token from Revolut API: {0}", url);
 
             var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
             _logger.LogDebug("Got Client ID from Keyvault");
@@ -86,7 +86,8 @@ public class RevolutService : IRevolutService
             };
 
             var form = new FormUrlEncodedContent(kvp);
-            _logger.LogDebug("Sending request to Revolut API"); ;
+            _logger.LogDebug("Sending request to Revolut API");
+            ;
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -239,7 +240,9 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                _logger.LogError($"Error getting consent request {response.StatusCode}: {response.Content.ToString()} ");
+                _logger.LogError(
+                    $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
+                );
                 throw new ConsentException(response.Content.ToString());
             }
         }
@@ -307,7 +310,7 @@ public class RevolutService : IRevolutService
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-             _logger.LogError($"Error getting access token: {response.StatusCode}");
+                _logger.LogError($"Error getting access token: {response.StatusCode}");
                 return response.StatusCode.ToString();
             }
             var content = await response.Content.ReadAsStringAsync();
@@ -380,7 +383,10 @@ public class RevolutService : IRevolutService
         _logger.LogInformation("PFX Size : {0}", pfxBytes.Length);
 
         var certWithKey = new X509Certificate2(pfxBytes);
-        _logger.LogInformation("Loaded certificate from PFX file {0}", certWithKey.Thumbprint ?? "");
+        _logger.LogInformation(
+            "Loaded certificate from PFX file {0}",
+            certWithKey.Thumbprint ?? ""
+        );
         _logger.LogInformation("Loaded certificate {0}", certWithKey.SubjectName.Name ?? "");
 
         var clientHandler = new HttpClientHandler

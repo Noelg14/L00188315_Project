@@ -76,7 +76,7 @@ namespace L00188315_Project.Server.Controllers
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
-            if(user == null)
+            if (user == null)
                 return Unauthorized();
             return new UserDTO
             {
