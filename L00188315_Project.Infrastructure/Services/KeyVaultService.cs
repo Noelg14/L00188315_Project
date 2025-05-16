@@ -1,18 +1,16 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
-using Azure;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Services.DTOs;
 using Microsoft.Extensions.Configuration;
 
 namespace L00188315_Project.Infrastructure.Services;
 
-public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKeyVaultService
+public class KeyVaultService(IHttpClientFactory _httpClientFactory,IConfiguration _config, ICacheService _cache) : IKeyVaultService
 {
-    private HttpClient _client = new HttpClient();
+    private HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
 
     public async Task<string> GetCertAsync(string certName)
     {

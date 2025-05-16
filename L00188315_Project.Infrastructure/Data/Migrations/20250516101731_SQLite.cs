@@ -22,13 +22,12 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     ConsentStatus = table.Column<int>(type: "INTEGER", nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Expires = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Expires = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Consents", x => x.ConsentId);
-                }
-            );
+                });
 
             migrationBuilder.CreateTable(
                 name: "Accounts",
@@ -41,11 +40,11 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     AccountType = table.Column<string>(type: "TEXT", nullable: false),
                     AccountSubType = table.Column<string>(type: "TEXT", nullable: false),
                     Iban = table.Column<string>(type: "TEXT", nullable: false),
-                    SortCode = table.Column<string>(type: "TEXT", nullable: false),
+                    SortCode = table.Column<string>(type: "TEXT", nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    ConsentId = table.Column<string>(type: "TEXT", nullable: true),
+                    ConsentId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -54,10 +53,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         name: "FK_Accounts_Consents_ConsentId",
                         column: x => x.ConsentId,
                         principalTable: "Consents",
-                        principalColumn: "ConsentId"
-                    );
-                }
-            );
+                        principalColumn: "ConsentId");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Balances",
@@ -68,7 +65,7 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     Currency = table.Column<string>(type: "TEXT", nullable: true),
                     BalanceType = table.Column<string>(type: "TEXT", nullable: true),
                     LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    RootAccountId = table.Column<string>(type: "TEXT", nullable: true),
+                    RootAccountId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -78,10 +75,8 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         column: x => x.RootAccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade
-                    );
-                }
-            );
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Transactions",
@@ -96,18 +91,12 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                     ValueDateTime = table.Column<DateTime>(type: "TEXT", nullable: true),
                     CreditorAccount = table.Column<string>(type: "TEXT", nullable: true),
                     DebtorAccount = table.Column<string>(type: "TEXT", nullable: true),
-                    ProprietaryBankTransactionCode = table.Column<string>(
-                        type: "TEXT",
-                        nullable: true
-                    ),
-                    ProprietaryBankTransactionIssuer = table.Column<string>(
-                        type: "TEXT",
-                        nullable: true
-                    ),
+                    ProprietaryBankTransactionCode = table.Column<string>(type: "TEXT", nullable: true),
+                    ProprietaryBankTransactionIssuer = table.Column<string>(type: "TEXT", nullable: true),
                     Status = table.Column<string>(type: "TEXT", nullable: true),
                     TransactionId = table.Column<string>(type: "TEXT", nullable: true),
                     TransactionInformation = table.Column<string>(type: "TEXT", nullable: true),
-                    UserComments = table.Column<string>(type: "TEXT", nullable: true),
+                    UserComments = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -117,41 +106,40 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         column: x => x.RootAccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade
-                    );
-                }
-            );
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_ConsentId",
                 table: "Accounts",
-                column: "ConsentId"
-            );
+                column: "ConsentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Balances_RootAccountId",
                 table: "Balances",
                 column: "RootAccountId",
-                unique: true
-            );
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_RootAccountId",
                 table: "Transactions",
-                column: "RootAccountId"
-            );
+                column: "RootAccountId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(name: "Balances");
+            migrationBuilder.DropTable(
+                name: "Balances");
 
-            migrationBuilder.DropTable(name: "Transactions");
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
-            migrationBuilder.DropTable(name: "Accounts");
+            migrationBuilder.DropTable(
+                name: "Accounts");
 
-            migrationBuilder.DropTable(name: "Consents");
+            migrationBuilder.DropTable(
+                name: "Consents");
         }
     }
 }

@@ -47,6 +47,7 @@ namespace L00188315_Project.Server.Extensions
                     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
                 }
             });
+            services.AddHttpClient("KeyVaultClient"); // Named client for use in your service
 
             services.AddSingleton<ICacheService, CacheService>(); // singleton, as we only want 1 instance of the cache service
             services.AddSingleton<IKeyVaultService, KeyVaultService>(); // singleton, as we only want 1 instance of the cache service
