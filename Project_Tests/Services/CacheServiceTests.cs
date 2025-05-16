@@ -6,9 +6,15 @@ using Moq;
 
 namespace Project_Tests;
 
+/// <summary>
+/// Tests for the CacheService class.
+/// </summary>
 public class CacheServiceTests
 {
     [Fact]
+    /// <summary>
+    /// Sets up the test class with the necessary dependencies.
+    /// </summary>
     public void Cache_Can_Set_Value()
     {
         // Arrange

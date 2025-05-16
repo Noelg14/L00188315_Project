@@ -111,11 +111,8 @@ public class RevolutServiceTests
     {
         // Arrange
         var userId = "user1";
-        var accountId = "acc1";
-        //_accountRepository.Setup(r => r.GetAccountAsync(userId,accountId)).ReturnsAsync());
         var service = CreateService();
-        // Act
-        // Assert
+        // Act & Assert
         await Assert.ThrowsAsync<TokenNullException>(async () => await service.GetAccountsAsync(userId));
         _accountRepository.Verify(r => r.GetAllAccountsAsync(userId), Times.Once);
     }
