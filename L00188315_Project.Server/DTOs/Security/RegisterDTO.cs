@@ -9,10 +9,12 @@
         /// Email of the user to be registered
         /// </summary>
         public string? Email { get; set; }
+
         /// <summary>
         /// Password of the user to be registered
         /// </summary>
         public string? Password { get; set; }
+
         /// <summary>
         /// Users name to be registered
         /// </summary>

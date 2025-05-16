@@ -30,7 +30,7 @@ namespace L00188315_Project.Infrastructure.Repositories
         {
 #pragma warning disable CS8603 // Possible null reference return.
             return await _dbContext.Consents.FirstOrDefaultAsync(c => c.ConsentId == consentId);
-#pragma warning restore CS8603 // Possible null reference return. 
+#pragma warning restore CS8603 // Possible null reference return.
             // it's okay to return null here, as we are checking for null in the service.
         }
 

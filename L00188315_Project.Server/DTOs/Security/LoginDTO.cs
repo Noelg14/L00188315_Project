@@ -12,6 +12,7 @@ namespace L00188315_Project.Server.DTOs.Security
         /// Email of user to be logged in
         /// </summary>
         public required string Email { get; set; }
+
         /// <summary>
         /// Password of the user to be logged in
         /// </summary>

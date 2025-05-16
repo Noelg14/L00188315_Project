@@ -3,12 +3,17 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Infrastructure.Services.DTOs;
 using Microsoft.Extensions.Configuration;
 
 namespace L00188315_Project.Infrastructure.Services;
 
-public class KeyVaultService(IHttpClientFactory _httpClientFactory,IConfiguration _config, ICacheService _cache) : IKeyVaultService
+public class KeyVaultService(
+    IHttpClientFactory _httpClientFactory,
+    IConfiguration _config,
+    ICacheService _cache
+) : IKeyVaultService
 {
     private HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
 
@@ -17,12 +22,19 @@ public class KeyVaultService(IHttpClientFactory _httpClientFactory,IConfiguratio
         var token = await GetToken();
 
         var keyVaultBaseUrl = CreateKeyVaultRequestUrl("certificates", certName);
-        var cert = await _client.GetFromJsonAsync<KeyVaultCertDTO>(keyVaultBaseUrl);
-        if (cert == null)
+        try
         {
-            throw new Exception("Certificate not found");
+            var cert = await _client.GetFromJsonAsync<KeyVaultCertDTO>(keyVaultBaseUrl);
+            if (cert == null)
+            {
+                throw new KeyVaultException("Certificate not found");
+            }
+            return cert.cer!;
         }
-        return cert.cer!;
+        catch (Exception ex)
+        {
+            throw new KeyVaultException($"Cert not found");
+        }
     }
 
     public async Task<string> GetSecretAsync(string secretName)
@@ -37,14 +49,21 @@ public class KeyVaultService(IHttpClientFactory _httpClientFactory,IConfiguratio
             "Bearer",
             token
         );
-        var secret = await _client.GetFromJsonAsync<KeyVaultSecretDTO>(keyVaultBaseUrl);
-        if (secret == null)
+        try
         {
-            throw new Exception("secret not found");
-        }
-        _cache.Set(secretName, secret.value, 3600);
+            var secret = await _client.GetFromJsonAsync<KeyVaultSecretDTO>(keyVaultBaseUrl);
+            if (secret == null)
+            {
+                throw new KeyVaultException("Secret not found");
+            }
+            _cache.Set(secretName, secret.value, 3600);
 
-        return secret.value;
+            return secret.value;
+        }
+        catch (Exception ex)
+        {
+            throw new KeyVaultException($"Error getting Secret: {ex.Message}");
+        }
     }
 
     private async Task<string> GetToken()
@@ -60,9 +79,16 @@ public class KeyVaultService(IHttpClientFactory _httpClientFactory,IConfiguratio
         var tokenUrl = _config["kvSettings:TokenUrl"];
         var scope = _config["kvSettings:Scope"];
 
-        if(string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(tokenUrl) || string.IsNullOrEmpty(scope))
+        if (
+            string.IsNullOrEmpty(clientId)
+            || string.IsNullOrEmpty(clientSecret)
+            || string.IsNullOrEmpty(tokenUrl)
+            || string.IsNullOrEmpty(scope)
+        )
         {
-            throw new ArgumentNullException("ClientId, ClientSecret, TokenUrl or Scope cannot be null or empty.");
+            throw new ArgumentNullException(
+                "ClientId, ClientSecret, TokenUrl or Scope cannot be null or empty."
+            );
         }
 
         var form = new FormUrlEncodedContent(

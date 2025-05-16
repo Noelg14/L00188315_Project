@@ -63,9 +63,7 @@ namespace L00188315_Project.Server.Controllers
             if (existingUser is not null)
                 return BadRequest("User already exists");
 
-            var user = new IdentityUser { 
-                UserName = registerDTO.Name, 
-                Email = registerDTO.Email };
+            var user = new IdentityUser { UserName = registerDTO.Name, Email = registerDTO.Email };
             var result = await _userManager.CreateAsync(user, registerDTO.Password!);
             if (!result.Succeeded)
                 return BadRequest("Account could not be created");
@@ -77,6 +75,7 @@ namespace L00188315_Project.Server.Controllers
                 UserId = user.Id,
             };
         }
+
         /// <summary>
         /// Returns the currently logged in user - based on the JWT
         /// </summary>
@@ -97,6 +96,7 @@ namespace L00188315_Project.Server.Controllers
                 UserId = user.Id,
             };
         }
+
         /// <summary>
         /// Endpoint to check if an email already exists in the database
         /// </summary>

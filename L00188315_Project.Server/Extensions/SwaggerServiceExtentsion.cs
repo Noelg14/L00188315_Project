@@ -50,6 +50,7 @@ namespace L00188315_Project.Server.Extensions
 
             return services;
         }
+
         /// <summary>
         /// Enables the Swagger UI and the Swagger JSON endpoint
         /// </summary>

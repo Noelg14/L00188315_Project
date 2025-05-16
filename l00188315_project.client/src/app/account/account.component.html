@@ -21,7 +21,7 @@
   <div class="card">
     <p class="card-title">{{account.accountSubType}} ({{account.currency}}) </p>
     <p class="balance">{{account.name}}</p>
-    <p class="balance" *ngIf="account.balance">{{account.balance.amount | currency:account.balance.currency?.toString()}}</p>
+    <p class="balance" *ngIf="account.balance">{{getCurrencySymbol(account?.balance?.currency!) + account.balance.amount}}</p>
     <p class="account">
       <svg
         width="20"

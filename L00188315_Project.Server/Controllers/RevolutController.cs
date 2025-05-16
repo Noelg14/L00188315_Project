@@ -148,7 +148,6 @@ namespace L00188315_Project.Server.Controllers
             if (Debugger.IsAttached)
             {
                 return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
-
             }
             return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
@@ -161,8 +160,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts(
-            //[FromQuery]string? refresh
-            )
+        //[FromQuery]string? refresh
+        )
         {
             try
             {
@@ -208,7 +207,7 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetTransactions(
             [FromQuery] string? accountId
-            //, [FromQuery] string? refresh - TBC
+        //, [FromQuery] string? refresh - TBC
         )
         {
             if (string.IsNullOrEmpty(accountId))
@@ -256,7 +255,7 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
             [FromQuery] string? accountId
-            //,[FromQuery] string? refresh
+        //,[FromQuery] string? refresh
         )
         {
             if (string.IsNullOrEmpty(accountId))

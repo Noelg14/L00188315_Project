@@ -19,6 +19,7 @@ namespace L00188315_Project.Server.DTOs.Response
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] // dont write if no data.
         public string? Message { get; set; }
+
         /// <summary>
         /// Was the operation successful?
         /// </summary>

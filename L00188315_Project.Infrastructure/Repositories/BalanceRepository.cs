@@ -22,10 +22,10 @@ namespace L00188315_Project.Infrastructure.Repositories
         public async Task<Balance> GetBalanceAsync(string userId, string accountId)
         {
 #pragma warning disable CS8603 // Possible null reference return.
-            return await _dbContext
-                .Balances
-                .FirstOrDefaultAsync(b => b.Account!.AccountId == accountId && b.Account!.UserId == userId);
-#pragma warning restore CS8603 // Possible null reference return. 
+            return await _dbContext.Balances.FirstOrDefaultAsync(b =>
+                b.Account!.AccountId == accountId && b.Account!.UserId == userId
+            );
+#pragma warning restore CS8603 // Possible null reference return.
             // it's okay to return null here, as we are checking for null in the service.
         }
 

@@ -119,6 +119,10 @@ public class RevolutService : IRevolutService
         var response = await sendGetRequestAsync(accountId, "/balances", token);
 
         var balance = response!.Data!.Balance!.FirstOrDefault(x => x.AccountId == accountId);
+        if(balance!.CreditDebitIndicator!.ToLower() == "debit")
+        {
+            balance.Amount!._Amount = "-" + balance.Amount._Amount!; // add '-' to the start,are the user is in debit.
+        }
         if (balance == null)
         {
             throw new BalanceException("No Balance returned after call to Revolut");
@@ -132,7 +136,7 @@ public class RevolutService : IRevolutService
     public async Task<List<Account>> GetAccountsAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
-            throw new ArgumentNullException(nameof(userId),"UserId cannot be null");
+            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
 
         var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
         if (existingAccounts.Count > 0)
@@ -243,7 +247,9 @@ public class RevolutService : IRevolutService
                 _logger.LogError(
                     $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
                 );
-                throw new ConsentException(response.Content.ToString() ?? "An Error occurred when getting a consent");
+                throw new ConsentException(
+                    response.Content.ToString() ?? "An Error occurred when getting a consent"
+                );
             }
         }
     }
