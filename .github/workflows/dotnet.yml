@@ -18,9 +18,7 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-          os: 
-            - { prettyname: Windows, fullname: windows-latest }
-            - { prettyname: Ubuntu, fullname: ubuntu-latest }
+          os: [windows-latest,ubuntu-latest ]
     timeout-minutes: 5 # this should take no more than 5 mins
 
     steps:
@@ -39,11 +37,11 @@ jobs:
 
      #Run Tests
     - name: Test Dotnet Application
-      run: dotnet test --logger "trx;LogFileName=TestResults-${{matrix.os.prettyname}}.trx"
+      run: dotnet test --logger "trx;LogFileName=TestResults-${{matrix.os}}.trx"
       #Upload test results
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: test-results-${{matrix.os.prettyname}}
-        path: ${{github.workspace}}/TestResults/TestResults-${{matrix.os.prettyname}}.trx
+        name: test-results-${{matrix.os}}
+        path: ${{github.workspace}}/TestResults/TestResults-${{matrix.os}}.trx
