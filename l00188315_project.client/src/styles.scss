@@ -10,11 +10,8 @@
 @import "../node_modules/bootstrap/scss/_root";
 /* You can add global styles to this file, and also import other style files */
 
-:root{
-  font-family: 'Roboto',sans-serif;
-}
 
-
+$font-family-base: 'Roboto',sans-serif !important;
 $primary:       #265e33;
 $secondary:     #8dbeed;
 $success:       $green;

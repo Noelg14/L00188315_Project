@@ -167,7 +167,7 @@ namespace L00188315_Project.Server.Controllers
         [HttpGet("accounts")] //Call 1st
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts()
+        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts([FromQuery]string? refresh)
         {
             try
             {
@@ -212,7 +212,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetTransactions(
-            [FromQuery] string? accountId
+            [FromQuery] string? accountId,
+            [FromQuery] string? refresh
         )
         {
             if (string.IsNullOrEmpty(accountId))
@@ -259,7 +260,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(400)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
-            [FromQuery] string? accountId
+            [FromQuery] string? accountId,
+            [FromQuery] string? refresh
         )
         {
             if (string.IsNullOrEmpty(accountId))
