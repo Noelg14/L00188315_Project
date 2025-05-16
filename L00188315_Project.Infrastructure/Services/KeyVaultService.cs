@@ -31,7 +31,7 @@ public class KeyVaultService(
             }
             return cert.cer!;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw new KeyVaultException($"Cert not found");
         }

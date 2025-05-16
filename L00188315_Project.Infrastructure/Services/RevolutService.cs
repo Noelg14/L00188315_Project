@@ -111,6 +111,13 @@ public class RevolutService : IRevolutService
     {
         if (string.IsNullOrEmpty(userId))
             throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+        var existingBalance = await _balanceRepository.GetBalanceAsync(userId, accountId);
+        if (existingBalance is not null)
+        {
+            _logger.LogInformation("Balance exists - Returning");
+            return existingBalance;
+        } // check if balance already exists
+
         var token = _cacheService.Get(userId);
         if (string.IsNullOrEmpty(token))
         {
@@ -139,7 +146,7 @@ public class RevolutService : IRevolutService
             throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
 
         var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
-        if (existingAccounts.Count > 0)
+        if (existingAccounts is not null  &&  existingAccounts.Count > 0)
         {
             _logger.LogInformation("Accounts exist - Returning");
             return existingAccounts;
@@ -258,18 +265,21 @@ public class RevolutService : IRevolutService
     {
         if (string.IsNullOrEmpty(userId))
             throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
-        var token = _cacheService.Get(userId);
-        if (string.IsNullOrEmpty(token))
-        {
-            throw new TokenNullException("Please Refresh Token");
-        }
+
         var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(
             userId,
             accountId
         );
-        if (existingTransactions.Count > 1 || existingTransactions is null)
+        if (existingTransactions is not null && existingTransactions.Count > 0 )
         {
+            _logger.LogInformation("Transactions exist - Returning");
             return existingTransactions!; // We know that the transactions exist
+        }
+
+        var token = _cacheService.Get(userId);
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new TokenNullException("Please Refresh Token");
         }
         var data = await sendGetRequestAsync(accountId, "/transactions", token);
         var transactions = new List<Transaction>();
