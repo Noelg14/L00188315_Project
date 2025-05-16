@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using L00188315_Project.Core.Entities;
+﻿using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Services;
@@ -9,60 +6,58 @@ using L00188315_Project.Infrastructure.Services.Mapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Moq.Protected;
+using Xunit;
 
-namespace Project_Tests.Services
+namespace Project_Tests;
+public class RevolutServiceTests
 {
-    public class RevolutServiceTests
+    private readonly Mock<ICacheService> _cacheService = new();
+    private readonly Mock<IConfiguration> _configuration = new();
+    private readonly Mock<IKeyVaultService> _keyVaultService = new();
+    private readonly Mock<IConsentRepository> _consentRepository = new();
+    private readonly Mock<IAccountRepository> _accountRepository = new();
+    private readonly Mock<IBalanceRepository> _balanceRepository = new();
+    private readonly Mock<ITransactionRepository> _transactionRepository = new();
+    private readonly Mock<OpenBankingMapper> _mapper = new();
+    private readonly Mock<ILogger<RevolutService>> _logger = new();
+
+    private RevolutService CreateService() =>
+        new RevolutService(
+            _cacheService.Object,
+            _configuration.Object,
+            _keyVaultService.Object,
+            _consentRepository.Object,
+            _logger.Object,
+            _accountRepository.Object,
+            _balanceRepository.Object,
+            _transactionRepository.Object,
+            _mapper.Object
+        );
+
+    [Fact]
+    public async Task GetAccountsAsync_ReturnsAccounts_WhenAccountsExist()
     {
-        //private IRevolutService? _service;
-        //private HttpClient? _mtlsClient;
-        //private HttpClient? _httpClient;
-        private readonly Mock<ICacheService> _cacheService;
-        private readonly Mock<IConfiguration> _configuration;
-        private readonly Mock<IKeyVaultService> _keyVaultService;
-        private readonly Mock<IConsentRepository> _consentRepository;
-        private readonly Mock<IAccountRepository> _accountRepository;
-        private readonly Mock<IBalanceRepository> _balanceRepository;
-        private readonly Mock<ITransactionRepository> _transactionRepository;
-        private readonly OpenBankingMapper _mapper;
-        private readonly ILogger<RevolutService> _logger;
+        // Arrange
+        var userId = "user1";
+        var accounts = new List<Account> { new Account {
+            Id = "a1",
+            AccountId = "acc1",
+            AccountSubType = "Personal",
+            AccountType = "Personal",
+            Currency = "USD",
+            Name = "Test",
+            Iban = "123"
+           }
+        };
+        _accountRepository.Setup(r => r.GetAllAccountsAsync(userId)).ReturnsAsync(accounts);
 
-        public RevolutServiceTests()
-        {
-            _cacheService = new Mock<ICacheService>();
-            _configuration = new Mock<IConfiguration>();
-            _keyVaultService = new Mock<IKeyVaultService>();
-            _consentRepository = new Mock<IConsentRepository>();
-            _accountRepository = new Mock<IAccountRepository>();
-            _balanceRepository = new Mock<IBalanceRepository>();
-            _transactionRepository = new Mock<ITransactionRepository>();
-            _mapper = new OpenBankingMapper();
-            _logger = new Mock<ILogger<RevolutService>>().Object;
-        }
+        var service = CreateService();
 
-        //Helper method to set up the mock httpClient
-        private HttpClient ConfigureMockClient<T>(T responseData)
-        {
-            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-            HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(JsonSerializer.Serialize(responseData)),
-            };
-            // Set up the SendAsync method behavior.
-            httpMessageHandlerMock
-                .Protected() // <= this is most important part that it need to setup.
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-                .ReturnsAsync(responseMessage);
-            // create the HttpClient
-            return new HttpClient(httpMessageHandlerMock.Object)
-            {
-                BaseAddress = new System.Uri("http://localhost"), // It should be in valid uri format.
-            };
-        }
+        // Act
+        var result = await service.GetAccountsAsync(userId);
+
+        // Assert
+        Assert.Equal(accounts, result);
+        _accountRepository.Verify(r => r.GetAllAccountsAsync(userId), Times.Once);
     }
 }
