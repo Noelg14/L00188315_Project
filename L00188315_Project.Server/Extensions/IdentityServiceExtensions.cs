@@ -7,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace L00188315_Project.Server.Extensions
 {
+    /// <summary>
+    /// Extension Class for the Identity services. Registers the ID services for the app.
+    /// </summary>
     public static class IdentityServiceExtensions
     {
         /// <summary>

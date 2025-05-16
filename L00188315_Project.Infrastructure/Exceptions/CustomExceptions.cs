@@ -17,4 +17,14 @@ namespace L00188315_Project.Infrastructure.Exceptions
         public ConsentException(string message)
             : base(message) { }
     }
+    public class BalanceException : Exception
+    {
+        public BalanceException(string message)
+            : base(message) { }
+    }
+    public class TransactionException : Exception
+    {
+        public TransactionException(string message)
+            : base(message) { }
+    }
 }

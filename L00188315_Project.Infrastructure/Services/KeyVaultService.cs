@@ -24,7 +24,7 @@ public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKe
         {
             throw new Exception("Certificate not found");
         }
-        return cert.cer;
+        return cert.cer!;
     }
 
     public async Task<string> GetSecretAsync(string secretName)
@@ -62,13 +62,18 @@ public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKe
         var tokenUrl = _config["kvSettings:TokenUrl"];
         var scope = _config["kvSettings:Scope"];
 
+        if(string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(tokenUrl) || string.IsNullOrEmpty(scope))
+        {
+            throw new ArgumentNullException("ClientId, ClientSecret, TokenUrl or Scope cannot be null or empty.");
+        }
+
         var form = new FormUrlEncodedContent(
             new List<KeyValuePair<string, string>>
             {
-                KeyValuePair.Create("client_id", clientId),
-                KeyValuePair.Create("client_secret", clientSecret),
+                KeyValuePair.Create("client_id", clientId!),
+                KeyValuePair.Create("client_secret", clientSecret!),
                 KeyValuePair.Create("grant_type", "client_credentials"),
-                KeyValuePair.Create("scope", scope),
+                KeyValuePair.Create("scope", scope!),
             }
         );
         var tokenRepsponse = await _client.PostAsync(tokenUrl, form);
@@ -80,7 +85,7 @@ public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKe
         var tokenRepsonseJson = JsonSerializer.Deserialize<TokenDTO>(content);
         var value = _cache.Set(
             "KeyVaultToken",
-            tokenRepsonseJson.access_token,
+            tokenRepsonseJson!.access_token,
             tokenRepsonseJson.expires_in
         );
         return value;

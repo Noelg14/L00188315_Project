@@ -56,7 +56,7 @@ public class TokenServiceTests
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration.Object["Token:Key"])
+                Encoding.UTF8.GetBytes(_configuration.Object["Token:Key"]!)
             ),
             ValidateIssuer = false,
             ValidateAudience = false,

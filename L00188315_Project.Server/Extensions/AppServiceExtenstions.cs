@@ -14,6 +14,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace L00188315_Project.Server.Extensions
 {
+    /// <summary>
+    /// Extension Class for the app services. Registers all the services for the app.
+    /// </summary>
     public static class AppServiceExtenstions
     {
         /// <summary>

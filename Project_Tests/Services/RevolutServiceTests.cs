@@ -15,9 +15,9 @@ namespace Project_Tests.Services
 {
     public class RevolutServiceTests
     {
-        private IRevolutService _service;
-        private HttpClient _mtlsClient;
-        private HttpClient _httpClient;
+        //private IRevolutService? _service;
+        //private HttpClient? _mtlsClient;
+        //private HttpClient? _httpClient;
         private readonly Mock<ICacheService> _cacheService;
         private readonly Mock<IConfiguration> _configuration;
         private readonly Mock<IKeyVaultService> _keyVaultService;

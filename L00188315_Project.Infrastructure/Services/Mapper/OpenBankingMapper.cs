@@ -6,14 +6,14 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
 {
     public class OpenBankingMapper
     {
-        public Core.Entities.Account MapToAccountEntity(OBAccount modelAccount, string userId)
+        public Account MapToAccountEntity(OBAccount modelAccount, string userId)
         {
-            return new Core.Entities.Account
+            return new Account
             {
-                AccountId = modelAccount.AccountId,
-                AccountSubType = modelAccount.AccountSubType,
-                AccountType = modelAccount.AccountType,
-                Currency = modelAccount.Currency,
+                AccountId = modelAccount.AccountId!,
+                AccountSubType = modelAccount.AccountSubType!,
+                AccountType = modelAccount.AccountType!,
+                Currency = modelAccount.Currency!,
                 Iban =
                     modelAccount._Account?.Find(x => x.SchemeName == "UK.OBIE.IBAN")?.Identification
                     ?? string.Empty,
@@ -33,7 +33,7 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
             return new Balance
             {
                 //AccountId = accountId,
-                Amount = modelBalance.Amount._Amount,
+                Amount = modelBalance.Amount!._Amount,
                 BalanceType = modelBalance.Type,
                 Currency = modelBalance.Amount.Currency,
                 LastUpdated = DateTime.TryParse(modelBalance.DateTime, out _)
@@ -49,7 +49,6 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
         {
             return new Core.Entities.Transaction
             {
-                //AccountId = accountId,
                 Amount = modelTransaction.Amount?._Amount,
                 AmountCurrency = modelTransaction.Amount?.Currency,
                 TransactionInformation = modelTransaction.TransactionInformation,

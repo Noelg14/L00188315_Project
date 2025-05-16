@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Services;
@@ -144,19 +145,11 @@ namespace L00188315_Project.Server.Controllers
             var token = await _revolutService.GetUserAccessToken(userId!, code);
 
             var usersAccounts = await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
-            //For each account, get the transactions and balance
-            //usersAccounts.ForEach(async x =>
-            //{
-            //   await Task.WhenAll(
-            //         _revolutService.GetTransactionsAsync(x.AccountId, userId!),
-            //         _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
-            //    );
-            //});
+            if (Debugger.IsAttached)
+            {
+                return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
 
-#if DEBUG
-            return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
-            //return Ok(new { Token = token }); // if debugging, return the token
-#endif
+            }
             return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
 
@@ -167,7 +160,9 @@ namespace L00188315_Project.Server.Controllers
         [HttpGet("accounts")] //Call 1st
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts([FromQuery]string? refresh)
+        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts(
+            //[FromQuery]string? refresh
+            )
         {
             try
             {
@@ -212,8 +207,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetTransactions(
-            [FromQuery] string? accountId,
-            [FromQuery] string? refresh
+            [FromQuery] string? accountId
+            //, [FromQuery] string? refresh - TBC
         )
         {
             if (string.IsNullOrEmpty(accountId))
@@ -260,8 +255,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(400)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
-            [FromQuery] string? accountId,
-            [FromQuery] string? refresh
+            [FromQuery] string? accountId
+            //,[FromQuery] string? refresh
         )
         {
             if (string.IsNullOrEmpty(accountId))

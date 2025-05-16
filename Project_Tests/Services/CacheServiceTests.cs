@@ -69,6 +69,6 @@ public class CacheServiceTests
         var serviceProvider = services.BuildServiceProvider();
 
         var memoryCache = serviceProvider.GetService<IMemoryCache>();
-        return memoryCache;
+        return memoryCache!;
     }
 }

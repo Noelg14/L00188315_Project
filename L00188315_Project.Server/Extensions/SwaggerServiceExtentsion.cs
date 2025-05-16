@@ -4,8 +4,16 @@ using Microsoft.OpenApi.Models;
 
 namespace L00188315_Project.Server.Extensions
 {
+    /// <summary>
+    /// Extension methods for configuring Swagger in the application.
+    /// </summary>
     public static class SwaggerServiceExtentsion
     {
+        /// <summary>
+        /// Configures Swagger for the application
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
         {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,7 +50,11 @@ namespace L00188315_Project.Server.Extensions
 
             return services;
         }
-
+        /// <summary>
+        /// Enables the Swagger UI and the Swagger JSON endpoint
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
         public static IApplicationBuilder UseSwaggerDocumentation(this IApplicationBuilder app)
         {
             app.UseSwagger();

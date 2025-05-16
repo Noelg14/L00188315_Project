@@ -7,7 +7,11 @@ public class CacheService(IMemoryCache _cache) : ICacheService
 {
     public void Clear(string key)
     {
-        //_cache.Remove(key);
+        if (string.IsNullOrEmpty(key))
+        {
+            throw new ArgumentNullException(nameof(key), "Key cannot be null or empty.");
+        }
+        _cache.Remove(key);
     }
 
     public string Get(string key)

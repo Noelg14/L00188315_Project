@@ -9,15 +9,11 @@ namespace L00188315_Project.Core.Entities
 {
     public class Consent
     {
-        public string ConsentId { get; set; }
+        public required string ConsentId { get; set; }
         public string? UserId { get; set; }
-
-        //public IdentityUser? User{ get; set; }
         public string? Scopes { get; set; }
         public string? Provider { get; set; }
         public ConsentStatus? ConsentStatus { get; set; } = Entities.ConsentStatus.Created;
-
-        //public string? AccountId { get; set; }
         public List<Account>? Account { get; set; }
         public DateTime? Created { get; set; } = DateTime.Now;
         public DateTime? Updated { get; set; }

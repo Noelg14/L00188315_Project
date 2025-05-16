@@ -28,7 +28,10 @@ namespace L00188315_Project.Infrastructure.Repositories
 
         public async Task<Consent> GetConsentAsync(string consentId)
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return await _dbContext.Consents.FirstOrDefaultAsync(c => c.ConsentId == consentId);
+#pragma warning restore CS8603 // Possible null reference return. 
+            // it's okay to return null here, as we are checking for null in the service.
         }
 
         public async Task<Consent> UpdateConsentAsync(Consent consent, ConsentStatus? status)
