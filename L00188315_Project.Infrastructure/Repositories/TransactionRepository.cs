@@ -17,7 +17,7 @@ namespace L00188315_Project.Infrastructure.Repositories
         public async Task<List<Transaction>> GetAllTransactionsAsync(string userId)
         {
             return await _dbContext
-                .Transactions.Where(t => t.Account.UserId == userId)
+                .Transactions.Where(t => t.Account!.UserId == userId)
                 .ToListAsync();
         }
 
@@ -28,14 +28,17 @@ namespace L00188315_Project.Infrastructure.Repositories
         {
             return await _dbContext
                 .Transactions.Where(t =>
-                    t.Account.UserId == userId && t.Account.AccountId == accountId
+                    t.Account!.UserId == userId && t.Account.AccountId == accountId
                 )
                 .ToListAsync();
         }
 
         public async Task<Transaction> GetTransactionByIdAsync(string transactionId)
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return await _dbContext.Transactions.FindAsync(transactionId);
+#pragma warning restore CS8603 // Possible null reference return.
+            // it's okay to return null here, as we are checking for null in the service.
         }
     }
 }

@@ -54,7 +54,6 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SortCode")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Updated")

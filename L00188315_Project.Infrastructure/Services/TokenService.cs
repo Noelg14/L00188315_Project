@@ -16,15 +16,20 @@ namespace L00188315_Project.Infrastructure.Services
         public TokenService(IConfiguration config)
         {
             this._config = config;
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Token:Key"]));
+            var key = config["Token:Key"];
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key), "Token key cannot be null or empty.");
+            }
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         }
 
         public string CreateToken(IdentityUser user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.GivenName, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.GivenName, user.UserName ?? ""),
                 new Claim(ClaimTypes.PrimarySid, user.Id),
             };
 

@@ -37,12 +37,12 @@
   </div>
   <div *ngIf="accountService.currentUser$ | async as user">
   <div class="dropdown ms-3 me-5 d-flex flex-row" style="cursor: pointer;">
-          <strong>Welcome {{user.displayName}}</strong>
-          <button class="btn btn-secondary" (click)="accountService.logout()">Logout</button>
+          <strong class="mx-2">Welcome {{user.displayName}}</strong>
+          <button class="btn btn-secondary mx" (click)="accountService.logout()">Logout</button>
     </div>
   </div>
     <!-- From Uiverse.io by Galahhad -->
-    <label class="ui-switch">
+    <label class="ui-switch me-2">
       <input type="checkbox" (change)="toggleTheme()" id="toggle" >
       <div class="slider">
         <div class="circle"></div>

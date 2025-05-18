@@ -1,30 +1,40 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
-using Azure;
 using L00188315_Project.Core.Interfaces.Services;
+using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Infrastructure.Services.DTOs;
 using Microsoft.Extensions.Configuration;
 
 namespace L00188315_Project.Infrastructure.Services;
 
-public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKeyVaultService
+public class KeyVaultService(
+    IHttpClientFactory _httpClientFactory,
+    IConfiguration _config,
+    ICacheService _cache
+) : IKeyVaultService
 {
-    private HttpClient _client = new HttpClient();
+    private HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
 
     public async Task<string> GetCertAsync(string certName)
     {
         var token = await GetToken();
 
         var keyVaultBaseUrl = CreateKeyVaultRequestUrl("certificates", certName);
-        var cert = await _client.GetFromJsonAsync<KeyVaultCertDTO>(keyVaultBaseUrl);
-        if (cert == null)
+        try
         {
-            throw new Exception("Certificate not found");
+            var cert = await _client.GetFromJsonAsync<KeyVaultCertDTO>(keyVaultBaseUrl);
+            if (cert == null)
+            {
+                throw new KeyVaultException("Certificate not found");
+            }
+            return cert.cer!;
         }
-        return cert.cer;
+        catch (Exception)
+        {
+            throw new KeyVaultException($"Cert not found");
+        }
     }
 
     public async Task<string> GetSecretAsync(string secretName)
@@ -39,14 +49,21 @@ public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKe
             "Bearer",
             token
         );
-        var secret = await _client.GetFromJsonAsync<KeyVaultSecretDTO>(keyVaultBaseUrl);
-        if (secret == null)
+        try
         {
-            throw new Exception("secret not found");
-        }
-        _cache.Set(secretName, secret.value, 3600);
+            var secret = await _client.GetFromJsonAsync<KeyVaultSecretDTO>(keyVaultBaseUrl);
+            if (secret == null)
+            {
+                throw new KeyVaultException("Secret not found");
+            }
+            _cache.Set(secretName, secret.value, 3600);
 
-        return secret.value;
+            return secret.value;
+        }
+        catch (Exception ex)
+        {
+            throw new KeyVaultException($"Error getting Secret: {ex.Message}");
+        }
     }
 
     private async Task<string> GetToken()
@@ -62,13 +79,25 @@ public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKe
         var tokenUrl = _config["kvSettings:TokenUrl"];
         var scope = _config["kvSettings:Scope"];
 
+        if (
+            string.IsNullOrEmpty(clientId)
+            || string.IsNullOrEmpty(clientSecret)
+            || string.IsNullOrEmpty(tokenUrl)
+            || string.IsNullOrEmpty(scope)
+        )
+        {
+            throw new ArgumentNullException(
+                "ClientId, ClientSecret, TokenUrl or Scope cannot be null or empty."
+            );
+        }
+
         var form = new FormUrlEncodedContent(
             new List<KeyValuePair<string, string>>
             {
-                KeyValuePair.Create("client_id", clientId),
-                KeyValuePair.Create("client_secret", clientSecret),
+                KeyValuePair.Create("client_id", clientId!),
+                KeyValuePair.Create("client_secret", clientSecret!),
                 KeyValuePair.Create("grant_type", "client_credentials"),
-                KeyValuePair.Create("scope", scope),
+                KeyValuePair.Create("scope", scope!),
             }
         );
         var tokenRepsponse = await _client.PostAsync(tokenUrl, form);
@@ -80,7 +109,7 @@ public class KeyVaultService(IConfiguration _config, ICacheService _cache) : IKe
         var tokenRepsonseJson = JsonSerializer.Deserialize<TokenDTO>(content);
         var value = _cache.Set(
             "KeyVaultToken",
-            tokenRepsonseJson.access_token,
+            tokenRepsonseJson!.access_token,
             tokenRepsonseJson.expires_in
         );
         return value;

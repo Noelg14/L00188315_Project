@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Interfaces.Services;
@@ -84,18 +85,19 @@ namespace L00188315_Project.Server.Controllers
                 apiResponse.Success = true;
                 return Ok(apiResponse);
             }
-            catch (ConsentException ex)
+            catch (Exception ex)
             {
-                _logger.LogError("Consent cannot be generated : {0}", ex.Message ?? string.Empty);
+                if (ex is TokenNullException)
+                    _logger.LogError("Token is null : {0}", ex.Message ?? string.Empty);
+                if (ex is ConsentException)
+                    _logger.LogError(
+                        "Consent cannot be generated : {0}",
+                        ex.Message ?? string.Empty
+                    );
                 return BadRequest(
-                    new ApiResponseDTO<string>
-                    {
-                        Message = ex.Message,
-                        Success = false,
-                    }
+                    new ApiResponseDTO<string> { Message = ex.Message, Success = false }
                 );
             }
-
         }
 
         /// <summary>
@@ -143,19 +145,10 @@ namespace L00188315_Project.Server.Controllers
             var token = await _revolutService.GetUserAccessToken(userId!, code);
 
             var usersAccounts = await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
-            //For each account, get the transactions and balance
-            //usersAccounts.ForEach(async x =>
-            //{
-            //   await Task.WhenAll(
-            //         _revolutService.GetTransactionsAsync(x.AccountId, userId!),
-            //         _revolutService.GetAccountBalanceAsync(x.AccountId, userId!)
-            //    );
-            //});
-
-#if DEBUG
-            return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
-            //return Ok(new { Token = token }); // if debugging, return the token
-#endif
+            if (Debugger.IsAttached)
+            {
+                return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
+            }
             return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
         }
 
@@ -166,7 +159,9 @@ namespace L00188315_Project.Server.Controllers
         [HttpGet("accounts")] //Call 1st
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts()
+        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts(
+        //[FromQuery]string? refresh
+        )
         {
             try
             {
@@ -212,6 +207,7 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetTransactions(
             [FromQuery] string? accountId
+        //, [FromQuery] string? refresh - TBC
         )
         {
             if (string.IsNullOrEmpty(accountId))
@@ -259,6 +255,7 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
             [FromQuery] string? accountId
+        //,[FromQuery] string? refresh
         )
         {
             if (string.IsNullOrEmpty(accountId))

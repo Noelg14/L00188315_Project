@@ -1,4 +1,5 @@
 ## Custom Ignores
+!**/Files/certificate.pfx
 **/obj
 **/bin
 *.db
@@ -14,7 +15,10 @@ testCover.bat
 
 **/node_modules
 appsettings.[dD]evelopment.json
-**/app/*
+**/L00188315_Project.Core/app/*
+**/L00188315_Project.Server/app/*
+**/L00188315_Project.Infrastructure/app/*
+
 
 
 ## Ignore Visual Studio temporary files, build results, and
@@ -255,7 +259,7 @@ ClientBin/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
-*.pfx
+#*.pfx
 *.publishsettings
 orleans.codegen.cs
 

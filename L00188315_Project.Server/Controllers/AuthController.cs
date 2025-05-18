@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace L00188315_Project.Server.Controllers
 {
+    /// <summary>
+    /// Controller for handling authentication and user registration
+    /// </summary>
     [Route("api/")]
     [ApiController]
     [AllowAnonymous]
@@ -23,7 +26,7 @@ namespace L00188315_Project.Server.Controllers
         /// <param name="loginDTO"></param>
         /// <returns>a <see cref="UserDTO"/> with a valid JWT</returns>
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> Auth([FromBody] LoginDTO loginDTO)
+        public async Task<ActionResult<UserDTO>> Login([FromBody] LoginDTO loginDTO)
         {
             ////User.FindFirstValue(ClaimTypes.Email);
 
@@ -50,10 +53,13 @@ namespace L00188315_Project.Server.Controllers
             };
         }
 
+        /// <summary>
+        /// Registers a new user and returns a JWT token
+        /// </summary>
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
-            var existingUser = await _userManager.FindByEmailAsync(registerDTO.Email);
+            var existingUser = await _userManager.FindByEmailAsync(registerDTO.Email!);
             if (existingUser is not null)
                 return BadRequest("User already exists");
 
@@ -70,13 +76,17 @@ namespace L00188315_Project.Server.Controllers
             };
         }
 
+        /// <summary>
+        /// Returns the currently logged in user - based on the JWT
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("me")]
         [Authorize]
         public async Task<ActionResult<UserDTO>> GetLoggedInUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
-            if(user == null)
+            var user = await _userManager.FindByEmailAsync(email!);
+            if (user == null)
                 return Unauthorized();
             return new UserDTO
             {
@@ -87,6 +97,11 @@ namespace L00188315_Project.Server.Controllers
             };
         }
 
+        /// <summary>
+        /// Endpoint to check if an email already exists in the database
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>True if exists , or false is not.</returns>
         [HttpGet("emailexists")]
         public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
         {

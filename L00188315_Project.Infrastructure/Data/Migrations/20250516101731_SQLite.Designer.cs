@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L00188315_Project.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250514211740_SQLite")]
+    [Migration("20250516101731_SQLite")]
     partial class SQLite
     {
         /// <inheritdoc />
@@ -57,7 +57,6 @@ namespace L00188315_Project.Infrastructure.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SortCode")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Updated")

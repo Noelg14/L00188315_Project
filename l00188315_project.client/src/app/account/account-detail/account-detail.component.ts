@@ -10,7 +10,7 @@ import { OpenBankingService } from 'src/app/services/open-banking.service';
 @Component({
   selector: 'app-account-detail',
   templateUrl: './account-detail.component.html',
-  styleUrls: ['./account-detail.component.css']
+  styleUrls: ['./account-detail.component.scss']
 })
 export class AccountDetailComponent implements OnInit {
   account?:Account;

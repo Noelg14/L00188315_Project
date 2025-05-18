@@ -24,7 +24,7 @@ export class AccountService {
   baseUrl:string = environment.apiUrl;
 
   loadCurrentUser(){
-    debugger;
+
     let token = localStorage.getItem("token")
     if(token === null){
       this.currentUserSource.next(null);

@@ -44,4 +44,4 @@ jobs:
       if: ${{ always() }}
       with:
         name: test-results-${{matrix.os}}
-        path: ${{github.workspace}}/TestResults/TestResults-${{matrix.os}}.trx
+        path: ${{github.workspace}}/Project_Tests/TestResults/TestResults-${{matrix.os}}.trx
