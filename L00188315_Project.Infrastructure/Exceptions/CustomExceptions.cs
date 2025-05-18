@@ -35,4 +35,9 @@ namespace L00188315_Project.Infrastructure.Exceptions
         public KeyVaultException(string message)
             : base(message) { }
     }
+    public class TokenException : Exception
+    {
+        public TokenException(string message)
+            : base(message) { }
+    }
 }

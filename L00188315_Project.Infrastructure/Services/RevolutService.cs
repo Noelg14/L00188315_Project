@@ -104,7 +104,7 @@ public class RevolutService : IRevolutService
         catch (Exception ex)
         {
             _logger.LogError($"Error getting access token: {ex.Message}");
-            throw new Exception(ex.Message,ex.InnerException);
+            throw new TokenException(ex.Message);
         }
     }
 
@@ -214,50 +214,59 @@ public class RevolutService : IRevolutService
         var consentRequest = new OpenBankingDataModel { Data = requestData };
         using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url))
         {
-            var token = await GetAccessToken();
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                _logger.LogInformation("");
-                throw new TokenNullException("Token is null");
-            }
-            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
-                "Bearer",
-                token
-            );
-            httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
-            httpRequestMessage.Content = new StringContent(
-                JsonSerializer.Serialize(consentRequest),
-                Encoding.UTF8,
-                "application/json"
-            );
-            _logger.LogInformation("Sending consent request to Revolut API");
 
-            var response = await _httpClient.SendAsync(httpRequestMessage);
+                var token = await GetAccessToken();
+                if (string.IsNullOrEmpty(token))
+                {
+                    _logger.LogInformation("");
+                    throw new TokenNullException("Token is null");
+                }
+                httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+                httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
+                httpRequestMessage.Content = new StringContent(
+                    JsonSerializer.Serialize(consentRequest),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+                _logger.LogInformation("Sending consent request to Revolut API");
 
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
-                await _consentRepository.CreateConsentAsync(
-                    new Consent
-                    {
-                        ConsentId = content?.Data?.ConsentId!,
-                        UserId = userId,
-                        ConsentStatus = ConsentStatus.Pending,
-                        Provider = "Revolut",
-                        Scopes = string.Join(", ", requestData.Permissions),
-                        Expires = DateTime.Now.AddDays(1),
-                    }
-                );
-                return await GenerateLoginPath(content?.Data?.ConsentId!);
+                var response = await _httpClient.SendAsync(httpRequestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
+                    await _consentRepository.CreateConsentAsync(
+                        new Consent
+                        {
+                            ConsentId = content?.Data?.ConsentId!,
+                            UserId = userId,
+                            ConsentStatus = ConsentStatus.Pending,
+                            Provider = "Revolut",
+                            Scopes = string.Join(", ", requestData.Permissions),
+                            Expires = DateTime.Now.AddDays(1),
+                        }
+                    );
+                    return await GenerateLoginPath(content?.Data?.ConsentId!);
+                }
+                else
+                {
+                    _logger.LogError(
+                        $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
+                    );
+                    throw new ConsentException(
+                        response.Content.ToString() ?? "An Error occurred when getting a consent"
+                    );
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogError(
-                    $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
-                );
-                throw new ConsentException(
-                    response.Content.ToString() ?? "An Error occurred when getting a consent"
-                );
+                _logger.LogError($"Error getting consent request: {ex.Message}");
+                throw new ConsentException(ex.Message);
             }
         }
     }
