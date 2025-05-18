@@ -28,6 +28,11 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Files\" />
+    <None Update="Files\testCert.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\key.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

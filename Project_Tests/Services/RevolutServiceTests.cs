@@ -264,8 +264,8 @@ public class RevolutServiceTests
         _mockConfig.Setup(x => x["Revolut:consentUrl"]).Returns("http://localhost/token");
         _mockConfig.Setup(x => x["Revolut:loginUrl"]).Returns("http://localhost/token");
         _mockConfig.Setup(x => x["Revolut:certPath"]).Returns("./");
-        _mockConfig.Setup(x => x["Revolut:keyPath"]).Returns("E:/ATU/Project/Idea/RevolutCert/private.key");
-        _mockConfig.Setup(x => x["Revolut:pfxPath"]).Returns("E:/ATU/Project/Idea/RevolutCert/combined.pfx");
+        _mockConfig.Setup(x => x["Revolut:keyPath"]).Returns("./Files/key.pem");
+        _mockConfig.Setup(x => x["Revolut:pfxPath"]).Returns("./Files/testCert.pfx");
         _mockConfig.Setup(x => x["Revolut:redirectUri"]).Returns("http://localhost");
 
         return _mockConfig;
