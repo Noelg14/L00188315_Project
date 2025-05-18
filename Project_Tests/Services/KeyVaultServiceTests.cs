@@ -17,7 +17,7 @@ public class KeyVaultServiceTests
 
     public KeyVaultServiceTests()
     {
-        _mockConfig = new Mock<IConfiguration>();
+        _mockConfig = new();
         _mockCache = new CacheService(GetTestCache());
         _mockConfig.Setup(x => x["kvSettings:ClientId"]).Returns("testClientId");
         _mockConfig.Setup(x => x["kvSettings:ClientSecret"]).Returns("testSecret");

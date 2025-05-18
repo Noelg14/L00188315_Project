@@ -16,7 +16,7 @@ public class TokenServiceTests
 
     public TokenServiceTests()
     {
-        _configuration = new Mock<IConfiguration>();
+        _configuration = new();
         _configuration
             .Setup(x => x["Token:Key"])
             .Returns("rjkq56RxW41yLcKSZn8trUD2qaCbiZQgcyg53DgkKR58ezBRpAjziKUBnSYnQRzU"); // random key
