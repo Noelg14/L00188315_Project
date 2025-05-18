@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -103,7 +104,7 @@ public class RevolutService : IRevolutService
         catch (Exception ex)
         {
             _logger.LogError($"Error getting access token: {ex.Message}");
-            return ex.Message;
+            throw new Exception(ex.Message,ex.InnerException);
         }
     }
 
@@ -472,8 +473,8 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                _logger.LogError($"Error getting transactions: {response.StatusCode}");
-                throw new TransactionException("Error Getting Transactions");
+                _logger.LogError($"Error getting data: {response.StatusCode}");
+                throw new DataException($"Error Getting data from {endpoint}");
             }
         }
     }
