@@ -2,7 +2,6 @@
 using L00188315_Project.Core.Interfaces.Repositories;
 using L00188315_Project.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace L00188315_Project.Infrastructure.Repositories
 {
@@ -21,6 +20,16 @@ namespace L00188315_Project.Infrastructure.Repositories
             _dbContext.Accounts.Add(account);
             await _dbContext.SaveChangesAsync();
             return account;
+        }
+
+        public async Task<bool> DeleteAccountAsync(string accountId)
+        {
+            var account = await _dbContext.Accounts
+                .FirstOrDefaultAsync(x => x.Id == accountId);
+            _dbContext.Accounts
+                .Remove(account!);
+            var complete = await _dbContext.SaveChangesAsync();
+            return complete > 0;
         }
 
         public async Task<Account> GetAccountAsync(string userId, string accountId)

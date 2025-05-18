@@ -15,6 +15,20 @@ public interface IRevolutService
     /// </summary>
     /// <returns></returns>
     public Task<List<Account>> GetAccountsAsync(string userId);
+    /// <summary>
+    /// Gets the account for the provided accountId
+    /// </summary>
+    /// <param name="accountId"></param>
+    /// <param name="userId"></param>
+    /// <returns>An Account related to the AccountId provided</returns>
+    public Task<Account> GetAccountAsync(string accountId,string userId);
+
+    /// <summary>
+    /// Deletes the provided account.
+    /// </summary>
+    /// <param name="accountId"></param>
+    /// <returns></returns>
+    public Task DeleteAccountAsync(string accountId);
 
     /// <summary>
     /// Get the transactions for the Revolut API

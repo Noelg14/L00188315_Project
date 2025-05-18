@@ -494,4 +494,25 @@ public class RevolutService : IRevolutService
             throw new ArgumentNullException(nameof(consentId), "ConsentId cannot be null");
         return await _consentRepository.GetConsentAsync(consentId);
     }
+
+    public async Task<Account> GetAccountAsync(string accountId, string userId)
+    {
+        if(string.IsNullOrEmpty(userId))
+            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+        if (string.IsNullOrEmpty(accountId))
+            throw new ArgumentNullException(nameof(accountId), "AccountId cannot be null");
+       return await _accountRepository.GetAccountAsync(userId, accountId);
+
+    }
+
+    public async Task DeleteAccountAsync(string accountId)
+    {
+        if (string.IsNullOrEmpty(accountId))
+            throw new ArgumentNullException(nameof(accountId), "AccountId cannot be null");
+        var complete = await _accountRepository.DeleteAccountAsync(accountId);
+        if (!complete)
+        {
+            throw new AccountException("Error deleting account");
+        }
+    }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Account } from 'src/app/models/account';
 import { Balance } from 'src/app/models/balance';
@@ -20,7 +20,8 @@ export class AccountDetailComponent implements OnInit {
   constructor(
     private readonly obService : OpenBankingService,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly toastr : ToastrService) {}
+    private readonly toastr : ToastrService,
+  private readonly router: Router) {}
   ngOnInit(): void {
     this.loadDetails();
   }
@@ -63,4 +64,18 @@ export class AccountDetailComponent implements OnInit {
           return '';
       }
     }
+    deleteAccount(){
+      const accountId = this.activatedRoute.snapshot.paramMap.get('id') as string;
+      this.obService.deleteAccount(accountId).subscribe({
+        next: response =>{
+          this.toastr.success("Account Removed", "Deleted")
+          this.router.navigateByUrl('/account')
+        },
+        error: err =>{
+          this.toastr.error(err.error.message, err.status)
+          console.error(err)
+        }
+      })
+    }
+
 }

@@ -40,4 +40,9 @@ namespace L00188315_Project.Infrastructure.Exceptions
         public TokenException(string message)
             : base(message) { }
     }
+    public class AccountException : Exception
+    {
+        public AccountException(string message)
+            : base(message) { }
+    }
 }

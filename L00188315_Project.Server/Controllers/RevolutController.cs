@@ -250,8 +250,8 @@ namespace L00188315_Project.Server.Controllers
         /// <param name="accountId">Account to get the balance</param>
         /// <returns>An <see cref="ApiResponseDTO{T}"/> with transactions</returns>
         [HttpGet("balances")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
             [FromQuery] string? accountId
@@ -290,6 +290,43 @@ namespace L00188315_Project.Server.Controllers
                     }
                 );
             }
+        }
+        /// <summary>
+        /// Deletes the account for the provided accountId
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpDelete("accounts")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> DeleteAccount([FromQuery]string accountId)
+        {
+
+            if (string.IsNullOrWhiteSpace(accountId))
+            {
+                return BadRequest("AccountId must contain a value");
+            }
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User must be logged in");
+            }
+            try
+            {
+                var account = await _revolutService.GetAccountAsync(accountId,userId);
+                await _revolutService.DeleteAccountAsync(account.Id);
+                return NoContent();
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(
+                    new ApiResponseDTO<string> { Message = ex.Message, Success = false }
+                );
+            }
+
         }
     }
 }
