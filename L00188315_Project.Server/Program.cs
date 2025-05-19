@@ -80,8 +80,6 @@ builder.Host.UseSerilog(
     (context, configuration) =>
     {
         configuration.ReadFrom.Configuration(context.Configuration).WriteTo.Console(); // write to console
-
-        //configuration.ReadFrom.Configuration(context.Configuration).WriteTo.DatadogLogs(apiKey: context.Configuration["Datadog:ApiKey"]);
     }
 );
 
@@ -130,7 +128,7 @@ app.MapGet(
 );
 #endif
 
-//app.MapFallbackToFile("/index.html");
+app.MapFallbackToFile("/index.html");
 //  Migrate in code
 using var scope = app.Services.CreateScope(); // create a scope for this
 var services = scope.ServiceProvider;

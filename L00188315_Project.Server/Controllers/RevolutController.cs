@@ -21,8 +21,6 @@ namespace L00188315_Project.Server.Controllers
     [Authorize]
     public class RevolutController : ControllerBase
     {
-        //"openbanking_intent_id": "CONSENTID",
-
         private readonly IRevolutService _revolutService;
         private readonly ILogger<RevolutController> _logger;
 
