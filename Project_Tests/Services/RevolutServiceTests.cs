@@ -268,6 +268,105 @@ public class RevolutServiceTests
 
     //GetAccountASync
     //DeleteAccountAsync
+    [Fact]
+    public async Task DeleteAccountAsync_ReturnsException_WhenNoAccountProvided()
+    {
+        // Arrange
+        var service = CreateService();
+        // Act
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.DeleteAccountAsync(string.Empty));
+       
+    }
+
+    [Fact]
+    public async Task DeleteAccountAsync_ReturnsOk_WhenAccountExists()
+    {
+        // Arrange
+        var userId = "user1";
+        var account = new Account
+        {
+            Id = "a1",
+            AccountId = "acc1",
+            AccountSubType = "Personal",
+            AccountType = "Personal",
+            Currency = "USD",
+            Name = "Test",
+            Iban = "123",
+        };
+        _accountRepository.Setup(r => r.DeleteAccountAsync(account.Id)).ReturnsAsync(true);
+        var service = CreateService();
+        // Act
+        await service.DeleteAccountAsync(account.Id);
+        // Assert
+        _accountRepository.Verify(r => r.DeleteAccountAsync(account.Id), Times.Once);
+    }
+    [Fact]
+    public async Task DeleteAccountAsync_ReturnsException_WhenIssueDeleting()
+    {
+        // Arrange
+        var userId = "user1";
+        var account = new Account
+        {
+            Id = "a1",
+            AccountId = "acc1",
+            AccountSubType = "Personal",
+            AccountType = "Personal",
+            Currency = "USD",
+            Name = "Test",
+            Iban = "123",
+        };
+        _accountRepository.Setup(r => r.DeleteAccountAsync(account.Id)).ReturnsAsync(false);
+        var service = CreateService();
+        // Act
+        // Assert
+        await Assert.ThrowsAsync<AccountException>(async () => await service.DeleteAccountAsync(account.Id));
+        _accountRepository.Verify(r => r.DeleteAccountAsync(account.Id), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAccountAsync_ReturnsOK_WhenAccountExists()
+    {
+        // Arrange
+        var userId = "user1";
+        var account = new Account
+        {
+            Id = "a1",
+            AccountId = "acc1",
+            AccountSubType = "Personal",
+            AccountType = "Personal",
+            Currency = "USD",
+            Name = "Test",
+            Iban = "123",
+        };
+        _accountRepository.Setup(r => r.GetAccountAsync(userId,account.Id)).ReturnsAsync(account);
+        var service = CreateService();
+        // Act
+        var returnedAccount = await service.GetAccountAsync(account.Id,userId);
+        // Assert
+        Assert.Equal(account, returnedAccount);
+        _accountRepository.Verify(r => r.GetAccountAsync(userId, account.Id), Times.Once);
+    }
+    [Fact]
+    public async Task GetAccountAsync_ReturnsException_WhenNoAccountIdProvided()
+    {
+        // Arrange
+        var userId = "user1";
+        var service = CreateService();
+        // Act
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.GetAccountAsync(string.Empty, userId));
+    }
+    [Fact]
+    public async Task GetAccountAsync_ReturnsException_WhenNoUserIdProvided()
+    {
+        // Arrange
+        var accountId = "acc1";
+        var service = CreateService();
+        // Act
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.GetAccountAsync(accountId,string.Empty));
+    }
 
     private RevolutService CreateService()
     {

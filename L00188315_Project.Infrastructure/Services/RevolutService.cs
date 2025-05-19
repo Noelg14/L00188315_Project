@@ -592,7 +592,7 @@ public class RevolutService : IRevolutService
     }
 
     /// <summary>
-    ///  Removes an account from the DB
+    ///  Removes an account from the DB by its TRUE id - not the accountId
     /// </summary>
     /// <param name="accountId"></param>
     /// <returns></returns>
