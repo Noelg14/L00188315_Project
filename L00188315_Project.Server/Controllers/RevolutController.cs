@@ -325,19 +325,42 @@ namespace L00188315_Project.Server.Controllers
             }
         }
 
-        
+        /// <summary>
+        /// Gets all transactions for the user
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("transactions/all")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<List<Transaction>>> GetAllTransactions()
+        public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetAllTransactions()
         {
             var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("User must be logged in");
             }
-            return Ok();
+            try
+            {
+                var transactions = await _revolutService.GetTransactionsForUserAsync(userId);
+                if(transactions is null  || transactions.Count < 1)
+                {
+                    return NoContent();
+                }
+                return Ok(
+                        new ApiResponseDTO<List<Transaction>>
+                        {
+                            Data = transactions,
+                            Success = true,
+                        }
+                    );
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(
+                    new ApiResponseDTO<string> { Message = ex.Message, Success = false }
+                );
+            }
         }
     }
 }

@@ -283,7 +283,6 @@ public class RevolutServiceTests
     public async Task DeleteAccountAsync_ReturnsOk_WhenAccountExists()
     {
         // Arrange
-        var userId = "user1";
         var account = new Account
         {
             Id = "a1",
@@ -305,7 +304,6 @@ public class RevolutServiceTests
     public async Task DeleteAccountAsync_ReturnsException_WhenIssueDeleting()
     {
         // Arrange
-        var userId = "user1";
         var account = new Account
         {
             Id = "a1",

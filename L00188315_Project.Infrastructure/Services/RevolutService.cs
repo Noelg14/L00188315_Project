@@ -608,4 +608,25 @@ public class RevolutService : IRevolutService
             throw new AccountException("Error deleting account");
         }
     }
+    
+    public async Task<List<Transaction>> GetTransactionsForUserAsync(string userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+        var accounts = await _accountRepository.GetAllAccountsAsync(userId);
+        var transactions = new List<Transaction>();
+        if(accounts is null || accounts.Count == 0)
+        {
+            return transactions;
+        }
+        foreach (var account in accounts)
+        {
+            var accountTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(
+                userId,
+                account.AccountId
+            );
+            transactions.AddRange(accountTransactions);
+        }
+        return transactions;
+    }
 }

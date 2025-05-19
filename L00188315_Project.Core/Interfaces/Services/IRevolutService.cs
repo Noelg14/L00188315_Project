@@ -67,4 +67,11 @@ public interface IRevolutService
     /// <param name="consentId"></param>
     /// <returns></returns>
     public Task<Consent> GetConsentByIdAsync(string consentId);
+
+    /// <summary>
+    /// Gets all transactions for a user and their accounts
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public Task<List<Transaction>> GetTransactionsForUserAsync(string userId);
 }
