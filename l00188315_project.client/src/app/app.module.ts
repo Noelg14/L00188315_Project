@@ -15,13 +15,15 @@ import { HttpInterceptorInterceptor } from './interceptor/http-interceptor.inter
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxSpinner, NgxSpinnerModule } from 'ngx-spinner';
 import { LoadingInterceptor } from './interceptor/loading.interceptor';
+import { TransactionDetailComponent } from './transaction-detail/transaction-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    TransactionDetailComponent
   ],
   imports: [
     BrowserModule,

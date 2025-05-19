@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
@@ -474,6 +475,10 @@ public class RevolutService : IRevolutService
                 | X509KeyStorageFlags.Exportable
                 | X509KeyStorageFlags.PersistKeySet
         );
+        if (Debugger.IsAttached)
+        {
+            certWithKey =  new X509Certificate2(pfxBytes);
+        }
         _logger.LogInformation(
             "Loaded certificate from PFX file {0}",
             certWithKey.Thumbprint ?? ""
@@ -608,7 +613,12 @@ public class RevolutService : IRevolutService
             throw new AccountException("Error deleting account");
         }
     }
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<List<Transaction>> GetTransactionsForUserAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))

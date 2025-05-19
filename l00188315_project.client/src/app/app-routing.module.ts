@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login/login.component';
 import { RegisterComponent } from './register/register/register.component';
 import { AccountComponent } from './account/account.component';
 import { AccountDetailComponent } from './account/account-detail/account-detail.component';
+import { TransactionDetailComponent } from './transaction-detail/transaction-detail.component';
 
 const routes: Routes = [
   {path:'',component: HomeComponent},
@@ -12,6 +13,7 @@ const routes: Routes = [
   {path:'register',component:RegisterComponent},
   {path:'account',component:AccountComponent,pathMatch:'full'  },
   {path:'account/:id',component:AccountDetailComponent},
+  {path:'transactions',component:TransactionDetailComponent},
 
   // {
   //   path:'checkout',
