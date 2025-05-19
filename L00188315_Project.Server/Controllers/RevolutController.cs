@@ -324,5 +324,20 @@ namespace L00188315_Project.Server.Controllers
                 );
             }
         }
+
+        
+        [HttpGet("transactions/all")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<List<Transaction>>> GetAllTransactions()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User must be logged in");
+            }
+            return Ok();
+        }
     }
 }
