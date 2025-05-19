@@ -408,12 +408,16 @@ public class RevolutService : IRevolutService
         _logger.LogInformation("Loading certificate from PFX file");
         _logger.LogInformation("PFX Size : {0}", pfxBytes.Length);
 
-        var certWithKey = new X509Certificate2(pfxBytes);
+        var certWithKey = new X509Certificate2(pfxBytes,
+            string.Empty, 
+            X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet
+);
         _logger.LogInformation(
             "Loaded certificate from PFX file {0}",
             certWithKey.Thumbprint ?? ""
         );
         _logger.LogInformation("Loaded certificate {0}", certWithKey.SubjectName.Name ?? "");
+        _logger.LogInformation("Cert has private key: {0}", certWithKey.HasPrivateKey);
 
         var clientHandler = new HttpClientHandler
         {
