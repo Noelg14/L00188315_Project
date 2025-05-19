@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -103,7 +104,7 @@ public class RevolutService : IRevolutService
         catch (Exception ex)
         {
             _logger.LogError($"Error getting access token: {ex.Message}");
-            return ex.Message;
+            throw new TokenException(ex.Message);
         }
     }
 
@@ -213,50 +214,59 @@ public class RevolutService : IRevolutService
         var consentRequest = new OpenBankingDataModel { Data = requestData };
         using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url))
         {
-            var token = await GetAccessToken();
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                _logger.LogInformation("");
-                throw new TokenNullException("Token is null");
-            }
-            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
-                "Bearer",
-                token
-            );
-            httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
-            httpRequestMessage.Content = new StringContent(
-                JsonSerializer.Serialize(consentRequest),
-                Encoding.UTF8,
-                "application/json"
-            );
-            _logger.LogInformation("Sending consent request to Revolut API");
 
-            var response = await _httpClient.SendAsync(httpRequestMessage);
+                var token = await GetAccessToken();
+                if (string.IsNullOrEmpty(token))
+                {
+                    _logger.LogInformation("");
+                    throw new TokenNullException("Token is null");
+                }
+                httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+                httpRequestMessage.Headers.Add("x-fapi-financial-id", "001580000103UAvAAM");
+                httpRequestMessage.Content = new StringContent(
+                    JsonSerializer.Serialize(consentRequest),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+                _logger.LogInformation("Sending consent request to Revolut API");
 
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
-                await _consentRepository.CreateConsentAsync(
-                    new Consent
-                    {
-                        ConsentId = content?.Data?.ConsentId!,
-                        UserId = userId,
-                        ConsentStatus = ConsentStatus.Pending,
-                        Provider = "Revolut",
-                        Scopes = string.Join(", ", requestData.Permissions),
-                        Expires = DateTime.Now.AddDays(1),
-                    }
-                );
-                return await GenerateLoginPath(content?.Data?.ConsentId!);
+                var response = await _httpClient.SendAsync(httpRequestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadFromJsonAsync<OpenBankingDataModel>(jso);
+                    await _consentRepository.CreateConsentAsync(
+                        new Consent
+                        {
+                            ConsentId = content?.Data?.ConsentId!,
+                            UserId = userId,
+                            ConsentStatus = ConsentStatus.Pending,
+                            Provider = "Revolut",
+                            Scopes = string.Join(", ", requestData.Permissions),
+                            Expires = DateTime.Now.AddDays(1),
+                        }
+                    );
+                    return await GenerateLoginPath(content?.Data?.ConsentId!);
+                }
+                else
+                {
+                    _logger.LogError(
+                        $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
+                    );
+                    throw new ConsentException(
+                        response.Content.ToString() ?? "An Error occurred when getting a consent"
+                    );
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogError(
-                    $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
-                );
-                throw new ConsentException(
-                    response.Content.ToString() ?? "An Error occurred when getting a consent"
-                );
+                _logger.LogError($"Error getting consent request: {ex.Message}");
+                throw new ConsentException(ex.Message);
             }
         }
     }
@@ -398,12 +408,16 @@ public class RevolutService : IRevolutService
         _logger.LogInformation("Loading certificate from PFX file");
         _logger.LogInformation("PFX Size : {0}", pfxBytes.Length);
 
-        var certWithKey = new X509Certificate2(pfxBytes);
+        var certWithKey = new X509Certificate2(pfxBytes,
+            string.Empty, 
+            X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet
+);
         _logger.LogInformation(
             "Loaded certificate from PFX file {0}",
             certWithKey.Thumbprint ?? ""
         );
         _logger.LogInformation("Loaded certificate {0}", certWithKey.SubjectName.Name ?? "");
+        _logger.LogInformation("Cert has private key: {0}", certWithKey.HasPrivateKey);
 
         var clientHandler = new HttpClientHandler
         {
@@ -472,8 +486,8 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                _logger.LogError($"Error getting transactions: {response.StatusCode}");
-                throw new TransactionException("Error Getting Transactions");
+                _logger.LogError($"Error getting data: {response.StatusCode}");
+                throw new DataException($"Error Getting data from {endpoint}");
             }
         }
     }
@@ -483,5 +497,26 @@ public class RevolutService : IRevolutService
         if (string.IsNullOrEmpty(consentId))
             throw new ArgumentNullException(nameof(consentId), "ConsentId cannot be null");
         return await _consentRepository.GetConsentAsync(consentId);
+    }
+
+    public async Task<Account> GetAccountAsync(string accountId, string userId)
+    {
+        if(string.IsNullOrEmpty(userId))
+            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+        if (string.IsNullOrEmpty(accountId))
+            throw new ArgumentNullException(nameof(accountId), "AccountId cannot be null");
+       return await _accountRepository.GetAccountAsync(userId, accountId);
+
+    }
+
+    public async Task DeleteAccountAsync(string accountId)
+    {
+        if (string.IsNullOrEmpty(accountId))
+            throw new ArgumentNullException(nameof(accountId), "AccountId cannot be null");
+        var complete = await _accountRepository.DeleteAccountAsync(accountId);
+        if (!complete)
+        {
+            throw new AccountException("Error deleting account");
+        }
     }
 }

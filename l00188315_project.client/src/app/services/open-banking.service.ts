@@ -26,4 +26,7 @@ export class OpenBankingService {
     consent(){
       return this.httpClient.get<ApiResponse<string>>(this.baseUrl+'api/Revolut/consent');
     }
+    deleteAccount(accountId : string){
+        return this.httpClient.delete<ApiResponse<string>>(this.baseUrl+`api/Revolut/accounts?accountId=${accountId}`);
+    }
 }
