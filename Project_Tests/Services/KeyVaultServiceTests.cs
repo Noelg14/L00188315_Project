@@ -1,4 +1,5 @@
-﻿using L00188315_Project.Core.Interfaces.Services;
+﻿using System.Net;
+using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Exceptions;
 using L00188315_Project.Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
@@ -6,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Moq.Protected;
-using System.Net;
 
 namespace Project_Tests;
 
@@ -71,7 +71,9 @@ public class KeyVaultServiceTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri!.AbsoluteUri.Contains("certificates")),
+                ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri!.AbsoluteUri.Contains("certificates")
+                ),
                 ItExpr.IsAny<CancellationToken>()
             )
             .ReturnsAsync(
@@ -92,6 +94,7 @@ public class KeyVaultServiceTests
         // Assert
         Assert.Contains("Cert not found", exception.Message);
     }
+
     [Fact]
     public async Task GetSecretAsync_ShouldThrowError_WhenSecretIsNull()
     {
@@ -122,6 +125,7 @@ public class KeyVaultServiceTests
         // Assert
         Assert.Contains("Error getting Secret", exception.Message);
     }
+
     [Fact]
     public async Task GetSecretAsync_ShouldThrowError_WhenSecretDoesNotExist()
     {

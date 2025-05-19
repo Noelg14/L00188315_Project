@@ -42,6 +42,7 @@ namespace L00188315_Project.Core.Interfaces.Repositories
         /// <param name="account"></param>
         /// <returns></returns>
         public Task<Account> UpdateAccountAsync(string userId, Account account);
+
         /// <summary>
         /// Deletes the provided Account
         /// </summary>

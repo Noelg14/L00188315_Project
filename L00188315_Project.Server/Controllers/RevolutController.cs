@@ -291,6 +291,7 @@ namespace L00188315_Project.Server.Controllers
                 );
             }
         }
+
         /// <summary>
         /// Deletes the account for the provided accountId
         /// </summary>
@@ -300,9 +301,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> DeleteAccount([FromQuery]string accountId)
+        public async Task<ActionResult> DeleteAccount([FromQuery] string accountId)
         {
-
             if (string.IsNullOrWhiteSpace(accountId))
             {
                 return BadRequest("AccountId must contain a value");
@@ -314,19 +314,17 @@ namespace L00188315_Project.Server.Controllers
             }
             try
             {
-                var account = await _revolutService.GetAccountAsync(accountId,userId);
+                var account = await _revolutService.GetAccountAsync(accountId, userId);
                 await _revolutService.DeleteAccountAsync(account.Id);
                 return NoContent();
-
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<string> { Message = ex.Message, Success = false }
                 );
             }
-
         }
     }
 }

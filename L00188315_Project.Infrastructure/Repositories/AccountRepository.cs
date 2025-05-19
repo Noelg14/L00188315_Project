@@ -24,10 +24,8 @@ namespace L00188315_Project.Infrastructure.Repositories
 
         public async Task<bool> DeleteAccountAsync(string accountId)
         {
-            var account = await _dbContext.Accounts
-                .FirstOrDefaultAsync(x => x.Id == accountId);
-            _dbContext.Accounts
-                .Remove(account!);
+            var account = await _dbContext.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
+            _dbContext.Accounts.Remove(account!);
             var complete = await _dbContext.SaveChangesAsync();
             return complete > 0;
         }

@@ -34,19 +34,18 @@ public class RevolutServiceTests
             RootAccountId = accountId,
             Currency = "USD",
             Amount = "1000",
-
         };
-        _balanceRepository.Setup(r => r.GetBalanceAsync(userId,accountId)).ReturnsAsync(balance);
+        _balanceRepository.Setup(r => r.GetBalanceAsync(userId, accountId)).ReturnsAsync(balance);
         var service = CreateService();
 
         // Act
-        var result = await service.GetAccountBalanceAsync(accountId,userId);
+        var result = await service.GetAccountBalanceAsync(accountId, userId);
 
         // Assert
         Assert.Equal(balance, result);
         _balanceRepository.Verify(r => r.GetBalanceAsync(userId, accountId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetTransactionsAsync_ReturnsTransactions_WhenTransactionsExist()
     {
@@ -64,17 +63,22 @@ public class RevolutServiceTests
                 TransactionInformation = "Test transaction",
             },
         };
-        _transactionRepository.Setup(r => r.GetAllTransactionsByAccountIdAsync(userId,accountId)).ReturnsAsync(transactions);
+        _transactionRepository
+            .Setup(r => r.GetAllTransactionsByAccountIdAsync(userId, accountId))
+            .ReturnsAsync(transactions);
         var service = CreateService();
 
         // Act
-        var result = await service.GetTransactionsAsync(accountId,userId);
+        var result = await service.GetTransactionsAsync(accountId, userId);
 
         // Assert
         Assert.Equal(transactions, result);
-        _transactionRepository.Verify(r => r.GetAllTransactionsByAccountIdAsync(userId,accountId), Times.Once);
+        _transactionRepository.Verify(
+            r => r.GetAllTransactionsByAccountIdAsync(userId, accountId),
+            Times.Once
+        );
     }
-    
+
     [Fact]
     public async Task GetAccountsAsync_ReturnsAccounts_WhenAccountsExist()
     {
@@ -103,7 +107,7 @@ public class RevolutServiceTests
         Assert.Equal(accounts, result);
         _accountRepository.Verify(r => r.GetAllAccountsAsync(userId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetAccountsAsync_ReturnsException_WhenNoAccountsAndNoToken()
     {
@@ -111,10 +115,12 @@ public class RevolutServiceTests
         var userId = "user1";
         var service = CreateService();
         // Act & Assert
-        await Assert.ThrowsAsync<TokenNullException>(async () => await service.GetAccountsAsync(userId));
+        await Assert.ThrowsAsync<TokenNullException>(async () =>
+            await service.GetAccountsAsync(userId)
+        );
         _accountRepository.Verify(r => r.GetAllAccountsAsync(userId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetBalancesAsync_ReturnsException_WhenNoBalanceAndNoToken()
     {
@@ -122,15 +128,19 @@ public class RevolutServiceTests
         var userId = "user1";
         var accountId = "acc1";
 #pragma warning disable CS8603 // Possible null reference return. Allow it for this test - we want a null return.
-        _balanceRepository.Setup(r => r.GetBalanceAsync(userId,accountId)).ReturnsAsync(() => null);
+        _balanceRepository
+            .Setup(r => r.GetBalanceAsync(userId, accountId))
+            .ReturnsAsync(() => null);
 #pragma warning restore CS8603 // Possible null reference return.
         var service = CreateService();
         // Act
         // Assert
-        await Assert.ThrowsAsync<TokenNullException>(async () => await service.GetAccountBalanceAsync(accountId,userId));
-        _balanceRepository.Verify(r => r.GetBalanceAsync(userId,accountId), Times.Once);
+        await Assert.ThrowsAsync<TokenNullException>(async () =>
+            await service.GetAccountBalanceAsync(accountId, userId)
+        );
+        _balanceRepository.Verify(r => r.GetBalanceAsync(userId, accountId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetTransactionsAsync_ReturnsException_WhenNoTransactionsAndNoToken()
     {
@@ -140,8 +150,13 @@ public class RevolutServiceTests
         var service = CreateService();
         // Act
         // Assert
-        await Assert.ThrowsAsync<TokenNullException>(async () => await service.GetTransactionsAsync(accountId,userId));
-        _transactionRepository.Verify(r => r.GetAllTransactionsByAccountIdAsync(userId,accountId), Times.Once);
+        await Assert.ThrowsAsync<TokenNullException>(async () =>
+            await service.GetTransactionsAsync(accountId, userId)
+        );
+        _transactionRepository.Verify(
+            r => r.GetAllTransactionsByAccountIdAsync(userId, accountId),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -155,17 +170,21 @@ public class RevolutServiceTests
             ConsentId = "consent1",
             ConsentStatus = ConsentStatus.Created,
             Provider = "Revolut",
-            Expires = DateTime.Now.AddDays(1)
+            Expires = DateTime.Now.AddDays(1),
         };
         _consentRepository.Setup(r => r.GetConsentAsync(consent.ConsentId)).ReturnsAsync(consent);
         var service = CreateService();
-        // Act 
+        // Act
         await service.UpdateConsent(consent.ConsentId, ConsentStatus.Complete);
         consent.ConsentStatus = ConsentStatus.Complete;
         // Assert
         _consentRepository.Verify(r => r.GetConsentAsync(consent.ConsentId), Times.Once);
-        _consentRepository.Verify(r => r.UpdateConsentAsync(consent, ConsentStatus.Complete), Times.Once);
+        _consentRepository.Verify(
+            r => r.UpdateConsentAsync(consent, ConsentStatus.Complete),
+            Times.Once
+        );
     }
+
     [Fact]
     public async Task UpdateConsent_ReturnsException_WhenConsentDoesNotExists()
     {
@@ -175,12 +194,14 @@ public class RevolutServiceTests
         _consentRepository.Setup(r => r.GetConsentAsync(consentId)).ReturnsAsync(() => null);
 #pragma warning restore
         var service = CreateService();
-        // Act 
+        // Act
         // Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () => await service.UpdateConsent(consentId, ConsentStatus.Complete));
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+            await service.UpdateConsent(consentId, ConsentStatus.Complete)
+        );
         _consentRepository.Verify(r => r.GetConsentAsync(consentId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetConsentRequestAsync_ReturnsOk_WhenConsentExists()
     {
@@ -192,10 +213,12 @@ public class RevolutServiceTests
             ConsentId = "consent1",
             ConsentStatus = ConsentStatus.Created,
             Provider = "Revolut",
-            Expires = DateTime.Now.AddDays(1)
+            Expires = DateTime.Now.AddDays(1),
         };
 
-        _consentRepository.Setup(r => r.GetAllConsentsAsync(userId)).ReturnsAsync(new List<Consent> { consent });
+        _consentRepository
+            .Setup(r => r.GetAllConsentsAsync(userId))
+            .ReturnsAsync(new List<Consent> { consent });
         _keyVaultService.Setup(r => r.GetSecretAsync("revolutClientId")).ReturnsAsync("value");
         var service = CreateService();
         // Act
@@ -206,7 +229,7 @@ public class RevolutServiceTests
         Assert.Contains("redirect_uri", generatedRequest);
         _consentRepository.Verify(r => r.GetAllConsentsAsync(userId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetConsentByIdAsync_ReturnsOk_WhenConsentExists()
     {
@@ -218,7 +241,7 @@ public class RevolutServiceTests
             ConsentId = "consent1",
             ConsentStatus = ConsentStatus.Created,
             Provider = "Revolut",
-            Expires = DateTime.Now.AddDays(1)
+            Expires = DateTime.Now.AddDays(1),
         };
         _consentRepository.Setup(r => r.GetConsentAsync(consent.ConsentId)).ReturnsAsync(consent);
         var service = CreateService();
@@ -228,7 +251,7 @@ public class RevolutServiceTests
         Assert.Equal(consent, returnedConsent);
         _consentRepository.Verify(r => r.GetConsentAsync(consent.ConsentId), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetConsentByIdAsync_ReturnsException_WhenConsentIdIsNullExists()
     {
@@ -237,10 +260,12 @@ public class RevolutServiceTests
         // Act
         // Assert
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.GetConsentByIdAsync(null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await service.GetConsentByIdAsync(null)
+        );
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
-    
+
     private RevolutService CreateService()
     {
         return new RevolutService(
