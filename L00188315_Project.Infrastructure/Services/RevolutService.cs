@@ -475,7 +475,7 @@ public class RevolutService : IRevolutService
                 | X509KeyStorageFlags.Exportable
                 | X509KeyStorageFlags.PersistKeySet
         );
-        if (Debugger.IsAttached)
+        if (Debugger.IsAttached) // Required for this to work locally??????
         {
             certWithKey =  new X509Certificate2(pfxBytes);
         }
