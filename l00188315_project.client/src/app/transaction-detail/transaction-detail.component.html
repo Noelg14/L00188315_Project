@@ -1,6 +1,6 @@
 <div >
-  <div id="csvDownload"></div>
-    <h1 class="h1">Transactions</h1>
+  <div id="csvDownload" class="py-2 my-2"></div>
+    <h1 class="h1">All Transactions</h1>
     <div *ngIf="transactions.length === 0 ">
       <h3 class="text-danger">No Transactions found</h3>
     </div>
@@ -22,7 +22,7 @@
           <tbody>
             <tr *ngFor="let transaction of transactions">
               <td>{{transaction.bookingDateTime|date:'dd/MM/yyyy HH:mm:ss'}}</td>
-              <td>{{transaction.account === null ? "Unknown" : transaction.account.name +'|'+ transaction.account.currency }}</td>
+              <td>{{transaction.accountId}}</td>
               <td>{{transaction.amountCurrency}}</td>
               <td>{{transaction.amount}}</td>
               <td>{{transaction.transactionInformation}} </td>

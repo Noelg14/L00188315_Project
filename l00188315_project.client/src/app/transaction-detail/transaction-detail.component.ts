@@ -30,7 +30,7 @@ export class TransactionDetailComponent implements OnInit {
     const header = "Transaction Date,Account,Currency,Amount,Detail,Type,Status"
     let rows = "";
     for(let transaction of this.transactions){
-        let row = `${transaction.bookingDateTime},${transaction.account},${transaction.amountCurrency},${transaction.amount},${transaction.userComments	},${transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator},${transaction.status}`+"\n";
+        let row = `${transaction.bookingDateTime},${transaction.accountId},${transaction.amountCurrency},${transaction.amount},${transaction.transactionInformation	},${transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator},${transaction.status}`+"\n";
         rows += row;
     }
     const csvContent = header + "\n" + rows;

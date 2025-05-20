@@ -1,8 +1,8 @@
 import { Account } from "./account"
 
 export interface Transaction {
-  rootAccountId: string
-  account : Account| null
+  accountId: string
+  account : Account | null
   amount: string
   amountCurrency: string
   creditDebitIndicator: string | null
