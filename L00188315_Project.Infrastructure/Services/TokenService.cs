@@ -8,11 +8,19 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace L00188315_Project.Infrastructure.Services
 {
+    /// <summary>
+    /// Token Service class for creating JWT tokens.
+    /// </summary>
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
 
+        /// <summary>
+        /// Constructor for TokenService.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public TokenService(IConfiguration config)
         {
             this._config = config;
@@ -24,6 +32,11 @@ namespace L00188315_Project.Infrastructure.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         }
 
+        /// <summary>
+        /// Create a JWT token for the given user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public string CreateToken(IdentityUser user)
         {
             var claims = new List<Claim>

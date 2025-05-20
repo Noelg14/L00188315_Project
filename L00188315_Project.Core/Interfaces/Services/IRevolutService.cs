@@ -15,13 +15,14 @@ public interface IRevolutService
     /// </summary>
     /// <returns></returns>
     public Task<List<Account>> GetAccountsAsync(string userId);
+
     /// <summary>
     /// Gets the account for the provided accountId
     /// </summary>
     /// <param name="accountId"></param>
     /// <param name="userId"></param>
     /// <returns>An Account related to the AccountId provided</returns>
-    public Task<Account> GetAccountAsync(string accountId,string userId);
+    public Task<Account> GetAccountAsync(string accountId, string userId);
 
     /// <summary>
     /// Deletes the provided account.
@@ -66,4 +67,11 @@ public interface IRevolutService
     /// <param name="consentId"></param>
     /// <returns></returns>
     public Task<Consent> GetConsentByIdAsync(string consentId);
+
+    /// <summary>
+    /// Gets all transactions for a user and their accounts
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public Task<List<Transaction>> GetTransactionsForUserAsync(string userId);
 }

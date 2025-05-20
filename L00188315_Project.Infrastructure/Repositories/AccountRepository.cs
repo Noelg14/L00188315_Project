@@ -5,15 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace L00188315_Project.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Iplementation of the IAccountRepository interface for managing accounts.
+    /// </summary>
     public class AccountRepository : IAccountRepository
     {
         private readonly AppDbContext _dbContext;
 
+        /// <summary>
+        /// Constructor for AccountRepository.
+        /// </summary>
+        /// <param name="dbContext"></param>
         public AccountRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Create an account for a user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="account"></param>
+        /// <returns></returns>
         public async Task<Account> CreateAccountAsync(string userId, Account account)
         {
             account.UserId = userId;
@@ -22,16 +35,25 @@ namespace L00188315_Project.Infrastructure.Repositories
             return account;
         }
 
+        /// <summary>
+        /// Deletes a provided Account.
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         public async Task<bool> DeleteAccountAsync(string accountId)
         {
-            var account = await _dbContext.Accounts
-                .FirstOrDefaultAsync(x => x.Id == accountId);
-            _dbContext.Accounts
-                .Remove(account!);
+            var account = await _dbContext.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
+            _dbContext.Accounts.Remove(account!);
             var complete = await _dbContext.SaveChangesAsync();
             return complete > 0;
         }
 
+        /// <summary>
+        /// Gets an account by its id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         public async Task<Account> GetAccountAsync(string userId, string accountId)
         {
             var account = await _dbContext
@@ -40,6 +62,11 @@ namespace L00188315_Project.Infrastructure.Repositories
             return account!;
         }
 
+        /// <summary>
+        /// Gets all accounts for a user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<List<Account>> GetAllAccountsAsync(string userId)
         {
             var accounts = await _dbContext
@@ -49,6 +76,12 @@ namespace L00188315_Project.Infrastructure.Repositories
             return accounts;
         }
 
+        /// <summary>
+        /// Updates an account for a user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="account"></param>
+        /// <returns></returns>
         public async Task<Account> UpdateAccountAsync(string userId, Account account)
         {
             var currentAccount = await GetAccountAsync(userId, account.AccountId);

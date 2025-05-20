@@ -21,8 +21,6 @@ namespace L00188315_Project.Server.Controllers
     [Authorize]
     public class RevolutController : ControllerBase
     {
-        //"openbanking_intent_id": "CONSENTID",
-
         private readonly IRevolutService _revolutService;
         private readonly ILogger<RevolutController> _logger;
 
@@ -291,6 +289,7 @@ namespace L00188315_Project.Server.Controllers
                 );
             }
         }
+
         /// <summary>
         /// Deletes the account for the provided accountId
         /// </summary>
@@ -300,9 +299,8 @@ namespace L00188315_Project.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> DeleteAccount([FromQuery]string accountId)
+        public async Task<ActionResult> DeleteAccount([FromQuery] string accountId)
         {
-
             if (string.IsNullOrWhiteSpace(accountId))
             {
                 return BadRequest("AccountId must contain a value");
@@ -314,19 +312,52 @@ namespace L00188315_Project.Server.Controllers
             }
             try
             {
-                var account = await _revolutService.GetAccountAsync(accountId,userId);
+                var account = await _revolutService.GetAccountAsync(accountId, userId);
                 await _revolutService.DeleteAccountAsync(account.Id);
                 return NoContent();
-
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<string> { Message = ex.Message, Success = false }
                 );
             }
+        }
 
+        /// <summary>
+        /// Gets all transactions for the user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("transactions/all")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetAllTransactions()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User must be logged in");
+            }
+            try
+            {
+                var transactions = await _revolutService.GetTransactionsForUserAsync(userId);
+                if (transactions is null || transactions.Count < 1)
+                {
+                    return NoContent();
+                }
+                return Ok(
+                    new ApiResponseDTO<List<Transaction>> { Data = transactions, Success = true }
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(
+                    new ApiResponseDTO<string> { Message = ex.Message, Success = false }
+                );
+            }
         }
     }
 }

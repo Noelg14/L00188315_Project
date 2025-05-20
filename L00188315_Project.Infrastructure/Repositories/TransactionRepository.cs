@@ -5,8 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace L00188315_Project.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Implementation of the ITransactionRepository interface for managing transactions.
+    /// </summary>
+    /// <param name="_dbContext"></param>
     public class TransactionRepository(AppDbContext _dbContext) : ITransactionRepository
     {
+        /// <summary>
+        /// Create transactions for a user.
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <returns></returns>
         public async Task CreateTransactionsAsync(List<Transaction> transactions)
         {
             await _dbContext.Transactions.AddRangeAsync(transactions);
@@ -14,6 +23,11 @@ namespace L00188315_Project.Infrastructure.Repositories
             return;
         }
 
+        /// <summary>
+        /// Get all transactions for a user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<List<Transaction>> GetAllTransactionsAsync(string userId)
         {
             return await _dbContext
@@ -21,6 +35,12 @@ namespace L00188315_Project.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Gets All transactions for a user by account id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         public async Task<List<Transaction>> GetAllTransactionsByAccountIdAsync(
             string userId,
             string accountId
@@ -33,6 +53,11 @@ namespace L00188315_Project.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Get a transaction by its id.
+        /// </summary>
+        /// <param name="transactionId"></param>
+        /// <returns></returns>
         public async Task<Transaction> GetTransactionByIdAsync(string transactionId)
         {
 #pragma warning disable CS8603 // Possible null reference return.

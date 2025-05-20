@@ -62,9 +62,19 @@ jobs:
         name: "publish"
         path: ./L00188315_Project.Server/app/
 
-  deploy:
+  deployDev:
     runs-on: ubuntu-latest
     needs: build
+    environment:
+      name: 'Dev'
+      url: "test.noelgriffin.ie"
+    steps:
+      - name: "Deploy"
+        run: echo "Deploying"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: deployDev
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}

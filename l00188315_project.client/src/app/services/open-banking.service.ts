@@ -29,4 +29,7 @@ export class OpenBankingService {
     deleteAccount(accountId : string){
         return this.httpClient.delete<ApiResponse<string>>(this.baseUrl+`api/Revolut/accounts?accountId=${accountId}`);
     }
+    allTransactions(){
+      return this.httpClient.get<ApiResponse<Transaction[]>>(this.baseUrl+`api/Revolut/transactions/all`);
+    }
 }
