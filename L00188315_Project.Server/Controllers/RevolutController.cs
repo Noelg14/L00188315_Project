@@ -343,18 +343,15 @@ namespace L00188315_Project.Server.Controllers
             try
             {
                 var transactions = await _revolutService.GetTransactionsForUserAsync(userId);
-                if(transactions is null  || transactions.Count < 1)
+                if (transactions is null || transactions.Count < 1)
                 {
                     return NoContent();
                 }
                 return Ok(
-                        new ApiResponseDTO<List<Transaction>>
-                        {
-                            Data = transactions,
-                            Success = true,
-                        }
-                    );
-            }catch(Exception ex)
+                    new ApiResponseDTO<List<Transaction>> { Data = transactions, Success = true }
+                );
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest(

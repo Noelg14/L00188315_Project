@@ -3,8 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace L00188315_Project.Infrastructure.Data
 {
+    /// <summary>
+    /// AppDbContext is the database context for the application.
+    /// </summary>
     public class AppDbContext : DbContext
     {
+        /// <summary>
+        /// Constructor for AppDbContext.
+        /// </summary>
+        /// <param name="options"></param>
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
@@ -13,6 +20,10 @@ namespace L00188315_Project.Infrastructure.Data
         public DbSet<Balance> Balances { get; set; }
         public DbSet<Consent> Consents { get; set; }
 
+        /// <summary>
+        /// Override the OnModelCreating method to configure the model.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -42,11 +53,12 @@ namespace L00188315_Project.Infrastructure.Data
 
             modelBuilder.Entity<Account>().Property(a => a.Updated).ValueGeneratedOnUpdate();
             modelBuilder.Entity<Account>().Property(a => a.Created).ValueGeneratedOnAdd();
-
-            //modelBuilder.Entity<Consent>().Property(a => a.Updated).ValueGeneratedOnUpdate();
-            //modelBuilder.Entity<Consent>().Property(a => a.Created).HasDefaultValue(DateTimeOffset.Now);
         }
 
+        /// <summary>
+        /// Custom SaveChanges method to set Created and Updated timestamps.
+        /// </summary>
+        /// <returns></returns>
         public override int SaveChanges()
         {
             foreach (var entry in ChangeTracker.Entries<Consent>())

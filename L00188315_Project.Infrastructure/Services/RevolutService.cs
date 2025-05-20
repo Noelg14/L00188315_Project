@@ -477,7 +477,7 @@ public class RevolutService : IRevolutService
         );
         if (Debugger.IsAttached) // Required for this to work locally??????
         {
-            certWithKey =  new X509Certificate2(pfxBytes);
+            certWithKey = new X509Certificate2(pfxBytes);
         }
         _logger.LogInformation(
             "Loaded certificate from PFX file {0}",
@@ -613,8 +613,9 @@ public class RevolutService : IRevolutService
             throw new AccountException("Error deleting account");
         }
     }
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
@@ -625,16 +626,17 @@ public class RevolutService : IRevolutService
             throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
         var accounts = await _accountRepository.GetAllAccountsAsync(userId);
         var transactions = new List<Transaction>();
-        if(accounts is null || accounts.Count == 0)
+        if (accounts is null || accounts.Count == 0)
         {
             return transactions;
         }
         foreach (var account in accounts)
         {
-            var accountTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(
-                userId,
-                account.AccountId
-            );
+            var accountTransactions =
+                await _transactionRepository.GetAllTransactionsByAccountIdAsync(
+                    userId,
+                    account.AccountId
+                );
             transactions.AddRange(accountTransactions);
         }
         return transactions;

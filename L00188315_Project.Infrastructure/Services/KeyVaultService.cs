@@ -8,6 +8,7 @@ using L00188315_Project.Infrastructure.Services.DTOs;
 using Microsoft.Extensions.Configuration;
 
 namespace L00188315_Project.Infrastructure.Services;
+
 /// <summary>
 /// // Implementation of the KeyVaultService. This service is used to get secrets and certificates from Azure Key Vault.
 /// </summary>
@@ -21,6 +22,7 @@ public class KeyVaultService(
 ) : IKeyVaultService
 {
     private HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
+
     /// <summary>
     /// Gets a certificate from Azure Key Vault.
     /// </summary>
@@ -46,6 +48,7 @@ public class KeyVaultService(
             throw new KeyVaultException($"Cert not found");
         }
     }
+
     /// <summary>
     /// Gets a secret from Azure Key Vault.
     /// </summary>
@@ -80,6 +83,7 @@ public class KeyVaultService(
             throw new KeyVaultException($"Error getting Secret: {ex.Message}");
         }
     }
+
     /// <summary>
     /// Gets a token from Azure Key Vault. This token is used to authenticate with Azure Key Vault.
     /// </summary>
@@ -134,6 +138,7 @@ public class KeyVaultService(
         );
         return value;
     }
+
     /// <summary>
     /// Helper method to create the Key Vault request URL.
     /// </summary>

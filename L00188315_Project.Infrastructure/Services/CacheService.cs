@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 
 namespace L00188315_Project.Infrastructure.Services;
+
 /// <summary>
 /// Implementation of the cache service.
 /// </summary>
@@ -21,6 +22,7 @@ public class CacheService(IMemoryCache _cache) : ICacheService
         }
         _cache.Remove(key);
     }
+
     /// <summary>
     /// Get a value from the cache.
     /// </summary>
@@ -35,6 +37,7 @@ public class CacheService(IMemoryCache _cache) : ICacheService
         }
         return value;
     }
+
     /// <summary>
     /// Sets a value in the cache with an expiry time.
     /// </summary>

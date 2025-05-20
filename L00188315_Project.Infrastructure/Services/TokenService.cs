@@ -15,6 +15,7 @@ namespace L00188315_Project.Infrastructure.Services
     {
         private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
+
         /// <summary>
         /// Constructor for TokenService.
         /// </summary>
@@ -30,6 +31,7 @@ namespace L00188315_Project.Infrastructure.Services
             }
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         }
+
         /// <summary>
         /// Create a JWT token for the given user.
         /// </summary>

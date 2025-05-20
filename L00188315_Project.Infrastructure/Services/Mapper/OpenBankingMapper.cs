@@ -36,6 +36,7 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 Updated = DateTime.Now,
             };
         }
+
         /// <summary>
         /// Maps the Open Banking balance model to the Core Balance entity.
         /// </summary>
