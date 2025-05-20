@@ -2,7 +2,7 @@
   <h1>Accounts:</h1>
   <div class="d-flex justify-content-center w-100">
     <div class="d-flex flex-row justify-content-evenly align-content-between w-50 mt-2">
-      <button class="btn btn-primary btn-lg" (click)="linkAccount()">Link an account</button>
+      <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#selectModal">Link an account</button>
       <!-- <button class="btn btn-secondary btn-lg">Refresh</button> -->
     </div>
   </div>
@@ -55,4 +55,23 @@
   </ng-container>
 </div>
 
+</div>
+
+
+<!--Modal-->
+<div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Choose provider</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <button class="btn btn-secondary btn-lg text-white justify-content-center align-middle" (click)="linkAccount()">
+          <img src="../../assets/revolut.png" class=" img-fluid py-1" height="25px" width="25px" /> Revolut
+        </button>
+        <p>More coming soon...</p>
+      </div>
+    </div>
+  </div>
 </div>

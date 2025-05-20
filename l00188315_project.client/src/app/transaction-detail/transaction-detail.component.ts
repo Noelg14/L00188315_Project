@@ -18,11 +18,31 @@ export class TransactionDetailComponent implements OnInit {
     this.openBankingService.allTransactions().subscribe({
       next: (response) => {
         this.transactions = response.data;
+        this.exportToCSV();
       },
       error: (error) => {
         this.toastr.error(error.error.message);
       }
     })
+  }
+
+  exportToCSV(){
+    const header = "Transaction Date,Account,Currency,Amount,Detail,Type,Status"
+    let rows = "";
+    for(let transaction of this.transactions){
+        let row = `${transaction.bookingDateTime},${transaction.account},${transaction.amountCurrency},${transaction.amount},${transaction.userComments	},${transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator},${transaction.status}`+"\n";
+        rows += row;
+    }
+    const csvContent = header + "\n" + rows;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.classList.add('btn');
+    link.classList.add('btn-primary');
+    link.textContent = 'Download CSV';
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'transactions.csv');
+    document.getElementById('csvDownload')?.appendChild(link);
   }
 
 }
