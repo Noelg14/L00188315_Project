@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-#if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly.
+#if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly. -> Remove for Submission
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(
@@ -128,7 +128,6 @@ app.MapGet(
 );
 #endif
 
-//app.MapFallbackToFile("/index.html");
 //  Migrate in code
 using var scope = app.Services.CreateScope(); // create a scope for this
 var services = scope.ServiceProvider;

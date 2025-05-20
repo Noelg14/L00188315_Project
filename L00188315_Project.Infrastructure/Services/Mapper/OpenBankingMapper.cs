@@ -4,8 +4,17 @@ using L00188315_Project.Core.Models;
 
 namespace L00188315_Project.Infrastructure.Services.Mapper
 {
+    /// <summary>
+    /// Helper lass to map Open Banking data models to Core entities.
+    /// </summary>
     public class OpenBankingMapper
     {
+        /// <summary>
+        /// Maps the Open Banking account model to the Core Account entity.
+        /// </summary>
+        /// <param name="modelAccount"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public Account MapToAccountEntity(OBAccount modelAccount, string userId)
         {
             return new Account
@@ -27,7 +36,12 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 Updated = DateTime.Now,
             };
         }
-
+        /// <summary>
+        /// Maps the Open Banking balance model to the Core Balance entity.
+        /// </summary>
+        /// <param name="modelBalance"></param>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         public Balance MapToBalanceEntity(OBBalance modelBalance, string accountId)
         {
             return new Balance
@@ -42,6 +56,12 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
             };
         }
 
+        /// <summary>
+        /// Maps the Open Banking transaction model to the Core Transaction entity.
+        /// </summary>
+        /// <param name="modelTransaction"></param>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         public Core.Entities.Transaction MapToTransactionEntity(
             OBTransaction modelTransaction,
             string accountId

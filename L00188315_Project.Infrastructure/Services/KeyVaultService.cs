@@ -8,7 +8,12 @@ using L00188315_Project.Infrastructure.Services.DTOs;
 using Microsoft.Extensions.Configuration;
 
 namespace L00188315_Project.Infrastructure.Services;
-
+/// <summary>
+/// // Implementation of the KeyVaultService. This service is used to get secrets and certificates from Azure Key Vault.
+/// </summary>
+/// <param name="_httpClientFactory"></param>
+/// <param name="_config"></param>
+/// <param name="_cache"></param>
 public class KeyVaultService(
     IHttpClientFactory _httpClientFactory,
     IConfiguration _config,
@@ -16,7 +21,12 @@ public class KeyVaultService(
 ) : IKeyVaultService
 {
     private HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
-
+    /// <summary>
+    /// Gets a certificate from Azure Key Vault.
+    /// </summary>
+    /// <param name="certName"></param>
+    /// <returns></returns>
+    /// <exception cref="KeyVaultException"></exception>
     public async Task<string> GetCertAsync(string certName)
     {
         var token = await GetToken();
@@ -36,7 +46,12 @@ public class KeyVaultService(
             throw new KeyVaultException($"Cert not found");
         }
     }
-
+    /// <summary>
+    /// Gets a secret from Azure Key Vault.
+    /// </summary>
+    /// <param name="secretName"></param>
+    /// <returns></returns>
+    /// <exception cref="KeyVaultException"></exception>
     public async Task<string> GetSecretAsync(string secretName)
     {
         var token = await GetToken();
@@ -65,7 +80,12 @@ public class KeyVaultService(
             throw new KeyVaultException($"Error getting Secret: {ex.Message}");
         }
     }
-
+    /// <summary>
+    /// Gets a token from Azure Key Vault. This token is used to authenticate with Azure Key Vault.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="Exception"></exception>
     private async Task<string> GetToken()
     {
         var token = _cache.Get("KeyVaultToken"); //  check if we have a token in the cache
@@ -114,7 +134,13 @@ public class KeyVaultService(
         );
         return value;
     }
-
+    /// <summary>
+    /// Helper method to create the Key Vault request URL.
+    /// </summary>
+    /// <param name="secretType"></param>
+    /// <param name="secretName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     private string CreateKeyVaultRequestUrl(string secretType, string secretName)
     {
         if (secretType != "secrets" && secretType != "certificates")
