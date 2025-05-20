@@ -266,8 +266,6 @@ public class RevolutServiceTests
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 
-    //GetAccountASync
-    //DeleteAccountAsync
     [Fact]
     public async Task DeleteAccountAsync_ReturnsException_WhenNoAccountProvided()
     {
@@ -365,6 +363,124 @@ public class RevolutServiceTests
         // Assert
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.GetAccountAsync(accountId,string.Empty));
     }
+    [Fact]
+    public async Task GetTransactionsForUserAsync_ReturnsOk_WhenTransactionsExist()
+    {
+        // Arrange
+        var userId = "user1";
+        var transaction1 = new Transaction
+        {
+            Id = "t1",
+            RootAccountId = "acc1",
+            Amount = "1000",
+            AmountCurrency = "USD",
+            TransactionInformation = "Test transaction",
+        };
+        var transaction2 = new Transaction
+        {
+            Id = "t2",
+            RootAccountId = "acc2",
+            Amount = "1000",
+            AmountCurrency = "EUR",
+            TransactionInformation = "Another transaction",
+        };
+        var accounts = new List<Account>
+        {
+            new Account
+            {
+                Id = "a1",
+                AccountId = "acc1",
+                AccountSubType = "Personal",
+                AccountType = "Personal",
+                Currency = "USD",
+                Name = "Test",
+                Iban = "123",
+            },
+            new Account
+            {
+                Id = "a2",
+                AccountId = "acc2",
+                AccountSubType = "Personal",
+                AccountType = "Personal",
+                Currency = "EUR",
+                Name = "Test2",
+                Iban = "456",
+            }
+        };
+        var service = CreateService();
+        _accountRepository.Setup(r => r.GetAllAccountsAsync(userId)).ReturnsAsync(accounts);
+        _transactionRepository.Setup(r => r.GetAllTransactionsByAccountIdAsync(userId,"acc1")).ReturnsAsync(new List<Transaction> { transaction1 });
+        _transactionRepository.Setup(r => r.GetAllTransactionsByAccountIdAsync(userId,"acc2")).ReturnsAsync(new List<Transaction> { transaction2 });
+        //Act
+        var transactions = await service.GetTransactionsForUserAsync(userId);
+        // Assert
+        Assert.Equal(2, transactions.Count);
+        Assert.Contains(transactions, t => t.Id == "t1" && t.AmountCurrency == "USD");
+        Assert.Contains(transactions, t => t.Id == "t2" && t.AmountCurrency == "EUR");
+        _accountRepository.Verify(r => r.GetAllAccountsAsync(userId), Times.Once);
+        _transactionRepository.Verify(r => r.GetAllTransactionsByAccountIdAsync(userId,"acc1"), Times.Once);
+        _transactionRepository.Verify(r => r.GetAllTransactionsByAccountIdAsync(userId,"acc2"), Times.Once);
+    }
+    [Fact]
+    public async Task GetTransactionsForUserAsync_ReturnsException_WhenUserIdIsEmpty()
+    {
+        // Arrange
+ 
+        var service = CreateService();
+        //Act
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.GetTransactionsForUserAsync(string.Empty));
+    }
+    [Fact]
+    public async Task GetTransactionsForUserAsync_ReturnsOk_WhenUserTransactionsExistForOneAccount()
+    {
+        // Arrange
+        var userId = "user1";
+        var transaction1 = new Transaction
+        {
+            Id = "t1",
+            RootAccountId = "acc1",
+            Amount = "1000",
+            AmountCurrency = "USD",
+            TransactionInformation = "Test transaction",
+        };
+        var accounts = new List<Account>
+        {
+            new Account
+            {
+                Id = "a1",
+                AccountId = "acc1",
+                AccountSubType = "Personal",
+                AccountType = "Personal",
+                Currency = "USD",
+                Name = "Test",
+                Iban = "123",
+            },
+            new Account
+            {
+                Id = "a2",
+                AccountId = "acc2",
+                AccountSubType = "Personal",
+                AccountType = "Personal",
+                Currency = "EUR",
+                Name = "Test2",
+                Iban = "456",
+            }
+        };
+        var service = CreateService();
+        _accountRepository.Setup(r => r.GetAllAccountsAsync(userId)).ReturnsAsync(accounts);
+        _transactionRepository.Setup(r => r.GetAllTransactionsByAccountIdAsync(userId, "acc1")).ReturnsAsync(new List<Transaction> { transaction1 });
+        _transactionRepository.Setup(r => r.GetAllTransactionsByAccountIdAsync(userId, "acc2")).ReturnsAsync(new List<Transaction>());
+        //Act
+        var transactions = await service.GetTransactionsForUserAsync(userId);
+        // Assert
+        Assert.Single(transactions);
+        Assert.Contains(transactions, t => t.Id == "t1" && t.AmountCurrency == "USD");
+        _accountRepository.Verify(r => r.GetAllAccountsAsync(userId), Times.Once);
+        _transactionRepository.Verify(r => r.GetAllTransactionsByAccountIdAsync(userId, "acc1"), Times.Once);
+        _transactionRepository.Verify(r => r.GetAllTransactionsByAccountIdAsync(userId, "acc2"), Times.Once);
+    }
+
 
     private RevolutService CreateService()
     {
