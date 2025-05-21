@@ -259,11 +259,9 @@ public class RevolutServiceTests
         var service = CreateService();
         // Act
         // Assert
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await service.GetConsentByIdAsync(null)
+            await service.GetConsentByIdAsync(string.Empty)
         );
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 
     [Fact]

@@ -61,13 +61,13 @@ public class TokenServiceTests
             ValidateIssuer = false,
             ValidateAudience = false,
         };
+        //Assert
         var principal = tokenHandler.ValidateToken(
             token,
             tokenValidationParameters,
             out SecurityToken validatedToken
         );
         var validToken = validatedToken as JwtSecurityToken;
-        //Assert
         Assert.NotNull(validToken);
     }
 }
