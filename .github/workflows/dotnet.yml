@@ -37,6 +37,10 @@ jobs:
 
     - name: SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v5.2.0 
+      with:
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORG }} # For SonarQube Cloud only
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT }}
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       continue-on-error: true

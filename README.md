@@ -5,6 +5,8 @@
 
 [![Build Project Artefact](https://github.com/Noelg14/L00188315_Project/actions/workflows/build.yml/badge.svg)](https://github.com/Noelg14/L00188315_Project/actions/workflows/build.yml)
 
+
+
 # About this Project
 This Project was done by L00188315.
 The application is an Open Banking Dashboard.
