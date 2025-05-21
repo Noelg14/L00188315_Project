@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace L00188315_Project.Core.Entities
@@ -24,6 +25,7 @@ namespace L00188315_Project.Core.Entities
         /// <summary>
         /// Account associated with the transaction.
         /// </summary>
+        [JsonIgnore]
         public Account? Account { get; set; } = null!;
 
         /// <summary>
