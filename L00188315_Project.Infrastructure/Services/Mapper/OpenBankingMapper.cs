@@ -1,4 +1,5 @@
-﻿using System.Transactions;
+﻿using System.Globalization;
+using System.Transactions;
 using L00188315_Project.Core.Entities;
 using L00188315_Project.Core.Models;
 
@@ -51,8 +52,12 @@ namespace L00188315_Project.Infrastructure.Services.Mapper
                 Amount = modelBalance.Amount!._Amount,
                 BalanceType = modelBalance.Type,
                 Currency = modelBalance.Amount.Currency,
-                LastUpdated = DateTime.TryParse(modelBalance.DateTime, out _)
-                    ? DateTime.Parse(modelBalance.DateTime)
+                LastUpdated = DateTime.TryParse(
+                    modelBalance.DateTime,
+                    CultureInfo.InvariantCulture,
+                    out _
+                )
+                    ? DateTime.Parse(modelBalance.DateTime, CultureInfo.InvariantCulture)
                     : DateTime.Now,
             };
         }

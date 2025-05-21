@@ -86,7 +86,7 @@ namespace L00188315_Project.Server.Controllers
             catch (Exception ex)
             {
                 if (ex is TokenNullException)
-                    _logger.LogError("Token is null : {0}", ex.Message ?? string.Empty);
+                    _logger.LogError(ex, "Token is null : {0}", ex.Message ?? string.Empty);
                 if (ex is ConsentException)
                     _logger.LogError(
                         "Consent cannot be generated : {0}",
@@ -140,9 +140,9 @@ namespace L00188315_Project.Server.Controllers
             await _revolutService.UpdateConsent(consentId, ConsentStatus.Complete); // update consent first
             _logger.LogInformation("Consent {0} updated ", consentId);
 
-            var token = await _revolutService.GetUserAccessToken(userId!, code);
+            await _revolutService.GetUserAccessToken(userId!, code);
 
-            var usersAccounts = await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
+            await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
             if (Debugger.IsAttached)
             {
                 return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
@@ -178,13 +178,13 @@ namespace L00188315_Project.Server.Controllers
                 var apiResponse = new ApiResponseDTO<List<Account>>
                 {
                     Data = accounts,
-                    Success = accounts is null ? false : true,
+                    Success = !(accounts is null),
                 };
                 return Ok(apiResponse);
             }
             catch (TokenNullException ex)
             {
-                _logger.LogError("Token is null: {0}", ex.Message);
+                _logger.LogError(ex, "Token is null: {0}", ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
@@ -213,7 +213,7 @@ namespace L00188315_Project.Server.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-                var accounts = await _revolutService.GetAccountsAsync(userId!);
+                await _revolutService.GetAccountsAsync(userId!); // Get counts just to be sure.
                 var transactions = await _revolutService.GetTransactionsAsync(accountId, userId!);
 
                 _logger.LogInformation(
@@ -224,14 +224,14 @@ namespace L00188315_Project.Server.Controllers
                 var apiResponse = new ApiResponseDTO<List<Transaction>>
                 {
                     Data = transactions,
-                    Success = transactions is null ? false : true,
+                    Success = !(transactions is null),
                 };
 
                 return Ok(apiResponse);
             }
             catch (TokenNullException ex)
             {
-                _logger.LogError("Token is null: {0}", ex.Message);
+                _logger.LogError(ex, "Token is null: {0}", ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
@@ -261,7 +261,7 @@ namespace L00188315_Project.Server.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.PrimarySid);
-                var accounts = await _revolutService.GetAccountsAsync(userId!);
+                await _revolutService.GetAccountsAsync(userId!);
                 var balances = await _revolutService.GetAccountBalanceAsync(accountId, userId!);
 
                 _logger.LogInformation(
@@ -272,14 +272,14 @@ namespace L00188315_Project.Server.Controllers
                 var apiResponse = new ApiResponseDTO<Balance>
                 {
                     Data = balances,
-                    Success = balances is null ? false : true,
+                    Success = !(balances is null),
                 };
 
                 return Ok(apiResponse);
             }
             catch (TokenNullException ex)
             {
-                _logger.LogError("Token is null: {0}", ex.Message);
+                _logger.LogError(ex, "Token is null: {0}", ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
@@ -318,7 +318,7 @@ namespace L00188315_Project.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<string> { Message = ex.Message, Success = false }
                 );
@@ -353,7 +353,7 @@ namespace L00188315_Project.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, ex.Message);
                 return BadRequest(
                     new ApiResponseDTO<string> { Message = ex.Message, Success = false }
                 );

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Data;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -21,7 +22,7 @@ public class KeyVaultService(
     ICacheService _cache
 ) : IKeyVaultService
 {
-    private HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
+    private readonly HttpClient _client = _httpClientFactory.CreateClient("KeyVaultClient");
 
     /// <summary>
     /// Gets a certificate from Azure Key Vault.
@@ -36,6 +37,10 @@ public class KeyVaultService(
         var keyVaultBaseUrl = CreateKeyVaultRequestUrl("certificates", certName);
         try
         {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
             var cert = await _client.GetFromJsonAsync<KeyVaultCertDTO>(keyVaultBaseUrl);
             if (cert == null)
             {
@@ -67,6 +72,7 @@ public class KeyVaultService(
             "Bearer",
             token
         );
+
         try
         {
             var secret = await _client.GetFromJsonAsync<KeyVaultSecretDTO>(keyVaultBaseUrl);
@@ -110,7 +116,7 @@ public class KeyVaultService(
             || string.IsNullOrEmpty(scope)
         )
         {
-            throw new ArgumentNullException(
+            throw new NoNullAllowedException(
                 "ClientId, ClientSecret, TokenUrl or Scope cannot be null or empty."
             );
         }
@@ -127,7 +133,7 @@ public class KeyVaultService(
         var tokenRepsponse = await _client.PostAsync(tokenUrl, form);
         if (!tokenRepsponse.IsSuccessStatusCode)
         {
-            throw new Exception($"Error getting token: {tokenRepsponse.StatusCode}");
+            throw new TokenNullException($"Error getting token: {tokenRepsponse.StatusCode}");
         }
         var content = await tokenRepsponse.Content.ReadAsStringAsync();
         var tokenRepsonseJson = JsonSerializer.Deserialize<TokenDTO>(content);

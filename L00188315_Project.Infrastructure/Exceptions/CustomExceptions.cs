@@ -68,4 +68,14 @@ namespace L00188315_Project.Infrastructure.Exceptions
         public AccountException(string message)
             : base(message) { }
     }
+
+    /// <summary>
+    /// Failure Reason Messages
+    /// </summary>
+    public static class FailureReason
+    {
+        public static readonly string USER_ID_NULL = "UserId is null";
+        public static readonly string ACCOUNT_ID_NULL = "AccountId is null";
+        public static readonly string CONSENT_ID_NULL = "ConsentId is null";
+    }
 }

@@ -45,8 +45,10 @@ public class CacheService(IMemoryCache _cache) : ICacheService
     /// <param name="value">the value to be cached</param>
     /// <param name="seconds">seconds the key is to persist in the cache default 3600</param>
     /// <returns></returns>
-    public string Set(string key, string value, int seconds = 3600)
+    public string Set(string key, string value, int seconds)
     {
+        if (seconds <= 0)
+            seconds = 3600;
         TimeSpan expiry = TimeSpan.FromSeconds(seconds);
         return _cache.Set(key, value, expiry);
     }

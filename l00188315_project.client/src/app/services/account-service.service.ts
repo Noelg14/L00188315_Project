@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, of, ReplaySubject, tap } from 'rxjs';
+import { map, of, ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LoginDto, LoginResponse } from '../models/LoginDto';
 import { ToastrService } from 'ngx-toastr';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AccountService {
-    private currentUserSource = new ReplaySubject<LoginResponse | null>(1);
+    private readonly currentUserSource = new ReplaySubject<LoginResponse | null>(1);
     currentUser$ = this.currentUserSource.asObservable();
 
   constructor(

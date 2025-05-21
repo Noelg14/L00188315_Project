@@ -27,10 +27,14 @@ export class TransactionDetailComponent implements OnInit {
   }
 
   exportToCSV(){
+    if(this.transactions.length < 1 ){
+      this.toastr.error("No transactions to download");
+      return;
+    }
     const header = "Transaction Date,Account,Currency,Amount,Detail,Type,Status"
     let rows = "";
     for(let transaction of this.transactions){
-        let row = `${transaction.bookingDateTime},${transaction.accountId},${transaction.amountCurrency},${transaction.amount},${transaction.transactionInformation	},${transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator},${transaction.status}`+"\n";
+        let row = `${transaction.bookingDateTime},${transaction.rootAccountId},${transaction.amountCurrency},${transaction.amount},${transaction.transactionInformation	},${transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator},${transaction.status}`+"\n";
         rows += row;
     }
     const csvContent = header + "\n" + rows;
@@ -38,6 +42,7 @@ export class TransactionDetailComponent implements OnInit {
     const link = document.createElement('a');
     link.classList.add('btn');
     link.classList.add('btn-primary');
+    link.classList.add('btn-lg');
     link.textContent = 'Download CSV';
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);

@@ -90,10 +90,8 @@ public class RevolutService : IRevolutService
         try
         {
             var url = _configuration["Revolut:tokenUrl"];
-            _logger.LogInformation("Getting access token from Revolut API: {0}", url);
 
             var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
-            _logger.LogInformation("Got Client ID from Keyvault");
 
             var kvp = new List<KeyValuePair<string, string>>
             {
@@ -108,8 +106,11 @@ public class RevolutService : IRevolutService
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogError($"Error getting access token: {response.StatusCode}");
-                _logger.LogError($"Failed:  {response.Content.ToString()}");
+                _logger.LogError(
+                    "Error getting access token: {0} \n {1}",
+                    response.StatusCode,
+                    response.Content.ToString()
+                );
             }
             var content = await response.Content.ReadAsStringAsync();
             var token = JsonSerializer.Deserialize<TokenDTO>(content);
@@ -119,7 +120,7 @@ public class RevolutService : IRevolutService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting access token: {ex.Message}");
+            _logger.LogError(ex, "Error getting access token: {0}", ex.Message);
             throw new TokenException(ex.Message);
         }
     }
@@ -136,7 +137,7 @@ public class RevolutService : IRevolutService
     public async Task<Balance> GetAccountBalanceAsync(string accountId, string userId)
     {
         if (string.IsNullOrEmpty(userId))
-            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+            throw new ArgumentNullException(nameof(userId), FailureReason.USER_ID_NULL);
         var existingBalance = await _balanceRepository.GetBalanceAsync(userId, accountId);
         if (existingBalance is not null)
         {
@@ -150,16 +151,16 @@ public class RevolutService : IRevolutService
             throw new TokenNullException("No Token for Revolut");
         }
         var response = await sendGetRequestAsync(accountId, "/balances", token);
-
+        if (response!.Data!.Balance == null)
+        {
+            throw new BalanceException("No Balance returned after call to Revolut");
+        }
         var balance = response!.Data!.Balance!.FirstOrDefault(x => x.AccountId == accountId);
         if (balance!.CreditDebitIndicator!.ToLower() == "debit")
         {
             balance.Amount!._Amount = "-" + balance.Amount._Amount!; // add '-' to the start,are the user is in debit.
         }
-        if (balance == null)
-        {
-            throw new BalanceException("No Balance returned after call to Revolut");
-        }
+
         var balanceEntity = _mapper.MapToBalanceEntity(balance, accountId);
         balanceEntity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
         await _balanceRepository.CreateBalanceAsync(userId, balanceEntity);
@@ -176,7 +177,7 @@ public class RevolutService : IRevolutService
     public async Task<List<Account>> GetAccountsAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
-            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+            throw new ArgumentNullException(nameof(userId), FailureReason.USER_ID_NULL);
 
         var existingAccounts = await _accountRepository.GetAllAccountsAsync(userId);
         if (existingAccounts is not null && existingAccounts.Count > 0)
@@ -223,9 +224,9 @@ public class RevolutService : IRevolutService
     public async Task<string> GetConsentRequestAsync(string userId)
     {
         var existingConsents = await _consentRepository.GetAllConsentsAsync(userId);
-        var consent = existingConsents
-            .Where(c => c.Provider == "Revolut" && c.Expires > DateTime.Now) // check if another valid consent exists
-            .FirstOrDefault();
+        var consent = existingConsents.FirstOrDefault(c =>
+            c.Provider == "Revolut" && c.Expires > DateTime.Now
+        );
         if (consent != null)
         {
             //if user has an existing consent, return the login path
@@ -258,7 +259,6 @@ public class RevolutService : IRevolutService
                 var token = await GetAccessToken();
                 if (string.IsNullOrEmpty(token))
                 {
-                    _logger.LogInformation("");
                     throw new TokenNullException("Token is null");
                 }
                 httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(
@@ -296,7 +296,9 @@ public class RevolutService : IRevolutService
                 else
                 {
                     _logger.LogError(
-                        $"Error getting consent request {response.StatusCode}: {response.Content.ToString()} "
+                        "Error getting consent request {0} : {1}",
+                        response.StatusCode,
+                        response.Content.ToString()
                     );
                     throw new ConsentException(
                         response.Content.ToString() ?? "An Error occurred when getting a consent"
@@ -305,7 +307,7 @@ public class RevolutService : IRevolutService
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error getting consent request: {ex.Message}");
+                _logger.LogError(ex, "Error getting consent request:{0}", ex.Message);
                 throw new ConsentException(ex.Message);
             }
         }
@@ -322,7 +324,7 @@ public class RevolutService : IRevolutService
     public async Task<List<Transaction>> GetTransactionsAsync(string accountId, string userId)
     {
         if (string.IsNullOrEmpty(userId))
-            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+            throw new ArgumentNullException(nameof(userId), FailureReason.USER_ID_NULL);
 
         var existingTransactions = await _transactionRepository.GetAllTransactionsByAccountIdAsync(
             userId,
@@ -343,6 +345,14 @@ public class RevolutService : IRevolutService
         var transactions = new List<Transaction>();
         foreach (var transaction in data?.Data?.Transaction!)
         {
+            var transactionExists = await _transactionRepository.GetTransactionByIdAsync(
+                transaction!.TransactionId!
+            );
+            if (
+                transactionExists is not null
+                && transaction.AccountId != transactionExists!.Account!.AccountId
+            ) // dont load same transaction twice
+                continue;
             var entity = _mapper.MapToTransactionEntity(transaction, accountId);
             entity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
             transactions.Add(entity);
@@ -367,7 +377,6 @@ public class RevolutService : IRevolutService
         }
         consent.ConsentStatus = status;
         await _consentRepository.UpdateConsentAsync(consent, status);
-        return;
     }
 
     /// <summary>
@@ -391,7 +400,7 @@ public class RevolutService : IRevolutService
             var response = await _mtlsClient.PostAsync(url, form);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogError($"Error getting access token: {response.StatusCode}");
+                _logger.LogError("Error getting access token: {0}", response.StatusCode);
                 return response.StatusCode.ToString();
             }
             var content = await response.Content.ReadAsStringAsync();
@@ -402,7 +411,7 @@ public class RevolutService : IRevolutService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting access token: {ex.Message}");
+            _logger.LogError(ex, "Error getting access token: {0}", ex.Message);
             return ex.Message;
         }
     }
@@ -414,7 +423,7 @@ public class RevolutService : IRevolutService
     /// <returns></returns>
     private async Task<string> GenerateJWT(string consentId)
     {
-        var keyPem = File.ReadAllText(_configuration["Revolut:keyPath"]!);
+        var keyPem = await File.ReadAllTextAsync(_configuration["Revolut:keyPath"]!);
         var clientId = await _keyVaultService.GetSecretAsync("revolutClientId");
         var redirect = _configuration["Revolut:redirectUri"];
 
@@ -465,7 +474,6 @@ public class RevolutService : IRevolutService
     private HttpClient ConfigureMtlsClient()
     {
         var pfxBytes = File.ReadAllBytes(_configuration["Revolut:pfxPath"]!);
-        _logger.LogInformation("Loading certificate from PFX file");
         _logger.LogInformation("PFX Size : {0}", pfxBytes.Length);
 
         var certWithKey = new X509Certificate2(
@@ -479,11 +487,6 @@ public class RevolutService : IRevolutService
         {
             certWithKey = new X509Certificate2(pfxBytes);
         }
-        _logger.LogInformation(
-            "Loaded certificate from PFX file {0}",
-            certWithKey.Thumbprint ?? ""
-        );
-        _logger.LogInformation("Loaded certificate {0}", certWithKey.SubjectName.Name ?? "");
         _logger.LogInformation("Cert has private key: {0}", certWithKey.HasPrivateKey);
 
         var clientHandler = new HttpClientHandler
@@ -502,7 +505,6 @@ public class RevolutService : IRevolutService
             Credentials = null,
             CheckCertificateRevocationList = false,
         };
-        _logger.LogInformation("Cert Added to handler");
         clientHandler.ClientCertificates.Add(certWithKey);
         return new HttpClient(clientHandler);
     }
@@ -561,7 +563,11 @@ public class RevolutService : IRevolutService
             }
             else
             {
-                _logger.LogError($"Error getting data: {response.StatusCode}");
+                _logger.LogError(
+                    "Error getting data: {0} | {1}",
+                    response.StatusCode,
+                    response.Content.ToString()
+                );
                 throw new DataException($"Error Getting data from {endpoint}");
             }
         }
@@ -576,7 +582,7 @@ public class RevolutService : IRevolutService
     public async Task<Consent> GetConsentByIdAsync(string consentId)
     {
         if (string.IsNullOrEmpty(consentId))
-            throw new ArgumentNullException(nameof(consentId), "ConsentId cannot be null");
+            throw new ArgumentNullException(nameof(consentId), FailureReason.CONSENT_ID_NULL);
         return await _consentRepository.GetConsentAsync(consentId);
     }
 
@@ -590,9 +596,9 @@ public class RevolutService : IRevolutService
     public async Task<Account> GetAccountAsync(string accountId, string userId)
     {
         if (string.IsNullOrEmpty(userId))
-            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+            throw new ArgumentNullException(nameof(userId), FailureReason.USER_ID_NULL);
         if (string.IsNullOrEmpty(accountId))
-            throw new ArgumentNullException(nameof(accountId), "AccountId cannot be null");
+            throw new ArgumentNullException(nameof(accountId), FailureReason.ACCOUNT_ID_NULL);
         return await _accountRepository.GetAccountAsync(userId, accountId);
     }
 
@@ -606,7 +612,7 @@ public class RevolutService : IRevolutService
     public async Task DeleteAccountAsync(string accountId)
     {
         if (string.IsNullOrEmpty(accountId))
-            throw new ArgumentNullException(nameof(accountId), "AccountId cannot be null");
+            throw new ArgumentNullException(nameof(accountId), FailureReason.ACCOUNT_ID_NULL);
         var complete = await _accountRepository.DeleteAccountAsync(accountId);
         if (!complete)
         {
@@ -623,7 +629,7 @@ public class RevolutService : IRevolutService
     public async Task<List<Transaction>> GetTransactionsForUserAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
-            throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
+            throw new ArgumentNullException(nameof(userId), FailureReason.USER_ID_NULL);
         var accounts = await _accountRepository.GetAllAccountsAsync(userId);
         var transactions = new List<Transaction>();
         if (accounts is null || accounts.Count == 0)
