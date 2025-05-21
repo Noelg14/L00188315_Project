@@ -16,39 +16,48 @@ namespace L00188315_Project.Core.Entities
         /// ID of the consent.
         /// </summary>
         public required string ConsentId { get; set; }
+
         /// <summary>
         /// User ID associated with the consent.
         /// </summary>
         public string? UserId { get; set; }
+
         /// <summary>
         /// Scopes of the consent.
         /// </summary>
         public string? Scopes { get; set; }
+
         /// <summary>
         /// Provider of the consent.
         /// </summary>
         public string? Provider { get; set; }
+
         /// <summary>
         /// Consent  status.
         /// </summary>
         public ConsentStatus? ConsentStatus { get; set; } = Entities.ConsentStatus.Created;
+
         /// <summary>
         /// List of accounts associated with the consent.
         /// </summary>
         public List<Account>? Account { get; set; }
+
         /// <summary>
         /// Date and time when the consent was created.
         /// </summary>
         public DateTime? Created { get; set; } = DateTime.Now;
+
         /// <summary>
         ///  Date and time when the consent was last updated.
         /// </summary>
         public DateTime? Updated { get; set; }
+
         /// <summary>
         /// Date and time when the consent expires.
         /// </summary>
         public DateTime? Expires { get; set; }
     }
+
     /// <summary>
     /// Enum representing the status of the consent.
     /// </summary>

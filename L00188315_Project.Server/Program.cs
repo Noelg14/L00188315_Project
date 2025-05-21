@@ -133,7 +133,6 @@ using var scope = app.Services.CreateScope(); // create a scope for this
 var services = scope.ServiceProvider;
 var context = services.GetRequiredService<AppDbContext>(); // get the db context from the scope service
 var Idcontext = services.GetRequiredService<AppIdentityDbContext>(); // get the db context from the scope service
-var userManager = services.GetRequiredService<UserManager<IdentityUser>>(); // get the db context from the scope service
 var logger = services.GetRequiredService<ILogger<Program>>();
 
 try
@@ -141,9 +140,9 @@ try
     await context.Database.MigrateAsync(); //apply migration if pending
     await Idcontext.Database.MigrateAsync(); //apply migration if pending
 }
-catch (Exception e)
+catch (Exception ex)
 {
-    logger.LogError(e.Message);
+    logger.LogError(ex, ex.Message);
 }
 
-app.Run();
+await app.RunAsync();

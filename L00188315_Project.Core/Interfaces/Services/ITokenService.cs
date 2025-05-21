@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
 namespace L00188315_Project.Core.Interfaces.Services;
+
 /// <summary>
 /// Token service interface. Allows for changing the token service implementation without changing the code that uses it.
 /// </summary>

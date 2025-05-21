@@ -20,7 +20,6 @@ namespace L00188315_Project.Infrastructure.Repositories
         {
             await _dbContext.Transactions.AddRangeAsync(transactions);
             await _dbContext.SaveChangesAsync();
-            return;
         }
 
         /// <summary>

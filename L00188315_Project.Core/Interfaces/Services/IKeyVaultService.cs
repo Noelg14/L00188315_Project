@@ -11,6 +11,7 @@ public interface IKeyVaultService
     /// <param name="secretName"></param>
     /// <returns>The secret value</returns>
     public Task<string> GetSecretAsync(string secretName);
+
     /// <summary>
     /// Get a certificate from the Key Vault
     /// </summary>

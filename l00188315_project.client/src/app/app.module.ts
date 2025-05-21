@@ -13,7 +13,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { AccountModule } from './account/account.module';
 import { HttpInterceptorInterceptor } from './interceptor/http-interceptor.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxSpinner, NgxSpinnerModule } from 'ngx-spinner';
+import { NgxSpinnerModule } from 'ngx-spinner';
 import { LoadingInterceptor } from './interceptor/loading.interceptor';
 import { TransactionDetailComponent } from './transaction-detail/transaction-detail.component';
 
