@@ -30,7 +30,7 @@ Add value to the `appsettings.json`
     "KvApiVersion": "7.4"
   }
 ```
-## Generating Eevolut certs:
+## Generating Revolut certs:
 Follow the below to generate the `private.key` and `transport.pem`.
 Create a Developer account with Revolut OpenBanking Dev tools.
 Creat an App and note the Client ID

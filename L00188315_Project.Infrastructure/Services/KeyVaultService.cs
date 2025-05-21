@@ -37,13 +37,10 @@ public class KeyVaultService(
         var keyVaultBaseUrl = CreateKeyVaultRequestUrl("certificates", certName);
         try
         {
-            if (_client.DefaultRequestHeaders.Authorization == null)
-            {
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    "Bearer",
-                    token
-                );
-            }
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
             var cert = await _client.GetFromJsonAsync<KeyVaultCertDTO>(keyVaultBaseUrl);
             if (cert == null)
             {
@@ -71,13 +68,10 @@ public class KeyVaultService(
             return _cache.Get(secretName);
         }
         var keyVaultBaseUrl = CreateKeyVaultRequestUrl("secrets", secretName);
-        if (_client.DefaultRequestHeaders.Authorization == null)
-        {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                "Bearer",
-                token
-            );
-        }
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            token
+        );
 
         try
         {

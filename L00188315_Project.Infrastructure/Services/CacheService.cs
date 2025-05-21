@@ -47,7 +47,7 @@ public class CacheService(IMemoryCache _cache) : ICacheService
     /// <returns></returns>
     public string Set(string key, string value, int seconds)
     {
-        if (seconds == 0 || seconds < 0)
+        if (seconds <= 0)
             seconds = 3600;
         TimeSpan expiry = TimeSpan.FromSeconds(seconds);
         return _cache.Set(key, value, expiry);
