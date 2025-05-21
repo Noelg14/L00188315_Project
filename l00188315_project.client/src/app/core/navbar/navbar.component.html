@@ -1,6 +1,9 @@
 <nav class="navbar navbar-expand-lg bg-body-secondary">
   <div class="container-fluid">
-    <a class="navbar-brand" [routerLink]="'/'">Open Banking Dashboard</a>
+    <a class="navbar-brand" [routerLink]="'/'">
+      <!-- Open Banking Dashboard -->
+       <img src="../../../assets/logo_small.png" alt="" width="75px">
+    </a>
     <button
       class="navbar-toggler"
       type="button"
@@ -20,9 +23,8 @@
             aria-current="page"
             [routerLink]="'/'"
             [routerLinkActiveOptions]="{ exact: true }"
-            [routerLinkActive]="'active'"
-            >Home</a
-          >
+            [routerLinkActive]="'active text-underline'"
+            > Home </a>
         </li>
         <li class="nav-item" *ngIf="accountService.currentUser$ | async as user">
           <a
@@ -43,8 +45,8 @@
   </div>
   <div *ngIf="accountService.currentUser$ | async as user">
   <div class="dropdown ms-3 me-5 d-flex flex-row" style="cursor: pointer;">
-          <strong class="mx-2">Welcome {{user.displayName}}</strong>
-          <button class="btn btn-secondary mx" (click)="accountService.logout()">Logout</button>
+          <strong class="me-5">Welcome {{user.displayName}}!</strong>
+          <button class="btn btn-secondary mx-1" (click)="accountService.logout()">Logout</button>
     </div>
   </div>
     <!-- From Uiverse.io by Galahhad -->
