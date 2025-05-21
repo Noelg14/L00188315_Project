@@ -29,7 +29,7 @@ namespace L00188315_Project.Core.Entities
         /// </summary>
         public string? Provider { get; set; }
         /// <summary>
-        /// Conent status.
+        /// Consent  status.
         /// </summary>
         public ConsentStatus? ConsentStatus { get; set; } = Entities.ConsentStatus.Created;
         /// <summary>
@@ -45,7 +45,7 @@ namespace L00188315_Project.Core.Entities
         /// </summary>
         public DateTime? Updated { get; set; }
         /// <summary>
-        /// Da and time when the consent expires.
+        /// Date and time when the consent expires.
         /// </summary>
         public DateTime? Expires { get; set; }
     }

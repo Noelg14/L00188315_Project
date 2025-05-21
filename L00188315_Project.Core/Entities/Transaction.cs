@@ -48,7 +48,7 @@ namespace L00188315_Project.Core.Entities
         /// </summary>
         public string? CreditorAccount { get; set; }
         /// <summary>
-        /// Debitor name associated with the transaction.
+        /// Debtor name associated with the transaction.
         /// </summary>
         public string? DebtorAccount { get; set; }
         /// <summary>

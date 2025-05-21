@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace L00188315_Project.Infrastructure.Repositories
 {
     /// <summary>
-    /// Iplementation of the IAccountRepository interface for managing accounts.
+    /// Implementation of the IAccountRepository interface for managing accounts.
     /// </summary>
     public class AccountRepository : IAccountRepository
     {
