@@ -34,17 +34,6 @@ jobs:
 
     - name: Compile Backend Application
       run: dotnet build -c 'API Only' --no-restore -warnaserror # build backend ONLY
-
-    - name: SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v5.2.0 
-      with:
-        args: >
-          -Dsonar.organization=${{ secrets.SONAR_ORG }}
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT }}
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      continue-on-error: true
-
      #Run Tests
     - name: Test Dotnet Application
       run: dotnet test --logger "trx;LogFileName=TestResults-${{matrix.os}}.trx"
