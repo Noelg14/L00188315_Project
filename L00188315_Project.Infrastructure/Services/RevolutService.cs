@@ -345,8 +345,13 @@ public class RevolutService : IRevolutService
         var transactions = new List<Transaction>();
         foreach (var transaction in data?.Data?.Transaction!)
         {
-            var transactionExists = await _transactionRepository.GetTransactionByIdAsync(transaction!.TransactionId!);
-            if (transactionExists is not null && transaction.AccountId != transactionExists!.Account!.AccountId) // dont load same transaction twice
+            var transactionExists = await _transactionRepository.GetTransactionByIdAsync(
+                transaction!.TransactionId!
+            );
+            if (
+                transactionExists is not null
+                && transaction.AccountId != transactionExists!.Account!.AccountId
+            ) // dont load same transaction twice
                 continue;
             var entity = _mapper.MapToTransactionEntity(transaction, accountId);
             entity.Account = await _accountRepository.GetAccountAsync(userId, accountId);
