@@ -67,9 +67,9 @@ jobs:
     needs: build
     environment:
       name: 'Dev'
-      url: "test.noelgriffin.ie"
+      url: "https://test.noelgriffin.ie"
     steps:
-      - name: "Deploy"
+      - name: "Emulate Dev Deploy"
         run: echo "Deploying"
 
   deploy:
