@@ -9,7 +9,8 @@ on:
     branches:
       - main # build when merged in master
     tags: 
-      - "!CI*"
+      - '*'         # allow all tags
+      - '!CI*'      # exclude CI* tags
 
 permissions: write-all
 
