@@ -28,7 +28,7 @@ resource "azurerm_windows_web_app" "app-service" {
     always_on           = false
     application_stack {
       #because windows has a v infront??
-      dotnet_version =  var.os == "Windows" ? "v8.0" : "8.0" 
+      dotnet_version = "v8.0"
     }
   }
 }
