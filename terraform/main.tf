@@ -11,7 +11,7 @@ resource "azurerm_service_plan" "atu-sp" {
   name                = "${var.prefix}-sp"
   location            = var.location
   resource_group_name = "ATU_CSD_2025"
-  os_type             = "${var.os}"
+  os_type             = "Windows"
   sku_name            = "F1"
 
 }
@@ -27,7 +27,6 @@ resource "azurerm_windows_web_app" "app-service" {
   site_config {
     always_on           = false
     application_stack {
-      #because windows has a v infront??
       dotnet_version = "v8.0"
     }
   }

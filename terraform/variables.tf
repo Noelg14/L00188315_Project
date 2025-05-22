@@ -15,8 +15,3 @@ variable "subscription_id" {
   type        = string
   description = "The Azure subscription where all resources in this example should be created"
 }
-variable "os" {
-  type        = string
-  description = "The Operating System the Resource will use - Windows or Linux"
-  default = "Windows"
-}
