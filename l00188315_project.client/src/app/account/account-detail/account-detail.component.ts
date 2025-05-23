@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Account } from 'src/app/models/account';
@@ -21,11 +22,12 @@ export class AccountDetailComponent implements OnInit {
     private readonly obService : OpenBankingService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly toastr : ToastrService,
+    private readonly title: Title,
   private readonly router: Router) {}
   ngOnInit(): void {
     this.loadDetails();
+    this.title.setTitle(`Account Detail`);
   }
-    title = "Account | "+(this.account?.currency ?? '');
 
     loadDetails(){
       const accountId = this.activatedRoute.snapshot.paramMap.get('id') as string;

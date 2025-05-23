@@ -3,6 +3,7 @@ import { OpenBankingService } from '../services/open-banking.service';
 import { Account } from '../models/account';
 import { Balance } from '../models/balance';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-account',
@@ -12,25 +13,27 @@ import { ToastrService } from 'ngx-toastr';
 export class AccountComponent implements OnInit{
   constructor(
     private readonly openBankingService:OpenBankingService,
-    private readonly toastr: ToastrService
+    private readonly toastr: ToastrService,
+    private readonly title: Title
 
   ) {
   }
   public accounts : Account[] | null = null;
   public balances : Balance[] | null = null;
 
-  title = "Accounts"
+
 
   ngOnInit(): void {
-  this.openBankingService.accounts().subscribe({
-      next: (response) => {
-        this.accounts = response.data;
-      },
-      error: (error) => {
-        this.toastr.error(error.error.message,error.status)
-        console.error(error);
-      }
-    });
+      this.title.setTitle("Accounts");
+      this.openBankingService.accounts().subscribe({
+          next: (response) => {
+            this.accounts = response.data;
+          },
+          error: (error) => {
+            this.toastr.error(error.error.message,error.status)
+            console.error(error);
+          }
+        });
   }
   linkAccount():void{
     this.openBankingService.consent().subscribe({
