@@ -77,5 +77,6 @@ namespace L00188315_Project.Infrastructure.Exceptions
         public static readonly string USER_ID_NULL = "UserId is null";
         public static readonly string ACCOUNT_ID_NULL = "AccountId is null";
         public static readonly string CONSENT_ID_NULL = "ConsentId is null";
+        public static readonly string TOKEN_NULL_RELINK = "Cannot Get Data from Revolut. Please relink account to update";
     }
 }

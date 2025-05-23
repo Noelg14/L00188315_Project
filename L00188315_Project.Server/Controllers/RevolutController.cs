@@ -236,7 +236,7 @@ namespace L00188315_Project.Server.Controllers
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
-                        Message = "Token is null, Please Relink Accounts",
+                        Message = FailureReason.TOKEN_NULL_RELINK,
                         Success = false,
                     }
                 );
@@ -284,7 +284,7 @@ namespace L00188315_Project.Server.Controllers
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
-                        Message = "Token is null, Please Relink Accounts",
+                        Message = FailureReason.TOKEN_NULL_RELINK,
                         Success = false,
                     }
                 );

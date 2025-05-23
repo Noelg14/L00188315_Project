@@ -32,7 +32,7 @@ import { TransactionDetailComponent } from './transaction-detail/transaction-det
     CoreModule,
     SharedModule,
     ReactiveFormsModule,
-    ToastrModule.forRoot({positionClass:'toast-bottom-right',timeOut:1000,preventDuplicates:true}),
+    ToastrModule.forRoot({positionClass:'toast-bottom-right',timeOut:2000,preventDuplicates:true}),
     AccountModule,
     BrowserAnimationsModule,
     NgxSpinnerModule
