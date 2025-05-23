@@ -147,7 +147,7 @@ namespace L00188315_Project.Server.Controllers
             {
                 return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
             }
-            return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
+            return Redirect("/account"); // if not in debug mode, return no content - redirect in future
         }
 
         /// <summary>
