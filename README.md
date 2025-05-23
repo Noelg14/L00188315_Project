@@ -1,14 +1,13 @@
 # L00188315_Project
 
-[![Terraform Create](https://github.com/Noelg14/L00188315_Project/actions/workflows/provision_infrastructure.yml/badge.svg)](https://github.com/Noelg14/L00188315_Project/actions/workflows/provision_infrastructure.yml)
-[![Build](https://github.com/Noelg14/L00188315_Project/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Noelg14/L00188315_Project/actions/workflows/dotnet.yml)
-
+[![Terraform Create](https://github.com/Noelg14/L00188315_Project/actions/workflows/provision_infrastructure.yml/badge.svg)](https://github.com/Noelg14/L00188315_Project/actions/workflows/provision_infrastructure.yml)  
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Noelg14_L00188315_Project&metric=alert_status&token=2e0c92735cc35b6016b6a10113c2c321f40c9f35)](https://sonarcloud.io/summary/new_code?id=Noelg14_L00188315_Project)  
 [![Build Project Artefact](https://github.com/Noelg14/L00188315_Project/actions/workflows/build.yml/badge.svg)](https://github.com/Noelg14/L00188315_Project/actions/workflows/build.yml)
 
 
 
 # About this Project
-This Project was done by L00188315.
+This Project was done by L00188315.  
 The application is an Open Banking Dashboard.
 
 ### Consent flow:
@@ -16,7 +15,7 @@ The application is an Open Banking Dashboard.
 
 # Setting up your environment
 ## Azure Keyvault
-Set up a keyvault and an App registration.
+Set up a keyvault and an App registration.  
 Give the app registration access to the Keyvault.
 
 Add value to the `appsettings.json`
@@ -31,9 +30,9 @@ Add value to the `appsettings.json`
   }
 ```
 ## Generating Revolut certs:
-Follow the below to generate the `private.key` and `transport.pem`.
-Create a Developer account with Revolut OpenBanking Dev tools.
-Creat an App and note the Client ID
+Follow the below to generate the `private.key` and `transport.pem`.  
+Create a Developer account with Revolut OpenBanking Dev tools.  
+Creat an App and note the Client ID  
 
 [Preparing the Sandbox Environment ](https://developer.revolut.com/docs/guides/build-banking-apps/get-started/prepare-sandbox-environment)
 
