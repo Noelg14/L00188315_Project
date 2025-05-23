@@ -24,7 +24,10 @@
               <td>{{transaction.bookingDateTime|date:'dd/MM/yyyy HH:mm:ss'}}</td>
               <td>{{transaction.rootAccountId}}</td>
               <td>{{transaction.amountCurrency}}</td>
-              <td>{{(transaction.creditDebitIndicator == "Debit" ? ("-"+transaction.amount)  : transaction.amount)}}</td>
+              <td>{{
+              (transaction.creditDebitIndicator == 'Debit' ? +transaction.amount * -1 : +transaction.amount)
+                | currency: transaction.amountCurrency 
+              }}</td>
               <td>{{transaction.transactionInformation}} </td>
               <td>{{transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator}}</td>
               <td>{{transaction.status}}</td>

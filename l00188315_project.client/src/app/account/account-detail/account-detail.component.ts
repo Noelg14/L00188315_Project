@@ -69,6 +69,7 @@ export class AccountDetailComponent implements OnInit {
       this.obService.deleteAccount(accountId).subscribe({
         next: response =>{
           this.toastr.success("Account Removed", "Deleted")
+          document.getElementById("modalClose")?.click(); // force close it
           this.router.navigateByUrl('/account')
         },
         error: err =>{

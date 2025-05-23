@@ -221,6 +221,7 @@ namespace L00188315_Project.Server.Controllers
                     userId,
                     accountId
                 );
+                transactions = transactions.OrderByDescending(x => x.BookingDateTime).ToList(); // Order by date descending
                 var apiResponse = new ApiResponseDTO<List<Transaction>>
                 {
                     Data = transactions,

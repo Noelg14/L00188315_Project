@@ -13,7 +13,7 @@
     <div class="card mt-2">
       <p class="card-title">{{account.accountSubType}} ({{account.currency}}) </p>
       <p class="balance">{{account.name}}</p>
-      <p class="balance" *ngIf="account.balance">{{getCurrencySymbol(account?.balance?.currency!) + account.balance.amount}}</p>
+      <p class="balance" *ngIf="account.balance">{{account.balance.amount| currency: account.currency}}</p>
       <p class="account">
         <svg
           width="20"
@@ -59,7 +59,7 @@
 
 <!--Modal-->
 <div class="modal fade rounded-5" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Choose provider</h1>

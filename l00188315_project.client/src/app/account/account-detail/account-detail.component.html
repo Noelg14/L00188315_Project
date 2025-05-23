@@ -60,7 +60,10 @@
             <tr *ngFor="let transaction of transactions">
               <td>{{transaction.bookingDateTime|date:'dd/MM/yyyy HH:mm:ss'}}</td>
               <td>{{transaction.amountCurrency}}</td>
-              <td>{{transaction.amount}}</td>
+              <td>{{
+              (transaction.creditDebitIndicator == 'Debit' ? +transaction.amount * -1 : +transaction.amount)
+                | currency: transaction.amountCurrency
+              }}</td>
               <td>{{transaction.transactionInformation}} </td>
               <td>{{transaction.proprietaryBankTransactionCode ?? transaction.creditDebitIndicator}}</td>
               <td>{{transaction.status}}</td>
@@ -81,7 +84,7 @@
 
 <!-- Modal -->
 <div class="modal fade rounded-5" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Account?</h1>
@@ -96,9 +99,9 @@
         <br>
           Are you sure you want to delete this account?
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger" (click)="deleteAccount()">Delete</button>
+      <div class="modal-footer row justify-content-center">
+        <button type="button" class="btn btn-primary col-3" data-bs-dismiss="modal" id="modalClose">Close</button>
+        <button type="button" class="btn btn-danger col-3" (click)="deleteAccount()">Delete</button>
       </div>
     </div>
   </div>
