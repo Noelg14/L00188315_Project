@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -17,6 +17,9 @@ export class AccountDetailComponent implements OnInit {
   account?:Account;
   balance?:Balance;
   transactions?: Transaction[] | null;
+
+  @ViewChild('modalClose')
+    modalClose: ElementRef | undefined;
 
   constructor(
     private readonly obService : OpenBankingService,
@@ -71,7 +74,7 @@ export class AccountDetailComponent implements OnInit {
       this.obService.deleteAccount(accountId).subscribe({
         next: response =>{
           this.toastr.success("Account Removed", "Deleted")
-          document.getElementById("modalClose")?.click(); // force close it
+          this.modalClose.nativeElement.click();
           this.router.navigateByUrl('/account')
         },
         error: err =>{
