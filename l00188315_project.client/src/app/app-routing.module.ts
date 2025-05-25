@@ -14,13 +14,6 @@ const routes: Routes = [
   {path:'account',component:AccountComponent,pathMatch:'full'  },
   {path:'account/:id',component:AccountDetailComponent},
   {path:'transactions',component:TransactionDetailComponent},
-
-  // {
-  //   path:'checkout',
-  //   canActivate:[AuthGuard],
-  //   loadChildren:()=>import('./checkout/checkout.module').then(m=>m.CheckoutModule)
-  // }, //now lazy loaded
-
   {path:'**',redirectTo:'',pathMatch:'full'}, //route that does not exist
 
 ];

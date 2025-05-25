@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -8,7 +9,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  constructor() {}
+  constructor(private readonly title:Title) {
+    title.setTitle('OpenBanking Dashboard');
+  }
 
-  title = 'OpenBanking Dashboard';
 }

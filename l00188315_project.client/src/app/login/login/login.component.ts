@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account-service.service';
 import { LoginDto } from 'src/app/models/LoginDto';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
@@ -14,8 +15,10 @@ export class LoginComponent {
   constructor(private readonly accountService: AccountService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly toastr: ToastrService
+    private readonly toastr: ToastrService,
+    private readonly title: Title
   ) {
+    this.title.setTitle("Login")
     this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'];
   }
 
@@ -25,7 +28,6 @@ export class LoginComponent {
   })
 
   returnUrl: string;
-  title = "Login"
 
   onSubmit(){
     let postData :LoginDto =  {

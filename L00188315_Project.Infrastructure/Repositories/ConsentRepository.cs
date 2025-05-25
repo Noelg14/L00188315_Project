@@ -70,7 +70,7 @@ namespace L00188315_Project.Infrastructure.Repositories
                 thisConsent.ConsentStatus = status;
             }
             _dbContext.Consents.Update(thisConsent);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return thisConsent;
         }

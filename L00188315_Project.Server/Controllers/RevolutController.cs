@@ -147,7 +147,7 @@ namespace L00188315_Project.Server.Controllers
             {
                 return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
             }
-            return Redirect("/accounts"); // if not in debug mode, return no content - redirect in future
+            return Redirect("/account"); // if not in debug mode, redirect to /account page
         }
 
         /// <summary>
@@ -221,6 +221,7 @@ namespace L00188315_Project.Server.Controllers
                     userId,
                     accountId
                 );
+                transactions = transactions.OrderByDescending(x => x.BookingDateTime).ToList(); // Order by date descending
                 var apiResponse = new ApiResponseDTO<List<Transaction>>
                 {
                     Data = transactions,
@@ -235,7 +236,7 @@ namespace L00188315_Project.Server.Controllers
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
-                        Message = "Token is null, Please Relink Accounts",
+                        Message = FailureReason.TOKEN_NULL_RELINK,
                         Success = false,
                     }
                 );
@@ -283,7 +284,7 @@ namespace L00188315_Project.Server.Controllers
                 return BadRequest(
                     new ApiResponseDTO<Balance>
                     {
-                        Message = "Token is null, Please Relink Accounts",
+                        Message = FailureReason.TOKEN_NULL_RELINK,
                         Success = false,
                     }
                 );

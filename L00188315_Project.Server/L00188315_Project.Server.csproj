@@ -8,9 +8,7 @@
     <SpaProxyServerUrl>https://localhost:60557</SpaProxyServerUrl>
     <Configurations>Debug;Release;API Only</Configurations>
     <!--Only Generate dc if debug-->
-    <GenerateDocumentationFile Condition="'$(Configuration)' == 'Debug'"
-      >true</GenerateDocumentationFile
-    >
+    <GenerateDocumentationFile Condition="'$(Configuration)' == 'Debug'">true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.14" />
@@ -42,5 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Account } from 'src/app/models/account';
@@ -17,15 +18,19 @@ export class AccountDetailComponent implements OnInit {
   balance?:Balance;
   transactions?: Transaction[] | null;
 
+  @ViewChild('modalClose')
+    modalClose: ElementRef | undefined;
+
   constructor(
     private readonly obService : OpenBankingService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly toastr : ToastrService,
+    private readonly title: Title,
   private readonly router: Router) {}
   ngOnInit(): void {
     this.loadDetails();
+    this.title.setTitle(`Account Detail`);
   }
-    title = "Account | "+(this.account?.currency ?? '');
 
     loadDetails(){
       const accountId = this.activatedRoute.snapshot.paramMap.get('id') as string;
@@ -69,6 +74,7 @@ export class AccountDetailComponent implements OnInit {
       this.obService.deleteAccount(accountId).subscribe({
         next: response =>{
           this.toastr.success("Account Removed", "Deleted")
+          this.modalClose.nativeElement.click();
           this.router.navigateByUrl('/account')
         },
         error: err =>{

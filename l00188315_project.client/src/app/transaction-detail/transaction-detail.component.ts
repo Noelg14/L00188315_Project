@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { OpenBankingService } from '../services/open-banking.service';
 import { ToastrService } from 'ngx-toastr';
 import { Transaction } from '../models/transaction';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-transaction-detail',
@@ -11,10 +12,12 @@ import { Transaction } from '../models/transaction';
 export class TransactionDetailComponent implements OnInit {
   constructor(
     private readonly openBankingService : OpenBankingService,
-    private readonly toastr : ToastrService
+    private readonly toastr : ToastrService,
+    private readonly title: Title
   ) {}
   transactions : Transaction[] = [];
   ngOnInit(): void {
+    this.title.setTitle(`Transactions`);
     this.openBankingService.allTransactions().subscribe({
       next: (response) => {
         this.transactions = response.data;
