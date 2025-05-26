@@ -5,7 +5,6 @@ using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Data;
 using L00188315_Project.Infrastructure.Data.Identity;
 using L00188315_Project.Server.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -88,6 +87,7 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
+app.MapFallbackToFile("index.html"); // for angular routing
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
