@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import * as LogRocket from 'logrocket';
+
 
 
 @Component({
@@ -11,6 +13,7 @@ export class AppComponent {
 
   constructor(private readonly title:Title) {
     title.setTitle('OpenBanking Dashboard');
+    LogRocket.init('xolkcf/project');
   }
 
 }
