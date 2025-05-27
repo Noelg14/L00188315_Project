@@ -63,7 +63,11 @@ namespace L00188315_Project.Server.Controllers
             if (existingUser is not null)
                 return BadRequest("User already exists");
 
-            var user = new IdentityUser { UserName = registerDTO.Name, Email = registerDTO.Email };
+            var user = new IdentityUser
+            {
+                UserName = registerDTO.Name!.Replace(" ", string.Empty),
+                Email = registerDTO.Email,
+            };
             var result = await _userManager.CreateAsync(user, registerDTO.Password!);
             if (!result.Succeeded)
                 return BadRequest("Account could not be created");
