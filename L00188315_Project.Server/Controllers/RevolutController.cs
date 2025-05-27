@@ -151,15 +151,13 @@ namespace L00188315_Project.Server.Controllers
         }
 
         /// <summary>
-        /// Gets the list of revolut accounts for the user
+        /// Gets the list of Revolut accounts for the user
         /// </summary>
         /// <returns>An <see cref="ApiResponseDTO{T}"/> with accounts</returns>
         [HttpGet("accounts")] //Call 1st
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts(
-        //[FromQuery]string? refresh
-        )
+        public async Task<ActionResult<ApiResponseDTO<List<Account>>>> GetAccounts()
         {
             try
             {
@@ -205,7 +203,6 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<List<Transaction>>>> GetTransactions(
             [FromQuery] string? accountId
-        //, [FromQuery] string? refresh - TBC
         )
         {
             if (string.IsNullOrEmpty(accountId))
@@ -254,7 +251,6 @@ namespace L00188315_Project.Server.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<ApiResponseDTO<Balance>>> GetBalances(
             [FromQuery] string? accountId
-        //,[FromQuery] string? refresh
         )
         {
             if (string.IsNullOrEmpty(accountId))
