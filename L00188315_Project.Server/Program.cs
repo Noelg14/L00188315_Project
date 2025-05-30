@@ -1,13 +1,60 @@
-using System.Diagnostics;
-using System.Text.Json.Serialization;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Data;
 using L00188315_Project.Infrastructure.Data.Identity;
 using L00188315_Project.Server.Extensions;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
+#if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly. -> Remove for Submission
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(
+        443,
+        ListenOptions =>
+        {
+            ListenOptions.UseHttps(httpsOptions =>
+            {
+                var localhostCert = CertificateLoader.LoadFromStoreCert(
+                    "localhost",
+                    "My",
+                    StoreLocation.CurrentUser,
+                    allowInvalid: true
+                );
+                var exampleCert = CertificateLoader.LoadFromStoreCert(
+                    "NOEL-PC\\Noel@Noel-PC",
+                    "My",
+                    StoreLocation.CurrentUser,
+                    allowInvalid: true
+                );
+                var certs = new Dictionary<string, X509Certificate2>(
+                    StringComparer.OrdinalIgnoreCase
+                )
+                {
+                    ["localhost"] = localhostCert,
+                    ["test.noelgriffin.ie"] = exampleCert,
+                };
+                httpsOptions.ServerCertificateSelector = (connectionContext, name) =>
+                {
+                    if (name is not null && certs.TryGetValue(name, out var cert))
+                    {
+                        return cert;
+                    }
+
+                    return exampleCert;
+                };
+            });
+        }
+    );
+});
+#endif
 
 // Add services to the container.
 
@@ -59,6 +106,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseSpa(options =>
+{
+    options.Options.SourcePath = "wwwroot"; // path to the client app
+    options.Options.DefaultPage = "/index.html"; // default page to serve
+});
 #if DEBUG // debug endponts for KV / Cache
 app.MapGet(
     "/secret/{secret}",
