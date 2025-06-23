@@ -1,13 +1,16 @@
-using System.Diagnostics;
-using System.Text.Json.Serialization;
 using L00188315_Project.Core.Interfaces.Services;
 using L00188315_Project.Infrastructure.Data;
 using L00188315_Project.Infrastructure.Data.Identity;
 using L00188315_Project.Server.Extensions;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 
@@ -59,6 +62,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseSpa(options =>
+{
+    options.Options.SourcePath = "wwwroot"; // path to the client app
+    options.Options.DefaultPage = "/index.html"; // default page to serve
+});
 #if DEBUG // debug endponts for KV / Cache
 app.MapGet(
     "/secret/{secret}",

@@ -143,11 +143,11 @@ namespace L00188315_Project.Server.Controllers
             await _revolutService.GetUserAccessToken(userId!, code);
 
             await _revolutService.GetAccountsAsync(userId!); // gets the accounts for the user
-            if (Debugger.IsAttached)
-            {
-                return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
-            }
-            return Redirect("/"); // if not in debug mode, redirect to /home page
+            //if (Debugger.IsAttached)
+            //{
+            //    return RedirectPermanent("http://localhost:4200/account"); // if debugging, return to the angular app
+            //}
+            return Redirect("/account"); // if not in debug mode, redirect to /home page
         }
 
         /// <summary>
