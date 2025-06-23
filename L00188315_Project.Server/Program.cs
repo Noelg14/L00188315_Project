@@ -12,50 +12,6 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-#if DEBUG // Only run this code in debug mode, uses a local FQDN to redirect correctly. -> Remove for Submission
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(
-        443,
-        ListenOptions =>
-        {
-            ListenOptions.UseHttps(httpsOptions =>
-            {
-                var localhostCert = CertificateLoader.LoadFromStoreCert(
-                    "localhost",
-                    "My",
-                    StoreLocation.CurrentUser,
-                    allowInvalid: true
-                );
-                var exampleCert = CertificateLoader.LoadFromStoreCert(
-                    "NOEL-PC\\Noel@Noel-PC",
-                    "My",
-                    StoreLocation.CurrentUser,
-                    allowInvalid: true
-                );
-                var certs = new Dictionary<string, X509Certificate2>(
-                    StringComparer.OrdinalIgnoreCase
-                )
-                {
-                    ["localhost"] = localhostCert,
-                    ["test.noelgriffin.ie"] = exampleCert,
-                };
-                httpsOptions.ServerCertificateSelector = (connectionContext, name) =>
-                {
-                    if (name is not null && certs.TryGetValue(name, out var cert))
-                    {
-                        return cert;
-                    }
-
-                    return exampleCert;
-                };
-            });
-        }
-    );
-});
-#endif
-
 // Add services to the container.
 
 builder
