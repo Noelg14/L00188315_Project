@@ -37,6 +37,19 @@ jobs:
      #Run Tests
     - name: Test Dotnet Application
       run: dotnet test --logger "trx;LogFileName=TestResults-${{matrix.os}}.trx"
+    
+    - name: Setup Nodejs
+      uses: actions/setup-node@v4
+      with:
+       node-version: '22'
+       
+    - name: Build Angular Application
+      run: |
+        cd l00188315_project.client
+        npm ci
+        npm run build
+        cd ..
+      
       #Upload test results
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
